@@ -11,34 +11,47 @@ import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import FadeContent from "@/components/reactbits/FadeContent";
 import FAQ from "@/components/FAQ";
 import Newsletter from "@/components/Newsletter";
-import PayPalPayment from "@/components/PayPalPayment";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
-  // Payment Modal State
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState<{ amount: string, name: string } | null>(null);
-
   const handleCheckout = async (planId: string, planName: string) => {
     if (planName === 'Free') {
+      // Free plan - just go to create
       window.location.href = '/create';
       return;
     }
 
-    // Set prices for PayPal
-    const prices: Record<string, string> = {
-      'Pro': '9.00',
-      'Team': '29.00'
-    };
+    if (planName === 'Team') {
+      // Team plan - go to support/contact
+      window.location.href = '/support';
+      return;
+    }
 
-    setPaymentDetails({
-      amount: prices[planName] || '9.00',
-      name: planName
-    });
-    setShowPaymentModal(true);
+    setCheckoutLoading(planName);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId, email: '' }), // Email will come from Clerk user
+      });
+
+      const data = await response.json();
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        // For now, show alert since Payoneer isn't configured yet
+        alert('Payment integration coming soon! Please contact support for Pro plan access.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setCheckoutLoading(null);
+    }
   };
 
   const plans = [
@@ -419,57 +432,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Payment Modal */}
-      <AnimatePresence>
-        {showPaymentModal && paymentDetails && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPaymentModal(false)}
-              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden"
-            >
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold text-stone-900">Upgrade to {paymentDetails.name}</h3>
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="my-8">
-                  <div className="flex items-baseline gap-1 mb-2">
-                    <span className="text-4xl font-bold text-stone-900">${paymentDetails.amount}</span>
-                    <span className="text-stone-500">/month</span>
-                  </div>
-                  <p className="text-stone-500 text-sm">Cancel anytime.</p>
-                </div>
-
-                <PayPalPayment
-                  amount={paymentDetails.amount}
-                  planName={paymentDetails.name}
-                  onSuccess={() => {
-                    alert("Payment Successful! Welcome to " + paymentDetails.name);
-                    setShowPaymentModal(false);
-                  }}
-                />
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
