@@ -9,11 +9,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SkySig n | Air Signature Capture",
+  title: "SkySign | Air Signature Capture",
   description: "Draw your signature in the air and capture it with your camera. The future of digital signatures.",
   keywords: ["signature", "e-signature", "digital signature", "air signature", "hand tracking"],
   openGraph: {
-    title: "SkySig n | Air Signature Capture",
+    title: "SkySign | Air Signature Capture",
     description: "Draw your signature in the air and capture it with your camera.",
     type: "website",
   },

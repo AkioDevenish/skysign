@@ -33,7 +33,7 @@ export default function SignInPage() {
                         }}
                         className="neon-text"
                     >
-                        SkySig n
+                        SkySign
                     </span>
                 </div>
 
