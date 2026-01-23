@@ -250,26 +250,26 @@ export default function SignatureCapture({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-40 p-10 text-center"
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-40 p-6 text-center"
                     >
-                        <h3 className="text-stone-900 text-2xl font-bold mb-8">
+                        <h3 className="text-stone-900 text-xl font-bold mb-6">
                             ✋ Show your hand to begin
                         </h3>
-                        <div className="flex gap-12 text-stone-600">
+                        <div className="flex gap-8 text-stone-600 text-sm">
                             <div>
-                                <div className="text-4xl mb-3">☝️</div>
+                                <div className="text-2xl mb-2">☝️</div>
                                 <p className="font-medium">Point to draw</p>
                             </div>
                             <div>
-                                <div className="text-4xl mb-3">✊</div>
-                                <p className="font-medium">Stop drawing</p>
+                                <div className="text-2xl mb-2">✊</div>
+                                <p className="font-medium">Stop</p>
                             </div>
                             <div>
-                                <div className="text-4xl mb-3">👍</div>
+                                <div className="text-2xl mb-2">👍</div>
                                 <p className="font-medium">Save</p>
                             </div>
                             <div>
-                                <div className="text-4xl mb-3">🖐️</div>
+                                <div className="text-2xl mb-2">🖐️</div>
                                 <p className="font-medium">Clear</p>
                             </div>
                         </div>
