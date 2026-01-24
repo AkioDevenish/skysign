@@ -49,7 +49,7 @@ export default function PrivacyPage() {
                             <p className="text-stone-600 mb-4">When you create an account or use our services, we may collect:</p>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2 mb-6">
                                 <li><strong>Account Information:</strong> Name, email address, password (encrypted), and profile picture</li>
-                                <li><strong>Payment Information:</strong> Credit card details (processed securely via Stripe), billing address, and transaction history</li>
+                                <li><strong>Payment Information:</strong> Credit card details (processed securely via Paddle), billing address, and transaction history</li>
                                 <li><strong>Identity Verification:</strong> Phone number, IP address, and device information for security purposes</li>
                                 <li><strong>Signature Data:</strong> Digital signatures you create, including drawn, typed, and uploaded signatures</li>
                             </ul>
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">4. Data Sharing and Disclosure</h2>
                             <p className="text-stone-600 mb-4">We do not sell your personal information. We may share data with:</p>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2">
-                                <li><strong>Service Providers:</strong> Trusted third parties who assist in operating our platform (e.g., Stripe for payments, Clerk for authentication)</li>
+                                <li><strong>Service Providers:</strong> Trusted third parties who assist in operating our platform (e.g., Paddle for payments, Clerk for authentication)</li>
                                 <li><strong>Document Recipients:</strong> Parties you explicitly share documents with for signing</li>
                                 <li><strong>Legal Requirements:</strong> When required by law, court order, or government request</li>
                                 <li><strong>Business Transfers:</strong> In connection with mergers, acquisitions, or sale of assets (with prior notice)</li>

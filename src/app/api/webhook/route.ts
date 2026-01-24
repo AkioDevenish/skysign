@@ -1,118 +1,163 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import crypto from 'crypto';
 
-// Lazy initialization to avoid build errors
-function getStripe() {
-    if (!process.env.STRIPE_SECRET_KEY) {
-        return null;
-    }
-    return new Stripe(process.env.STRIPE_SECRET_KEY, {
-        apiVersion: '2024-12-18.acacia',
-    });
+// Paddle webhook secret for signature verification
+const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET || '';
+
+interface PaddleWebhookEvent {
+    event_id: string;
+    event_type: string;
+    occurred_at: string;
+    notification_id: string;
+    data: {
+        id: string;
+        status: string;
+        customer_id: string;
+        custom_data?: {
+            clerkUserId?: string;
+            planId?: string;
+        };
+        items?: Array<{
+            price: {
+                id: string;
+                product_id: string;
+            };
+        }>;
+        billing_details?: {
+            email?: string;
+        };
+    };
 }
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+function verifyPaddleSignature(
+    rawBody: string,
+    signature: string | null,
+    secret: string
+): boolean {
+    if (!signature || !secret) return false;
+
+    try {
+        // Paddle uses ts;h1=signature format
+        const parts = signature.split(';');
+        const tsMatch = parts.find(p => p.startsWith('ts='));
+        const h1Match = parts.find(p => p.startsWith('h1='));
+
+        if (!tsMatch || !h1Match) return false;
+
+        const timestamp = tsMatch.split('=')[1];
+        const providedSignature = h1Match.split('=')[1];
+
+        const signedPayload = `${timestamp}:${rawBody}`;
+        const expectedSignature = crypto
+            .createHmac('sha256', secret)
+            .update(signedPayload)
+            .digest('hex');
+
+        return crypto.timingSafeEqual(
+            Buffer.from(providedSignature),
+            Buffer.from(expectedSignature)
+        );
+    } catch {
+        return false;
+    }
+}
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.text();
-        const signature = request.headers.get('stripe-signature');
+        const rawBody = await request.text();
+        const signature = request.headers.get('paddle-signature');
 
-        if (!signature) {
-            return NextResponse.json(
-                { error: 'Missing signature' },
-                { status: 400 }
-            );
-        }
-
-        if (!webhookSecret) {
-            console.log('Webhook secret not configured');
-            return NextResponse.json(
-                { error: 'Webhook not configured' },
-                { status: 503 }
-            );
-        }
-
-        let event: Stripe.Event;
-
-        const stripe = getStripe();
-        if (!stripe) {
-            return NextResponse.json(
-                { error: 'Stripe not configured' },
-                { status: 503 }
-            );
-        }
-
-        try {
-            event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-        } catch (err) {
-            console.error('Webhook signature verification failed:', err);
+        // Verify signature in production
+        if (webhookSecret && !verifyPaddleSignature(rawBody, signature, webhookSecret)) {
+            console.error('Paddle webhook signature verification failed');
             return NextResponse.json(
                 { error: 'Invalid signature' },
                 { status: 400 }
             );
         }
 
+        const event: PaddleWebhookEvent = JSON.parse(rawBody);
+
+        console.log('Paddle webhook received:', event.event_type);
+
         // Handle the event
-        switch (event.type) {
-            case 'checkout.session.completed': {
-                const session = event.data.object as Stripe.Checkout.Session;
-                const planId = session.metadata?.planId;
-                const customerEmail = session.customer_email;
+        switch (event.event_type) {
+            case 'subscription.created':
+            case 'subscription.activated': {
+                const { custom_data, status } = event.data;
+                const clerkUserId = custom_data?.clerkUserId;
+                const planId = custom_data?.planId;
 
-                console.log('Checkout completed:', {
+                console.log('Subscription created:', {
                     planId,
-                    customerEmail,
-                    subscriptionId: session.subscription,
+                    clerkUserId,
+                    status,
+                    subscriptionId: event.data.id,
                 });
 
-                // TODO: Update user's subscription status in your database
-                // Example with Clerk metadata:
-                // await clerkClient.users.updateUserMetadata(userId, {
-                //     publicMetadata: {
-                //         subscriptionPlan: planId,
-                //         subscriptionId: session.subscription,
-                //     },
-                // });
+                // TODO: Update user's subscription in Clerk
+                // import { clerkClient } from '@clerk/nextjs/server';
+                // if (clerkUserId) {
+                //     await clerkClient.users.updateUserMetadata(clerkUserId, {
+                //         publicMetadata: {
+                //             plan: planId,
+                //             subscriptionId: event.data.id,
+                //             subscriptionStatus: status,
+                //         },
+                //     });
+                // }
 
                 break;
             }
 
-            case 'customer.subscription.updated': {
-                const subscription = event.data.object as Stripe.Subscription;
+            case 'subscription.updated': {
+                const { status, custom_data } = event.data;
                 console.log('Subscription updated:', {
-                    id: subscription.id,
-                    status: subscription.status,
+                    id: event.data.id,
+                    status,
+                    clerkUserId: custom_data?.clerkUserId,
                 });
 
-                // TODO: Update subscription status in database
+                // TODO: Update subscription status
                 break;
             }
 
-            case 'customer.subscription.deleted': {
-                const subscription = event.data.object as Stripe.Subscription;
-                console.log('Subscription cancelled:', subscription.id);
+            case 'subscription.canceled':
+            case 'subscription.past_due': {
+                const { custom_data, status } = event.data;
+                console.log('Subscription cancelled/past due:', {
+                    id: event.data.id,
+                    status,
+                    clerkUserId: custom_data?.clerkUserId,
+                });
 
                 // TODO: Downgrade user to free tier
+                // if (custom_data?.clerkUserId) {
+                //     await clerkClient.users.updateUserMetadata(custom_data.clerkUserId, {
+                //         publicMetadata: {
+                //             plan: 'free',
+                //             subscriptionId: null,
+                //             subscriptionStatus: status,
+                //         },
+                //     });
+                // }
+
                 break;
             }
 
-            case 'invoice.payment_succeeded': {
-                const invoice = event.data.object as Stripe.Invoice;
-                console.log('Payment succeeded for invoice:', invoice.id);
+            case 'transaction.completed': {
+                console.log('Transaction completed:', event.data.id);
                 break;
             }
 
-            case 'invoice.payment_failed': {
-                const invoice = event.data.object as Stripe.Invoice;
-                console.log('Payment failed for invoice:', invoice.id);
-
+            case 'transaction.payment_failed': {
+                console.log('Payment failed for transaction:', event.data.id);
                 // TODO: Notify user of failed payment
                 break;
             }
 
             default:
-                console.log(`Unhandled event type: ${event.type}`);
+                console.log(`Unhandled Paddle event type: ${event.event_type}`);
         }
 
         return NextResponse.json({ received: true });
