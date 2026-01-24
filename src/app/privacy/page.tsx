@@ -192,6 +192,7 @@ export default function PrivacyPage() {
                     <p>© 2026 Sky Sign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/terms" className="hover:text-stone-900">Terms of Service</Link>
+                        <Link href="/refund" className="hover:text-stone-900">Refund Policy</Link>
                         <Link href="/support" className="hover:text-stone-900">Support</Link>
                     </div>
                 </div>

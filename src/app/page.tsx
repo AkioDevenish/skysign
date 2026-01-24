@@ -690,6 +690,7 @@ export default function Home() {
             <div className="flex items-center gap-8 text-sm text-stone-500">
               <Link href="/privacy" className="hover:text-stone-900 transition-colors">Privacy</Link>
               <Link href="/terms" className="hover:text-stone-900 transition-colors">Terms</Link>
+              <Link href="/refund" className="hover:text-stone-900 transition-colors">Refund</Link>
               <Link href="/support" className="hover:text-stone-900 transition-colors">Support</Link>
             </div>
             <p className="text-sm text-stone-400">
