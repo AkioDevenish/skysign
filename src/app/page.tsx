@@ -80,31 +80,7 @@ export default function Home() {
       return;
     }
 
-
-
-    setCheckoutLoading(planName);
-
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, email: '' }), // Email will come from Clerk user
-      });
-
-      const data = await response.json();
-
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        // For now, show alert since Payoneer isn't configured yet
-        alert('Payment integration coming soon! Please contact support for Pro plan access.');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Something went wrong. Please try again.');
-    } finally {
-      setCheckoutLoading(null);
-    }
+    alert('Payment integration coming soon! Stay tuned for Pro plan access.');
   };
 
   const plans = [
