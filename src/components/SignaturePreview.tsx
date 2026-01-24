@@ -66,196 +66,137 @@ export default function SignaturePreview({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 100,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(0, 0, 0, 0.9)',
-                backdropFilter: 'blur(20px)',
-                padding: '20px',
-            }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-stone-900/20 backdrop-blur-sm p-4"
         >
             <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                style={{
-                    width: '100%',
-                    maxWidth: '700px',
-                    background: 'linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%)',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    overflow: 'hidden',
-                }}
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+                className="w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl shadow-stone-900/10 border border-white/50 overflow-hidden"
             >
                 {/* Header */}
-                <div
-                    style={{
-                        padding: '24px',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: '600' }}>
-                        ✨ Your Signature
-                    </h2>
+                <div className="p-6 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xl">✨</span>
+                        <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+                            Your Signature
+                        </h2>
+                    </div>
                     <button
                         onClick={onClose}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#666',
-                            fontSize: '24px',
-                            cursor: 'pointer',
-                            padding: '4px',
-                        }}
+                        className="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
                     >
-                        ✕
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
                 {/* Signature preview */}
-                <div
-                    style={{
-                        padding: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: selectedColor === '#ffffff' ? '#1a1a1a' : '#ffffff',
-                        margin: '20px',
-                        borderRadius: '16px',
-                        minHeight: '200px',
-                    }}
-                >
-                    {processedDataUrl ? (
-                        <img
-                            src={processedDataUrl}
-                            alt="Your signature"
-                            style={{
-                                maxWidth: '100%',
-                                maxHeight: '180px',
-                                objectFit: 'contain',
-                                filter: selectedStyle === 'bold'
-                                    ? 'contrast(1.5)'
-                                    : selectedStyle === 'elegant'
-                                        ? 'blur(0.5px) contrast(1.2)'
-                                        : 'none',
-                            }}
-                        />
-                    ) : (
-                        <div style={{ color: '#666' }}>Processing...</div>
-                    )}
+                <div className="p-8">
+                    <div
+                        className="relative flex items-center justify-center rounded-2xl min-h-[240px] border border-stone-200 transition-colors duration-300"
+                        style={{
+                            background: selectedColor === '#ffffff' ? '#1c1917' : '#ffffff', // Invert bg for white signature
+                            backgroundImage: selectedColor === '#ffffff'
+                                ? 'radial-gradient(circle at 1px 1px, #292524 1px, transparent 0)'
+                                : 'radial-gradient(circle at 1px 1px, #e7e5e4 1px, transparent 0)',
+                            backgroundSize: '20px 20px'
+                        }}
+                    >
+                        {processedDataUrl ? (
+                            <img
+                                src={processedDataUrl}
+                                alt="Your signature"
+                                className="max-w-full max-h-[180px] object-contain transition-all duration-300"
+                                style={{
+                                    filter: selectedStyle === 'bold'
+                                        ? 'contrast(1.5) drop-shadow(0 0 1px rgba(0,0,0,0.1))'
+                                        : selectedStyle === 'elegant'
+                                            ? 'blur(0.5px) contrast(1.2)'
+                                            : 'none',
+                                }}
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center gap-3 text-stone-400">
+                                <div className="w-6 h-6 border-2 border-stone-300 border-t-stone-900 rounded-full animate-spin" />
+                                <span className="text-sm font-medium">Processing signature...</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Hidden canvas for processing */}
-                <canvas ref={canvasRef} style={{ display: 'none' }} />
+                <canvas ref={canvasRef} className="hidden" />
 
-                {/* Style options */}
-                <div style={{ padding: '0 24px 20px' }}>
-                    <p style={{ color: '#888', fontSize: '12px', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                        Background
-                    </p>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        {colors.map((color) => (
-                            <button
-                                key={color.value}
-                                onClick={() => setSelectedColor(color.value)}
-                                style={{
-                                    width: '36px',
-                                    height: '36px',
-                                    borderRadius: '50%',
-                                    background: color.value,
-                                    border: selectedColor === color.value
-                                        ? '3px solid #00f5ff'
-                                        : '2px solid rgba(255, 255, 255, 0.2)',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
-                                title={color.name}
-                            />
-                        ))}
+                <div className="px-8 pb-8 space-y-8">
+                    <div className="flex flex-col md:flex-row gap-8">
+                        {/* Background Options */}
+                        <div className="flex-1">
+                            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
+                                Color
+                            </p>
+                            <div className="flex gap-3">
+                                {colors.map((color) => (
+                                    <button
+                                        key={color.value}
+                                        onClick={() => setSelectedColor(color.value)}
+                                        className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${selectedColor === color.value
+                                                ? 'border-stone-900 scale-110 shadow-lg'
+                                                : 'border-stone-200 hover:border-stone-300 hover:scale-105'
+                                            }`}
+                                        style={{ backgroundColor: color.value }}
+                                        title={color.name}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Style Options */}
+                        <div className="flex-1">
+                            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
+                                Style
+                            </p>
+                            <div className="flex gap-2">
+                                {(['normal', 'bold', 'elegant'] as const).map((style) => (
+                                    <button
+                                        key={style}
+                                        onClick={() => setSelectedStyle(style)}
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${selectedStyle === style
+                                                ? 'bg-stone-900 border-stone-900 text-white shadow-lg shadow-stone-900/10'
+                                                : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
+                                            }`}
+                                    >
+                                        {style.charAt(0).toUpperCase() + style.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {/* Style presets */}
-                <div style={{ padding: '0 24px 20px' }}>
-                    <p style={{ color: '#888', fontSize: '12px', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                        Style
-                    </p>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        {(['normal', 'bold', 'elegant'] as const).map((style) => (
+                    {/* Actions */}
+                    <div className="flex items-center justify-between pt-8 border-t border-stone-100">
+                        <button
+                            onClick={onRetry}
+                            className="px-6 py-3 rounded-full border border-stone-200 text-stone-600 font-medium hover:bg-stone-50 hover:text-stone-900 transition-colors flex items-center gap-2"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Try Again
+                        </button>
+                        <div className="flex gap-3">
                             <button
-                                key={style}
-                                onClick={() => setSelectedStyle(style)}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '8px',
-                                    background: selectedStyle === style
-                                        ? 'rgba(0, 245, 255, 0.2)'
-                                        : 'rgba(255, 255, 255, 0.05)',
-                                    border: selectedStyle === style
-                                        ? '1px solid #00f5ff'
-                                        : '1px solid rgba(255, 255, 255, 0.1)',
-                                    color: selectedStyle === style ? '#00f5ff' : '#888',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    textTransform: 'capitalize',
-                                    transition: 'all 0.2s ease',
-                                }}
+                                onClick={() => handleDownload('png')}
+                                className="px-8 py-3 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 flex items-center gap-2 hover:-translate-y-0.5"
                             >
-                                {style}
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download PNG
                             </button>
-                        ))}
+                        </div>
                     </div>
-                </div>
-
-                {/* Actions */}
-                <div
-                    style={{
-                        padding: '24px',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-                        display: 'flex',
-                        gap: '12px',
-                        justifyContent: 'flex-end',
-                    }}
-                >
-                    <button
-                        onClick={onRetry}
-                        style={{
-                            padding: '12px 24px',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            background: 'transparent',
-                            color: '#fff',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        ↺ Retry
-                    </button>
-                    <button
-                        onClick={() => handleDownload('png')}
-                        style={{
-                            padding: '12px 24px',
-                            borderRadius: '12px',
-                            border: 'none',
-                            background: 'linear-gradient(135deg, #00f5ff 0%, #00a8ff 100%)',
-                            color: '#000',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        ⬇ Download PNG
-                    </button>
                 </div>
             </motion.div>
         </motion.div>
