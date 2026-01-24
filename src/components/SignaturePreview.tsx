@@ -28,7 +28,7 @@ export default function SignaturePreview({
         { name: 'Cyan', value: '#00f5ff' },
     ];
 
-    // Process image when loaded
+    // Process image when loaded or color/data changes
     useEffect(() => {
         if (!signatureDataUrl || !canvasRef.current) return;
 
@@ -41,16 +41,43 @@ export default function SignaturePreview({
             const ctx = canvas.getContext('2d')!;
             ctx.drawImage(img, 0, 0);
 
+            // Get image data to recolor
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // Parse selected color
+            let r = 0, g = 0, b = 0;
+            if (selectedColor.startsWith('#')) {
+                const hex = selectedColor.substring(1);
+                r = parseInt(hex.substring(0, 2), 16);
+                g = parseInt(hex.substring(2, 4), 16);
+                b = parseInt(hex.substring(4, 6), 16);
+            }
+
+            // Recolor non-transparent pixels
+            for (let i = 0; i < data.length; i += 4) {
+                // If alpha > 0, recolor
+                if (data[i + 3] > 0) {
+                    data[i] = r;     // Red
+                    data[i + 1] = g; // Green
+                    data[i + 2] = b; // Blue
+                    // Keep alpha as is
+                }
+            }
+
+            // Put image data back
+            ctx.putImageData(imageData, 0, 0);
+
             // Create trimmed version
             const trimmed = createTrimmedCanvas(canvas, 30);
             if (trimmed) {
                 setProcessedDataUrl(trimmed.toDataURL('image/png'));
             } else {
-                setProcessedDataUrl(signatureDataUrl);
+                setProcessedDataUrl(canvas.toDataURL('image/png'));
             }
         };
         img.src = signatureDataUrl;
-    }, [signatureDataUrl]);
+    }, [signatureDataUrl, selectedColor]);
 
     const handleDownload = (format: 'png' | 'svg') => {
         if (!processedDataUrl) return;
@@ -142,8 +169,8 @@ export default function SignaturePreview({
                                         key={color.value}
                                         onClick={() => setSelectedColor(color.value)}
                                         className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${selectedColor === color.value
-                                                ? 'border-stone-900 scale-110 shadow-lg'
-                                                : 'border-stone-200 hover:border-stone-300 hover:scale-105'
+                                            ? 'border-stone-900 scale-110 shadow-lg'
+                                            : 'border-stone-200 hover:border-stone-300 hover:scale-105'
                                             }`}
                                         style={{ backgroundColor: color.value }}
                                         title={color.name}
@@ -163,8 +190,8 @@ export default function SignaturePreview({
                                         key={style}
                                         onClick={() => setSelectedStyle(style)}
                                         className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${selectedStyle === style
-                                                ? 'bg-stone-900 border-stone-900 text-white shadow-lg shadow-stone-900/10'
-                                                : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
+                                            ? 'bg-stone-900 border-stone-900 text-white shadow-lg shadow-stone-900/10'
+                                            : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
                                             }`}
                                     >
                                         {style.charAt(0).toUpperCase() + style.slice(1)}
