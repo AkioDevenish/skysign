@@ -123,11 +123,12 @@ export default function Home() {
       ],
       cta: "Get Started",
       highlighted: false,
+      comingSoon: false,
     },
     {
       name: "Pro",
       planId: "pro",
-      price: "$9",
+      price: "Coming Soon",
       period: "per month",
       description: "For professionals who sign daily",
       features: [
@@ -138,13 +139,14 @@ export default function Home() {
         "Comprehensive Audit Logs",
         "Priority Email Support",
       ],
-      cta: "Start Free Trial",
+      cta: "Coming Soon",
       highlighted: true,
+      comingSoon: true,
     },
     {
       name: "Pro Plus",
       planId: "proplus",
-      price: "$29",
+      price: "Coming Soon",
       period: "per month",
       description: "For teams and organizations",
       features: [
@@ -155,8 +157,9 @@ export default function Home() {
         "Custom Branding",
         "Dedicated Success Manager",
       ],
-      cta: "Get Pro Plus",
+      cta: "Coming Soon",
       highlighted: false,
+      comingSoon: true,
     },
   ];
 
@@ -198,16 +201,11 @@ export default function Home() {
             <a href="#pricing" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">Pricing</a>
             <a href="#faq" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">FAQ</a>
             <SignedOut>
-              <SignInButton mode="modal">
-                <button className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">
-                  Sign In
-                </button>
-              </SignInButton>
               <Link
                 href="/sign-up"
                 className="px-6 py-2.5 bg-stone-900 text-stone-50 rounded-full text-sm font-medium hover:bg-stone-800 transition-all hover:shadow-lg hover:shadow-stone-900/10"
               >
-                Try Free
+                Get Started
               </Link>
             </SignedOut>
             <SignedIn>
@@ -540,10 +538,19 @@ export default function Home() {
                     }`}
                 >
                   {/* Popular Badge */}
-                  {plan.highlighted && (
+                  {plan.highlighted && !plan.comingSoon && (
                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
                       <span className="px-6 py-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 text-white text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg shadow-emerald-500/20 uppercase">
                         Most Popular
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Coming Soon Badge */}
+                  {plan.comingSoon && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
+                      <span className="px-6 py-2 bg-stone-800 text-stone-200 text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg border border-stone-700 uppercase">
+                        Coming Soon
                       </span>
                     </div>
                   )}
@@ -570,12 +577,14 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-10">
                     <div className="flex items-baseline gap-1">
-                      <span className={`text-6xl font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      <span className={`${plan.comingSoon ? 'text-4xl' : 'text-6xl'} font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
                         {plan.price}
                       </span>
-                      <span className={`text-stone-500 font-medium ${plan.highlighted ? 'text-stone-400' : ''}`}>
-                        /{plan.period === 'forever' ? 'forever' : 'mo'}
-                      </span>
+                      {!plan.comingSoon && (
+                        <span className={`text-stone-500 font-medium ${plan.highlighted ? 'text-stone-400' : ''}`}>
+                          /{plan.period === 'forever' ? 'forever' : 'mo'}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -583,8 +592,8 @@ export default function Home() {
                   <div className="mt-auto mb-12">
                     <button
                       onClick={() => handleCheckout(plan.planId, plan.name)}
-                      disabled={checkoutLoading === plan.name}
-                      className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-300 disabled:opacity-70 group/btn ${plan.highlighted
+                      disabled={checkoutLoading === plan.name || plan.comingSoon}
+                      className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed group/btn ${plan.highlighted
                         ? 'bg-white text-stone-900 hover:bg-stone-50 shadow-xl shadow-white/5'
                         : 'bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-900/10'
                         }`}
@@ -600,9 +609,11 @@ export default function Home() {
                       ) : (
                         <span className="flex items-center justify-center gap-2">
                           {plan.cta}
-                          <svg className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                          </svg>
+                          {!plan.comingSoon && (
+                            <svg className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                          )}
                         </span>
                       )}
                     </button>

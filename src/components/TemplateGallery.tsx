@@ -118,10 +118,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                             {isLocked && (
                                 <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
                                     <div className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white rounded-full text-sm font-medium">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                        </svg>
-                                        Upgrade to Pro
+                                        Coming Soon
                                     </div>
                                 </div>
                             )}
@@ -151,7 +148,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                             <p className="text-xs text-stone-500">Get 4 more premium styles with Pro</p>
                         </div>
                         <a href="/#pricing" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-full hover:bg-stone-800 transition-colors">
-                            Upgrade
+                            View Plans
                         </a>
                     </div>
                 </div>

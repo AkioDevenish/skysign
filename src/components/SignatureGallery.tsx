@@ -181,7 +181,7 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
                 <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
                     <p className="text-xs text-amber-700">
                         <strong>{remainingSlots}</strong> free {remainingSlots === 1 ? 'slot' : 'slots'} remaining.{' '}
-                        <a href="/#pricing" className="underline hover:no-underline">Upgrade to Pro</a> for unlimited.
+                        <span className="font-semibold">Unlimited signatures coming soon with Pro!</span>
                     </p>
                 </div>
             )}

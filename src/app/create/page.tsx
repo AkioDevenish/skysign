@@ -148,7 +148,7 @@ export default function CreatePage() {
                     refreshGallery();
                 }
             } else {
-                alert('Free plan limit reached (5 signatures). Upgrade to Pro for unlimited!');
+                alert('Free plan limit reached (5 signatures). Unlimited signatures coming soon with Pro!');
             }
             setShowPreview(true);
         }
@@ -219,8 +219,8 @@ export default function CreatePage() {
         }
 
         if (tier !== 'free' && plan === 'free') {
-            // Show upgrade prompt for premium features
-            alert(`This feature requires a ${tier.charAt(0).toUpperCase() + tier.slice(1)} plan. Upgrade to access it!`);
+            // Show coming soon prompt for premium features
+            alert(`The ${tier.charAt(0).toUpperCase() + tier.slice(1)} features are coming soon!`);
             return;
         }
         setActiveSection(sectionId);
