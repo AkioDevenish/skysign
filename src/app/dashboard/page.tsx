@@ -271,7 +271,7 @@ export default function DashboardPage() {
                             </div>
                             <h3 className="text-stone-900 font-semibold mb-1">Unlock Team Cooperation</h3>
                             <p className="text-sm text-stone-500 mb-6 max-w-xs mx-auto">
-                                Upgrade to Pro Plus to add up to 10 team members and manage shared documents.
+                                Pro Plus will allow you to add up to 10 team members and manage shared documents.
                             </p>
                             <Link
                                 href="/#pricing"
