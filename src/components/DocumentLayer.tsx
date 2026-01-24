@@ -77,11 +77,8 @@ export default function DocumentLayer({
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
+                alignItems: 'flex-start',
+                position: 'relative',
                 zIndex: 0
             }}
         >
@@ -130,8 +127,8 @@ export default function DocumentLayer({
                         onClick={prevPage}
                         disabled={currentPage <= 1}
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${currentPage <= 1
-                                ? 'text-stone-300 cursor-not-allowed'
-                                : 'text-stone-600 hover:bg-stone-100'
+                            ? 'text-stone-300 cursor-not-allowed'
+                            : 'text-stone-600 hover:bg-stone-100'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -156,8 +153,8 @@ export default function DocumentLayer({
                         onClick={nextPage}
                         disabled={currentPage >= numPages}
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${currentPage >= numPages
-                                ? 'text-stone-300 cursor-not-allowed'
-                                : 'text-stone-600 hover:bg-stone-100'
+                            ? 'text-stone-300 cursor-not-allowed'
+                            : 'text-stone-600 hover:bg-stone-100'
                             }`}
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

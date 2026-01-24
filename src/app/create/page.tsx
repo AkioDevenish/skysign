@@ -496,13 +496,14 @@ export default function CreatePage() {
                             ref={containerRef}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="relative h-[600px] bg-white rounded-3xl border border-stone-200 shadow-lg overflow-auto"
+                            className="relative bg-white rounded-3xl border border-stone-200 shadow-lg overflow-y-auto overflow-x-hidden"
+                            style={{ height: '600px' }}
                         >
                             <div
-                                className="relative min-h-full"
-                                style={{ height: docDims ? docDims.height : '100%' }}
+                                className="relative w-full"
+                                style={{ minHeight: '100%' }}
                             >
-                                <div className="absolute inset-0 z-0">
+                                <div className="w-full">
                                     <DocumentLayer
                                         file={documentFile}
                                         onLoad={setDocDims}
