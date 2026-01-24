@@ -77,8 +77,11 @@ export default function DocumentLayer({
                 width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'flex-start',
-                position: 'relative',
+                alignItems: 'center',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
                 zIndex: 0
             }}
         >

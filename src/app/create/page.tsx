@@ -406,7 +406,10 @@ export default function CreatePage() {
             </aside>
 
             {/* Main Content */}
-            <div className={`flex-1 transition-all duration-300 md:${sidebarCollapsed ? 'ml-16' : 'ml-64'} ml-0`}>
+            <div
+                className="flex-1 transition-all duration-300"
+                style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
+            >
                 {/* Top Navigation */}
                 <nav className="fixed top-0 right-0 bg-stone-50/90 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
                     style={{ left: sidebarCollapsed ? '64px' : '256px' }}
@@ -496,14 +499,14 @@ export default function CreatePage() {
                             ref={containerRef}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="relative bg-white rounded-3xl border border-stone-200 shadow-lg overflow-y-auto overflow-x-hidden"
-                            style={{ height: '600px' }}
+                            className="relative bg-white rounded-3xl border border-stone-200 shadow-lg overflow-auto"
+                            style={{ height: 'calc(100vh - 180px)' }}
                         >
                             <div
-                                className="relative w-full"
-                                style={{ minHeight: '100%' }}
+                                className="relative min-h-full"
+                                style={{ height: docDims ? docDims.height : '100%' }}
                             >
-                                <div className="w-full">
+                                <div className="absolute inset-0 z-0">
                                     <DocumentLayer
                                         file={documentFile}
                                         onLoad={setDocDims}
