@@ -504,19 +504,20 @@ export default function Home() {
             </div>
 
             {/* Pricing Cards */}
-            <div className="grid lg:grid-cols-3 gap-8 items-stretch">
+            {/* Pricing Cards */}
+            <div className="flex flex-col md:flex-row flex-wrap justify-center gap-8 items-stretch">
               {plans.map((plan, idx) => (
                 <div
                   key={plan.name}
-                  className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col h-full ${plan.highlighted
-                    ? 'bg-stone-900 text-white shadow-2xl shadow-stone-900/20 scale-[1.05] z-20'
+                  className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col w-full md:max-w-[48%] xl:max-w-[32%] ${plan.highlighted
+                    ? 'bg-stone-900 text-white shadow-2xl shadow-stone-900/20 scale-[1.02] lg:scale-[1.05] z-20'
                     : 'bg-white/70 backdrop-blur-xl border border-stone-200/60 hover:border-stone-400 hover:shadow-xl hover:shadow-stone-200/50 z-10'
                     }`}
                 >
                   {/* Popular Badge */}
                   {plan.highlighted && !plan.comingSoon && (
                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
-                      <span className="px-6 py-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 text-white text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg shadow-emerald-500/20 uppercase">
+                      <span className="px-6 py-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 text-white text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg shadow-emerald-500/20 uppercase whitespace-nowrap">
                         Most Popular
                       </span>
                     </div>
@@ -525,7 +526,7 @@ export default function Home() {
                   {/* Coming Soon Badge */}
                   {plan.comingSoon && (
                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
-                      <span className="px-6 py-2 bg-stone-800 text-stone-200 text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg border border-stone-700 uppercase">
+                      <span className="px-6 py-2 bg-stone-800 text-stone-200 text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg border border-stone-700 uppercase whitespace-nowrap">
                         Coming Soon
                       </span>
                     </div>
@@ -553,7 +554,7 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-10">
                     <div className="flex items-baseline gap-1">
-                      <span className={`${plan.comingSoon ? 'text-4xl' : 'text-6xl'} font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      <span className={`${plan.comingSoon ? 'text-4xl' : 'text-5xl lg:text-6xl'} font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
                         {plan.price}
                       </span>
                       {!plan.comingSoon && (
