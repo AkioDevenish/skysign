@@ -523,15 +523,6 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Coming Soon Badge */}
-                  {plan.comingSoon && (
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
-                      <span className="px-6 py-2 bg-stone-800 text-stone-200 text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg border border-stone-700 uppercase whitespace-nowrap">
-                        Coming Soon
-                      </span>
-                    </div>
-                  )}
-
                   {/* Plan Header */}
                   <div className="mb-10">
                     <div className="flex items-center justify-between mb-4">
