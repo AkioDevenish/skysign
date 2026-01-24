@@ -553,7 +553,7 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-10">
                     <div className="flex items-baseline gap-1">
-                      <span className={`${plan.comingSoon ? 'text-4xl' : 'text-6xl'} font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      <span className={`${plan.comingSoon ? 'text-3xl tracking-normal py-2' : 'text-6xl tracking-tighter'} font-bold ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
                         {plan.price}
                       </span>
                       {!plan.comingSoon && (
