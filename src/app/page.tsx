@@ -505,11 +505,11 @@ export default function Home() {
 
             {/* Pricing Cards */}
             {/* Pricing Cards */}
-            <div className="flex flex-col md:flex-row flex-wrap justify-center gap-8 items-stretch">
+            <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 items-stretch">
               {plans.map((plan, idx) => (
                 <div
                   key={plan.name}
-                  className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col w-full md:max-w-[48%] xl:max-w-[32%] ${plan.highlighted
+                  className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col flex-1 ${plan.highlighted
                     ? 'bg-stone-900 text-white shadow-2xl shadow-stone-900/20 scale-[1.02] lg:scale-[1.05] z-20'
                     : 'bg-white/70 backdrop-blur-xl border border-stone-200/60 hover:border-stone-400 hover:shadow-xl hover:shadow-stone-200/50 z-10'
                     }`}
