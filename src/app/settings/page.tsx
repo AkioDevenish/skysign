@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUser, UserButton } from '@clerk/nextjs';
+import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 import { getApiKeys, createApiKey, deleteApiKey, revokeApiKey, ApiKey } from '@/lib/apiKeyUtils';
 import { getSignatureCount } from '@/lib/signatureStorage';
 import { getTeamCount } from '@/lib/teamStorage';
@@ -110,40 +110,27 @@ export default function SettingsPage() {
                                 transition={{ duration: 0.2 }}
                             >
                                 {activeTab === 'profile' && (
-                                    <div className="bg-white rounded-2xl border border-stone-200 p-8">
-                                        <h2 className="text-xl font-semibold text-stone-900 mb-6">Profile</h2>
-
-                                        <div className="flex items-center gap-6 mb-8">
-                                            <div className="w-20 h-20 bg-stone-100 rounded-2xl flex items-center justify-center text-3xl">
-                                                {user?.firstName?.[0] || '👤'}
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-stone-900">{user?.fullName || 'User'}</p>
-                                                <p className="text-sm text-stone-500">{user?.primaryEmailAddress?.emailAddress}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-stone-700 mb-2">Full Name</label>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={user?.fullName || ''}
-                                                    className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-900"
-                                                    placeholder="Your name"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-stone-700 mb-2">Email</label>
-                                                <input
-                                                    type="email"
-                                                    value={user?.primaryEmailAddress?.emailAddress || ''}
-                                                    disabled
-                                                    className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-stone-500 cursor-not-allowed"
-                                                />
-                                                <p className="text-xs text-stone-400 mt-1">Email is managed by your authentication provider</p>
-                                            </div>
-                                        </div>
+                                    <div className="flex justify-center">
+                                        <UserProfile
+                                            routing="hash"
+                                            appearance={{
+                                                elements: {
+                                                    rootBox: "w-full",
+                                                    card: "shadow-none border-none w-full bg-transparent",
+                                                    navbar: "hidden", // Hide Clerk's sidebar if we want to force just the main profile info, but Clerk keeps them coupled. Actually keeping navbar is better for security settings.
+                                                    // Let's keep the navbar but style it to fit
+                                                    navbarButton: "text-stone-600 hover:text-stone-900",
+                                                    headerTitle: "text-stone-900",
+                                                    headerSubtitle: "text-stone-500",
+                                                },
+                                                variables: {
+                                                    colorPrimary: '#1c1917', // stone-900
+                                                    colorText: '#1c1917',
+                                                    fontFamily: 'inherit',
+                                                    borderRadius: '1rem',
+                                                }
+                                            }}
+                                        />
                                     </div>
                                 )}
 
