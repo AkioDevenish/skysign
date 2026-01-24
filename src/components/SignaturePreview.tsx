@@ -21,11 +21,8 @@ export default function SignaturePreview({
     const [selectedStyle, setSelectedStyle] = useState<'normal' | 'bold' | 'elegant'>('normal');
 
     const colors = [
-        { name: 'White', value: '#ffffff' },
-        { name: 'Blue', value: '#0066ff' },
         { name: 'Black', value: '#000000' },
-        { name: 'Gold', value: '#ffd700' },
-        { name: 'Cyan', value: '#00f5ff' },
+        { name: 'Blue', value: '#0066cc' },
     ];
 
     // Process image when loaded or color/data changes
@@ -61,7 +58,6 @@ export default function SignaturePreview({
                     data[i] = r;     // Red
                     data[i + 1] = g; // Green
                     data[i + 2] = b; // Blue
-                    // Keep alpha as is
                 }
             }
 
@@ -124,10 +120,8 @@ export default function SignaturePreview({
                     <div
                         className="relative flex items-center justify-center rounded-2xl min-h-[240px] border border-stone-200 transition-colors duration-300"
                         style={{
-                            background: selectedColor === '#ffffff' ? '#1c1917' : '#ffffff', // Invert bg for white signature
-                            backgroundImage: selectedColor === '#ffffff'
-                                ? 'radial-gradient(circle at 1px 1px, #292524 1px, transparent 0)'
-                                : 'radial-gradient(circle at 1px 1px, #e7e5e4 1px, transparent 0)',
+                            background: '#ffffff',
+                            backgroundImage: 'radial-gradient(circle at 1px 1px, #e7e5e4 1px, transparent 0)',
                             backgroundSize: '20px 20px'
                         }}
                     >
@@ -138,9 +132,9 @@ export default function SignaturePreview({
                                 className="max-w-full max-h-[180px] object-contain transition-all duration-300"
                                 style={{
                                     filter: selectedStyle === 'bold'
-                                        ? 'contrast(1.5) drop-shadow(0 0 1px rgba(0,0,0,0.1))'
+                                        ? `drop-shadow(0 0 1px ${selectedColor}) drop-shadow(0 0 1px ${selectedColor}) contrast(1.1)`
                                         : selectedStyle === 'elegant'
-                                            ? 'blur(0.5px) contrast(1.2)'
+                                            ? 'blur(0.5px) contrast(1.4)'
                                             : 'none',
                                 }}
                             />
