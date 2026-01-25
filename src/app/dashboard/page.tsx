@@ -417,15 +417,6 @@ export default function DashboardPage() {
                                                     </button>
                                                 </div>
 
-                                                <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-100">
-                                                    <div>
-                                                        <p className="font-medium text-stone-900">Dark Mode</p>
-                                                        <p className="text-xs text-stone-500 mt-1">Toggle application theme</p>
-                                                    </div>
-                                                    <button className="w-11 h-6 rounded-full bg-stone-200 cursor-not-allowed opacity-50 relative">
-                                                        <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full" />
-                                                    </button>
-                                                </div>
                                             </div>
 
                                             {/* Export Settings */}
