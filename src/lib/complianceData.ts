@@ -1,4 +1,4 @@
-export type Region = 'Americas' | 'Europe' | 'Asia Pacific' | 'Middle East & Africa';
+export type Region = 'Americas' | 'Caribbean' | 'Europe' | 'Asia Pacific' | 'Middle East & Africa';
 
 export interface CountryData {
     country: string;
@@ -34,21 +34,21 @@ export const complianceData: CountryData[] = [
     { country: 'Dominican Republic', flag: '🇩🇴', region: 'Americas', lawName: 'Law 126-02', year: '2002', status: 'Tiered', description: 'Regulates electronic commerce and digital signatures.' },
 
     // Caribbean
-    { country: 'Jamaica', flag: '🇯🇲', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2007', status: 'Permissive', description: 'Gives legal recognition to electronic documents and signatures.' },
-    { country: 'Barbados', flag: '🇧🇧', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2001', status: 'Permissive', description: 'Ensures functional equivalence of electronic signatures.' },
-    { country: 'Trinidad & Tobago', flag: '🇹🇹', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Provides legal framework for e-signatures and e-governance.' },
-    { country: 'Bahamas', flag: '🇧🇸', region: 'Americas', lawName: 'Electronic Comms & Trans Act', year: '2003', status: 'Permissive', description: 'Recognizes validity of electronic communications and signatures.' },
-    { country: 'Saint Lucia', flag: '🇱🇨', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Facilitates e-commerce and legal recognition of e-records.' },
-    { country: 'Antigua & Barbuda', flag: '🇦🇬', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2006', status: 'Permissive', description: 'Legal effect for electronic signatures.' },
-    { country: 'Dominica', flag: '🇩🇲', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2013', status: 'Permissive', description: 'Promotes confidence in electronic transactions.' },
-    { country: 'Grenada', flag: '🇬🇩', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2013', status: 'Permissive', description: 'Legal recognition for electronic signatures.' },
-    { country: 'St. Kitts & Nevis', flag: '🇰🇳', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Validates use of electronic records and signatures.' },
-    { country: 'St. Vincent & Grenadines', flag: '🇻🇨', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2007', status: 'Permissive', description: 'Supports electronic commerce and e-government.' },
-    { country: 'Belize', flag: '🇧🇿', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2003', status: 'Permissive', description: 'Functional equivalence for electronic transactions.' },
-    { country: 'Guyana', flag: '🇬🇾', region: 'Americas', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Promotes public confidence in validity of e-transactions.' },
-    { country: 'Cayman Islands', flag: '🇰🇾', region: 'Americas', lawName: 'Electronic Transactions Law', year: '2000', status: 'Permissive', description: 'One of the earliest adopters of e-transaction laws in the region.' },
-    { country: 'Bermuda', flag: '🇧🇲', region: 'Americas', lawName: 'Electronic Transactions Act', year: '1999', status: 'Permissive', description: 'Facilitates electronic commerce and authentication.' },
-    { country: 'Haiti', flag: '🇭🇹', region: 'Americas', lawName: 'Decree on E-Signatures', year: '2017', status: 'Tiered', description: 'Establishes validity of electronic signatures and records.' },
+    { country: 'Jamaica', flag: '🇯🇲', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2007', status: 'Permissive', description: 'Gives legal recognition to electronic documents and signatures.' },
+    { country: 'Barbados', flag: '🇧🇧', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2001', status: 'Permissive', description: 'Ensures functional equivalence of electronic signatures.' },
+    { country: 'Trinidad & Tobago', flag: '🇹🇹', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Provides legal framework for e-signatures and e-governance.' },
+    { country: 'Bahamas', flag: '🇧🇸', region: 'Caribbean', lawName: 'Electronic Comms & Trans Act', year: '2003', status: 'Permissive', description: 'Recognizes validity of electronic communications and signatures.' },
+    { country: 'Saint Lucia', flag: '🇱🇨', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Facilitates e-commerce and legal recognition of e-records.' },
+    { country: 'Antigua & Barbuda', flag: '🇦🇬', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2006', status: 'Permissive', description: 'Legal effect for electronic signatures.' },
+    { country: 'Dominica', flag: '🇩🇲', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2013', status: 'Permissive', description: 'Promotes confidence in electronic transactions.' },
+    { country: 'Grenada', flag: '🇬🇩', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2013', status: 'Permissive', description: 'Legal recognition for electronic signatures.' },
+    { country: 'St. Kitts & Nevis', flag: '🇰🇳', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Validates use of electronic records and signatures.' },
+    { country: 'St. Vincent & Grenadines', flag: '🇻🇨', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2007', status: 'Permissive', description: 'Supports electronic commerce and e-government.' },
+    { country: 'Belize', flag: '🇧🇿', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2003', status: 'Permissive', description: 'Functional equivalence for electronic transactions.' },
+    { country: 'Guyana', flag: '🇬🇾', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '2011', status: 'Permissive', description: 'Promotes public confidence in validity of e-transactions.' },
+    { country: 'Cayman Islands', flag: '🇰🇾', region: 'Caribbean', lawName: 'Electronic Transactions Law', year: '2000', status: 'Permissive', description: 'One of the earliest adopters of e-transaction laws in the region.' },
+    { country: 'Bermuda', flag: '🇧🇲', region: 'Caribbean', lawName: 'Electronic Transactions Act', year: '1999', status: 'Permissive', description: 'Facilitates electronic commerce and authentication.' },
+    { country: 'Haiti', flag: '🇭🇹', region: 'Caribbean', lawName: 'Decree on E-Signatures', year: '2017', status: 'Tiered', description: 'Establishes validity of electronic signatures and records.' },
 
     // --- EUROPE (eIDAS & Others) ---
     { country: 'European Union', flag: '🇪🇺', region: 'Europe', lawName: 'eIDAS Regulation', year: '2014', status: 'Tiered', description: 'Harmonized framework across all EU members (SES, AES, QES).' },
@@ -191,9 +191,9 @@ export const complianceData: CountryData[] = [
     { country: 'Suriname', flag: '🇸🇷', region: 'Americas', lawName: 'Electronic Legal Acts', year: '2017', status: 'Tiered', description: 'Recognizes digital contracts.' },
     { country: 'Cuba', flag: '🇨🇺', region: 'Americas', lawName: 'Decree-Law 370', year: '2018', status: 'Prescriptive', description: 'Informatization of society.' },
     { country: 'Puerto Rico', flag: '🇵🇷', region: 'Americas', lawName: 'Electronic Signatures Act', year: '2012', status: 'Permissive', description: 'US Territory, similar to Federal ESIGN.' },
-    { country: 'Aruba', flag: '🇦🇼', region: 'Americas', lawName: 'Civil Code', year: '2000', status: 'Tiered', description: 'Dutch overseas territory law.' },
-    { country: 'Curacao', flag: '🇨🇼', region: 'Americas', lawName: 'Electronic Contracts Ord.', year: '2000', status: 'Tiered', description: 'Dutch Caribbean law.' },
-    { country: 'St. Maarten', flag: '🇸🇽', region: 'Americas', lawName: 'Civil Code', year: '2010', status: 'Tiered', description: 'Part of Dutch Kingdom.' },
+    { country: 'Aruba', flag: '🇦🇼', region: 'Caribbean', lawName: 'Civil Code', year: '2000', status: 'Tiered', description: 'Dutch overseas territory law.' },
+    { country: 'Curacao', flag: '🇨🇼', region: 'Caribbean', lawName: 'Electronic Contracts Ord.', year: '2000', status: 'Tiered', description: 'Dutch Caribbean law.' },
+    { country: 'St. Maarten', flag: '🇸🇽', region: 'Caribbean', lawName: 'Civil Code', year: '2010', status: 'Tiered', description: 'Part of Dutch Kingdom.' },
     { country: 'Greenland', flag: '🇬🇱', region: 'Americas', lawName: 'Danish Acts', year: '2000', status: 'Tiered', description: 'Under Danish jurisdiction.' },
 
     // More Middle East

@@ -21,7 +21,7 @@ export default function ComplianceGrid() {
             {/* Controls */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-12">
                 <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar">
-                    {['All', 'Americas', 'Europe', 'Asia Pacific', 'Middle East & Africa'].map((region) => (
+                    {['All', 'Caribbean', 'Americas', 'Europe', 'Asia Pacific', 'Middle East & Africa'].map((region) => (
                         <button
                             key={region}
                             onClick={() => setSelectedRegion(region)}

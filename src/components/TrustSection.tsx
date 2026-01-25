@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const stats = [
     { value: '99.9%', label: 'Uptime' },
-    { value: '50+', label: 'Countries' },
+    { value: '180+', label: 'Countries' },
     { value: '256-bit', label: 'Encryption' },
 ];
 

@@ -6,7 +6,7 @@ import ComplianceGrid from '../../components/ComplianceGrid';
 
 export const metadata: Metadata = {
     title: 'Global E-Signature Compliance | Sky Sign',
-    description: 'Explore electronic signature laws and compliance standards for over 50 countries worldwide.',
+    description: 'Explore electronic signature laws and compliance standards for over 180 countries worldwide.',
 };
 
 export default function CompliancePage() {

@@ -256,7 +256,7 @@ export default function SignatureCapture({
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-stone-50 border border-stone-200 rounded-3xl pt-8 px-8 pb-20 max-w-2xl w-full text-center shadow-xl shadow-stone-900/5 my-auto"
+                            className="bg-stone-50 border border-stone-200 rounded-3xl pt-8 px-8 pb-20 max-w-3xl w-full text-center shadow-xl shadow-stone-900/5 my-auto"
                         >
                             <div className="flex items-center justify-center mx-auto mb-6">
                                 <span className="text-5xl">✋</span>

@@ -506,7 +506,7 @@ export default function CreatePage() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-3xl border border-stone-200 shadow-lg overflow-hidden w-full max-w-2xl"
+                            className="bg-white rounded-3xl border border-stone-200 shadow-lg overflow-hidden w-full max-w-4xl"
                         >
                             <SignatureCreator
                                 onSave={handleSave}

@@ -342,7 +342,7 @@ export default function SignatureCreator({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="h-[350px] rounded-xl overflow-hidden border border-stone-200"
+                        className="h-[500px] min-h-[500px] rounded-xl overflow-hidden border border-stone-200"
                     >
                         <SignatureCapture
                             onSave={onSave}
