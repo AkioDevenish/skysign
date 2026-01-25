@@ -258,8 +258,8 @@ export default function SignatureCapture({
                             transition={{ delay: 0.1 }}
                             className="bg-stone-50 border border-stone-200 rounded-3xl pt-8 px-8 pb-20 max-w-2xl w-full text-center shadow-xl shadow-stone-900/5 my-auto"
                         >
-                            <div className="w-16 h-16 bg-stone-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-stone-900/20">
-                                <span className="text-3xl">✋</span>
+                            <div className="flex items-center justify-center mx-auto mb-6">
+                                <span className="text-5xl">✋</span>
                             </div>
 
                             <h3 className="text-2xl font-bold text-stone-900 mb-2">
@@ -277,7 +277,7 @@ export default function SignatureCapture({
                                     { icon: '🖐️', label: 'Clear', desc: 'Open palm' }
                                 ].map((step, i) => (
                                     <div key={i} className="flex flex-col items-center">
-                                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl mb-3 shadow-sm border border-stone-100">
+                                        <div className="flex items-center justify-center text-3xl mb-3">
                                             {step.icon}
                                         </div>
                                         <p className="font-bold text-stone-900 text-sm mb-0.5">{step.label}</p>

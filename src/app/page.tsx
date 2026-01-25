@@ -447,7 +447,7 @@ export default function Home() {
               <div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-4 block">How it works</span>
                 <h2 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight">
-                  Three simple gestures
+                  Four simple steps
                 </h2>
               </div>
               <p className="text-stone-500 max-w-md text-lg">
@@ -455,10 +455,10 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
-                  <span className="text-4xl">👆</span>
+                <div className="flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <span className="text-6xl">👆</span>
                 </div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 01</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Point</h3>
@@ -468,10 +468,21 @@ export default function Home() {
               </SpotlightCard>
 
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
-                  <span className="text-4xl">👍</span>
+                <div className="flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <span className="text-6xl">✊</span>
                 </div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 02</span>
+                <h3 className="text-2xl font-semibold text-stone-900 mb-3">Stop</h3>
+                <p className="text-stone-500 leading-relaxed">
+                  Make a fist for 1 second to pause or stop drawing
+                </p>
+              </SpotlightCard>
+
+              <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
+                <div className="flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <span className="text-6xl">👍</span>
+                </div>
+                <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 03</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Save</h3>
                 <p className="text-stone-500 leading-relaxed">
                   Thumbs up for 1 second to save your signature
@@ -479,16 +490,17 @@ export default function Home() {
               </SpotlightCard>
 
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
-                  <span className="text-4xl">✋</span>
+                <div className="flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <span className="text-6xl">✋</span>
                 </div>
-                <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 03</span>
+                <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 04</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Clear</h3>
                 <p className="text-stone-500 leading-relaxed">
                   Open palm for 1 second to clear and start over
                 </p>
               </SpotlightCard>
             </div>
+
           </FadeContent>
         </div>
       </section>
