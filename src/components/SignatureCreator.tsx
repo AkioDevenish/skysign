@@ -173,7 +173,30 @@ export default function SignatureCreator({
     ];
 
     return (
-        <div className="p-6">
+        <div className="p-6 relative">
+            {/* Gesture Indicators Overlay for non-air modes */}
+            {mode !== 'air' && (
+                <div className="absolute top-8 right-8 flex gap-3 pointer-events-none z-20">
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-stone-200 shadow-sm"
+                    >
+                        <span className="text-xl">👍</span>
+                        <span className="text-[10px] font-bold text-stone-900 uppercase tracking-wider">Save</span>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-stone-200 shadow-sm"
+                    >
+                        <span className="text-xl">✋</span>
+                        <span className="text-[10px] font-bold text-stone-900 uppercase tracking-wider">Clear</span>
+                    </motion.div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
