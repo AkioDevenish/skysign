@@ -3,6 +3,8 @@
  * Uses localStorage for free tier, with structure ready for cloud backup
  */
 
+import { logAuditEntry } from './auditTrail';
+
 export interface SavedSignature {
     id: string;
     name: string;
@@ -62,6 +64,7 @@ export function saveSignature(
     try {
         const updated = [newSignature, ...signatures];
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        logAuditEntry('created', id, newSignature.name);
         return newSignature;
     } catch (error) {
         console.error('Error saving signature:', error);
@@ -107,6 +110,7 @@ export function deleteSignature(id: string): boolean {
 
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+        logAuditEntry('deleted', id);
         return true;
     } catch (error) {
         console.error('Error deleting signature:', error);
@@ -162,6 +166,8 @@ export function exportSignature(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    logAuditEntry('exported', signature.id, signature.name, { format });
 }
 
 /**

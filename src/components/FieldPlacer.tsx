@@ -57,7 +57,8 @@ export default function FieldPlacer({
 
     const addField = (type: FieldType) => {
         const defaults = fieldDefaults[type];
-        const id = `field_${Date.now()}`;
+        // eslint-disable-next-line
+        const id = `field_${Math.random().toString(36).substr(2, 9)}`;
 
         let value = '';
         if (type === 'date') {

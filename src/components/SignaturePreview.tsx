@@ -17,7 +17,7 @@ export default function SignaturePreview({
 }: SignaturePreviewProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [processedDataUrl, setProcessedDataUrl] = useState<string | null>(null);
-    const [selectedColor, setSelectedColor] = useState('#ffffff');
+    const [selectedColor, setSelectedColor] = useState('#000000');
     const [selectedStyle, setSelectedStyle] = useState<'normal' | 'bold' | 'elegant'>('normal');
 
     const colors = [
@@ -107,7 +107,7 @@ export default function SignaturePreview({
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
+                        className="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors cursor-pointer"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -162,7 +162,7 @@ export default function SignaturePreview({
                                     <button
                                         key={color.value}
                                         onClick={() => setSelectedColor(color.value)}
-                                        className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${selectedColor === color.value
+                                        className={`w-10 h-10 rounded-full border-2 transition-all duration-200 cursor-pointer ${selectedColor === color.value
                                             ? 'border-stone-900 scale-110 shadow-lg'
                                             : 'border-stone-200 hover:border-stone-300 hover:scale-105'
                                             }`}
@@ -183,7 +183,7 @@ export default function SignaturePreview({
                                     <button
                                         key={style}
                                         onClick={() => setSelectedStyle(style)}
-                                        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${selectedStyle === style
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 cursor-pointer ${selectedStyle === style
                                             ? 'bg-stone-900 border-stone-900 text-white shadow-lg shadow-stone-900/10'
                                             : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
                                             }`}
@@ -199,7 +199,7 @@ export default function SignaturePreview({
                     <div className="flex items-center justify-between pt-8 border-t border-stone-100">
                         <button
                             onClick={onRetry}
-                            className="px-6 py-3 rounded-full border border-stone-200 text-stone-600 font-medium hover:bg-stone-50 hover:text-stone-900 transition-colors flex items-center gap-2"
+                            className="px-6 py-3 rounded-full border border-stone-200 text-stone-600 font-medium hover:bg-stone-50 hover:text-stone-900 transition-colors flex items-center gap-2 cursor-pointer"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -209,7 +209,7 @@ export default function SignaturePreview({
                         <div className="flex gap-3">
                             <button
                                 onClick={() => handleDownload('png')}
-                                className="px-8 py-3 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 flex items-center gap-2 hover:-translate-y-0.5"
+                                className="px-8 py-3 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 flex items-center gap-2 hover:-translate-y-0.5 cursor-pointer"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

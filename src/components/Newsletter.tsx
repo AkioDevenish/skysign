@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 export default function Newsletter() {
+    const subscribe = useMutation(api.newsletter.subscribe);
     const [email, setEmail] = useState("");
-    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "already_subscribed">("idle");
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -14,22 +18,19 @@ export default function Newsletter() {
         setErrorMessage("");
 
         try {
-            const response = await fetch('/api/newsletter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || 'Failed to subscribe');
-            }
-
+            await subscribe({ email });
             setStatus("success");
             setEmail("");
-        } catch (error) {
-            setStatus("error");
-            setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
+        } catch (error: unknown) {
+            console.error("Subscription error:", error);
+            // Check for various ways the backend might report a duplicate
+            const msg = error instanceof Error ? error.message?.toLowerCase() : String(error).toLowerCase();
+            if (msg.includes("already subscribed") || msg.includes("duplicate") || msg.includes("unique constraint")) {
+                setStatus("already_subscribed");
+            } else {
+                setStatus("error");
+                setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
+            }
         }
     };
 
@@ -70,6 +71,24 @@ export default function Newsletter() {
                                     </div>
                                 </div>
                             </motion.div>
+                        ) : status === "already_subscribed" ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-stone-800/50 border border-stone-700 rounded-2xl p-8"
+                            >
+                                <div className="flex items-center gap-4 text-amber-400">
+                                    <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center">
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span className="font-semibold block">Already Subscribed!</span>
+                                        <span className="text-sm text-stone-400">You&apos;re already on the list.</span>
+                                    </div>
+                                </div>
+                            </motion.div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <input
@@ -80,10 +99,15 @@ export default function Newsletter() {
                                     placeholder="Enter your email"
                                     className="w-full px-6 py-4 rounded-xl bg-stone-800 border border-stone-700 text-stone-50 placeholder-stone-500 focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500 transition-all"
                                 />
+                                {status === "error" && (
+                                    <p className="text-red-400 text-sm px-2">
+                                        {errorMessage}
+                                    </p>
+                                )}
                                 <button
                                     type="submit"
                                     disabled={status === "loading"}
-                                    className="w-full px-8 py-4 bg-stone-50 text-stone-900 font-medium rounded-xl hover:bg-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full px-8 py-4 bg-stone-50 text-stone-900 font-medium rounded-xl hover:bg-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     {status === "loading" ? "Subscribing..." : "Subscribe to Newsletter"}
                                 </button>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { signatureTemplates, SignatureTemplate } from '@/lib/templateData';
 
 interface TemplateGalleryProps {
@@ -147,9 +148,9 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                             <p className="text-sm font-medium text-stone-900">Unlock all templates</p>
                             <p className="text-xs text-stone-500">Get 4 more premium styles with Pro</p>
                         </div>
-                        <a href="/#pricing" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-full hover:bg-stone-800 transition-colors">
+                        <Link href="/#pricing" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-full hover:bg-stone-800 transition-colors">
                             View Plans
-                        </a>
+                        </Link>
                     </div>
                 </div>
             )}

@@ -39,7 +39,7 @@ export default function TermsPage() {
                     <div className="prose prose-stone max-w-none">
                         <div className="bg-white rounded-2xl border border-stone-200 p-8 mb-8">
                             <p className="text-lg text-stone-600 leading-relaxed">
-                                Welcome to Sky Sign. These Terms of Service ("Terms") govern your access to and use of the Sky Sign electronic signature platform, including our website, applications, and related services (collectively, the "Service"). By accessing or using the Service, you agree to be bound by these Terms.
+                                Welcome to Sky Sign. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the Sky Sign electronic signature platform, including our website, applications, and related services (collectively, the &quot;Service&quot;). By accessing or using the Service, you agree to be bound by these Terms.
                             </p>
                         </div>
 
@@ -101,7 +101,7 @@ export default function TermsPage() {
                             <ul className="list-disc pl-6 text-stone-600 space-y-2 mb-4">
                                 <li>Paid subscriptions are billed in advance on a monthly or annual basis</li>
                                 <li>All fees are non-refundable unless otherwise stated</li>
-                                <li>We may change pricing with 30 days' notice</li>
+                                <li>We may change pricing with 30 days&apos; notice</li>
                                 <li>Failure to pay may result in suspension or termination of your account</li>
                             </ul>
 
@@ -186,9 +186,9 @@ export default function TermsPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">9. Disclaimers and Limitations of Liability</h2>
 
-                            <h3 className="text-lg font-semibold text-stone-800 mb-3">9.1 Service Provided "As Is"</h3>
+                            <h3 className="text-lg font-semibold text-stone-800 mb-3">9.1 Service Provided &quot;As Is&quot;</h3>
                             <p className="text-stone-600 mb-4">
-                                THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+                                THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">9.2 Limitation of Liability</h3>
@@ -205,7 +205,7 @@ export default function TermsPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">10. Indemnification</h2>
                             <p className="text-stone-600">
-                                You agree to indemnify, defend, and hold harmless Sky Sign and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys' fees) arising from your use of the Service, your violation of these Terms, or your infringement of any third-party rights.
+                                You agree to indemnify, defend, and hold harmless Sky Sign and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys&apos; fees) arising from your use of the Service, your violation of these Terms, or your infringement of any third-party rights.
                             </p>
                         </section>
 
@@ -214,7 +214,7 @@ export default function TermsPage() {
                             <ul className="list-disc pl-6 text-stone-600 space-y-2">
                                 <li>You may terminate your account at any time through your account settings</li>
                                 <li>We may suspend or terminate your account for violation of these Terms</li>
-                                <li>We may discontinue the Service with 30 days' notice</li>
+                                <li>We may discontinue the Service with 30 days&apos; notice</li>
                                 <li>Upon termination, your right to use the Service ceases immediately</li>
                                 <li>We may retain certain data as required by law or for legitimate business purposes</li>
                             </ul>

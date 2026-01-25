@@ -1,45 +1,31 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    getSignatures,
-    deleteSignature,
-    exportSignature,
-    getRemainingSlots,
-    SavedSignature,
-} from '@/lib/signatureStorage';
+import Image from 'next/image';
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { exportSignature, SavedSignature } from '@/lib/signatureStorage';
+import { Id } from "../../convex/_generated/dataModel";
 
 interface SignatureGalleryProps {
     onSelect?: (signature: SavedSignature) => void;
     onRefresh?: () => void;
 }
 
-export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalleryProps) {
-    const [signatures, setSignatures] = useState<SavedSignature[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
+    // Convex hooks
+    const signatures = useQuery(api.signatures.get);
+    const deleteSig = useMutation(api.signatures.remove);
+
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-    const loadSignatures = () => {
-        setLoading(true);
-        const sigs = getSignatures();
-        setSignatures(sigs);
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        const sigs = getSignatures();
-        setSignatures(sigs);
-        setLoading(false);
-    }, []);
-
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string, convexId: Id<"signatures">) => {
         if (deleteConfirm === id) {
-            deleteSignature(id);
-            loadSignatures();
+            await deleteSig({ id: convexId });
             setDeleteConfirm(null);
-            onRefresh?.();
         } else {
             setDeleteConfirm(id);
             setTimeout(() => setDeleteConfirm(null), 3000);
@@ -55,7 +41,21 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
         onSelect?.(signature);
     };
 
-    const remainingSlots = getRemainingSlots();
+    // Derived state
+    const loading = signatures === undefined;
+    const count = signatures?.length || 0;
+    const remainingSlots = Math.max(0, 5 - count);
+
+    // Map Convex docs to SavedSignature interface for compatibility
+    const mappedSignatures: SavedSignature[] = signatures?.map(sig => ({
+        id: sig._id, // Use Convex ID
+        name: sig.name,
+        dataUrl: sig.dataUrl,
+        createdAt: sig.createdAt,
+        updatedAt: sig.updatedAt,
+        style: sig.style,
+        thumbnail: sig.thumbnail,
+    })) || [];
 
     if (loading) {
         return (
@@ -65,7 +65,7 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
         );
     }
 
-    if (signatures.length === 0) {
+    if (mappedSignatures.length === 0) {
         return (
             <div className="p-8 text-center">
                 <div className="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -90,14 +90,14 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
             <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-stone-900">My Signatures</h3>
                 <span className="text-xs text-stone-500 bg-stone-100 px-2 py-1 rounded-full">
-                    {signatures.length}/5 used
+                    {mappedSignatures.length}/5 used
                 </span>
             </div>
 
             {/* Signature Grid */}
             <div className="space-y-3">
                 <AnimatePresence>
-                    {signatures.map((sig) => (
+                    {mappedSignatures.map((sig) => (
                         <motion.div
                             key={sig.id}
                             initial={{ opacity: 0, y: 10 }}
@@ -112,10 +112,12 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
                             {/* Signature Preview */}
                             <div className="p-3">
                                 <div className="bg-stone-50 rounded-lg p-3 mb-2 aspect-[3/1] flex items-center justify-center overflow-hidden">
-                                    <img
+                                    <Image
                                         src={sig.dataUrl}
                                         alt={sig.name}
-                                        className="max-w-full max-h-full object-contain"
+                                        fill
+                                        className="object-contain"
+                                        unoptimized
                                     />
                                 </div>
 
@@ -147,7 +149,7 @@ export default function SignatureGallery({ onSelect, onRefresh }: SignatureGalle
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleDelete(sig.id);
+                                                handleDelete(sig.id, sig.id as Id<"signatures">);
                                             }}
                                             className={`p-1.5 rounded-lg transition-colors ${deleteConfirm === sig.id
                                                 ? 'bg-red-100 text-red-600'

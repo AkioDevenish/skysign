@@ -63,7 +63,7 @@ export function useSignatureCanvas(
         const canvasX = x * canvas.width;
         const canvasY = y * canvas.height;
 
-        let rawPoint = { x: canvasX, y: canvasY };
+        const rawPoint = { x: canvasX, y: canvasY };
 
         // Use the last point from our buffer for smoothing if available
         const lastSmoothedPoint = lastPointsRef.current.length > 0

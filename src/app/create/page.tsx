@@ -10,15 +10,18 @@ import SignaturePreview from '@/components/SignaturePreview';
 import SignatureGallery from '@/components/SignatureGallery';
 import TemplateGallery from '@/components/TemplateGallery';
 import { signPdf } from '@/utils/pdfUtils';
-import { saveSignature, canSaveMore } from '@/lib/signatureStorage';
-import { logAuditEntry } from '@/lib/auditTrail';
+// import { saveSignature, canSaveMore } from '@/lib/signatureStorage'; // Deprecated
+// import { logAuditEntry } from '@/lib/auditTrail'; // Deprecated
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import SignaturePlacer from '@/components/SignaturePlacer';
 import FieldPlacer, { Field } from '@/components/FieldPlacer';
 import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
+import LimitModal from '@/components/LimitModal';
 
 // Dynamic import for DocumentLayer (SSR false)
-const DocumentLayer = dynamic<any>(() => import('@/components/DocumentLayer'), {
+const DocumentLayer = dynamic(() => import('@/components/DocumentLayer'), {
     ssr: false,
     loading: () => (
         <div className="absolute inset-0 flex items-center justify-center text-stone-400">
@@ -73,7 +76,7 @@ const sidebarItems = [
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
             </svg>
         ),
-        tier: 'pro',
+        tier: 'free',
     },
     {
         id: 'export',
@@ -85,17 +88,7 @@ const sidebarItems = [
         ),
         tier: 'pro',
     },
-    {
-        id: 'dashboard',
-        label: 'Dashboard',
-        href: '/dashboard',
-        icon: (
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-        ),
-        tier: 'free',
-    },
+
 ];
 
 const tierBadgeColors = {
@@ -122,12 +115,19 @@ export default function CreatePage() {
     const [placementMode, setPlacementMode] = useState(false);
     const [showSharing, setShowSharing] = useState(false);
     const [signedBlob, setSignedBlob] = useState<Blob | null>(null);
+    const [showLimitModal, setShowLimitModal] = useState(false);
+
+    // Convex Mutations
+    const createSig = useMutation(api.signatures.create);
+    const logAudit = useMutation(api.audit.log);
+    const signatureCount = useQuery(api.signatures.getCount);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // For now, defaulting to 'free' tier - would come from user metadata in real implementation
     const plan = (user?.publicMetadata?.plan as string) || 'free';
+    const isPro = plan === 'pro' || plan === 'proplus';
 
     // Refresh gallery after saving
     const refreshGallery = useCallback(() => {
@@ -139,18 +139,30 @@ export default function CreatePage() {
         if (documentFile) {
             setPlacementMode(true);
         } else {
-            // Save to storage first
-            if (canSaveMore(plan)) {
-                const result = saveSignature(dataUrl, undefined, undefined, plan);
-                if (result && 'error' in result) {
-                    alert(result.error);
-                } else {
-                    refreshGallery();
+            // Save to Convex
+            try {
+                // Check limits (backend also checks, but good for UI feedback)
+                if (plan === 'free' && (signatureCount ?? 0) >= 5) {
+                    setShowLimitModal(true);
+                    return;
                 }
-            } else {
-                alert('Free plan limit reached (5 signatures). Unlimited signatures coming soon with Pro!');
+
+                await createSig({
+                    name: `Signature ${new Date().toLocaleString()}`,
+                    dataUrl,
+                    plan,
+                });
+
+                refreshGallery();
+                setShowPreview(true);
+            } catch (error: unknown) {
+                const msg = error instanceof Error ? error.message : String(error);
+                if (msg && msg.includes('Free plan limit reached')) {
+                    setShowLimitModal(true);
+                } else {
+                    alert(msg || 'Failed to save signature');
+                }
             }
-            setShowPreview(true);
         }
     };
 
@@ -161,7 +173,16 @@ export default function CreatePage() {
             setIsSaving(true);
             const { clientWidth, clientHeight, scrollTop } = containerRef.current;
 
-            const auditEntry = logAuditEntry('signed', undefined, documentFile.name);
+            // Log audit via Convex
+            await logAudit({
+                action: 'signed',
+                signatureName: documentFile.name,
+                userAgent: navigator.userAgent,
+            });
+
+            // For now, we still need an ID for the PDF metadata if we want it.
+            // We can just use a random string or omit it if not critical.
+            const auditId = `audit_${Date.now()}`;
 
             const signedPdfBytes = await signPdf(
                 documentFile,
@@ -170,7 +191,7 @@ export default function CreatePage() {
                 currentPage,
                 -scrollTop,
                 user?.fullName || 'Anonymous Signer',
-                auditEntry.id
+                auditId
             );
 
             const blob = new Blob([signedPdfBytes as BlobPart], { type: 'application/pdf' });
@@ -240,7 +261,7 @@ export default function CreatePage() {
             {/* Mobile Menu Toggle */}
             <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="fixed top-4 left-4 z-50 md:hidden p-3 bg-white rounded-xl shadow-lg border border-stone-200"
+                className="fixed top-4 left-4 z-50 md:hidden p-3 bg-white rounded-xl shadow-lg border border-stone-200 cursor-pointer"
             >
                 <svg className="w-6 h-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {mobileMenuOpen ? (
@@ -269,7 +290,7 @@ export default function CreatePage() {
                 {/* Sidebar Header */}
                 <div className={`h-20 flex items-center border-b border-stone-200 ${sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
                     <Link href="/" className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-stone-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-stone-900/20">
                             <svg
                                 className="w-5 h-5 text-stone-50"
                                 viewBox="0 0 24 24"
@@ -285,13 +306,13 @@ export default function CreatePage() {
                             </svg>
                         </div>
                         {!sidebarCollapsed && (
-                            <span className="text-xl font-semibold tracking-tight text-stone-900">Sky Sign</span>
+                            <span className="text-xl font-bold tracking-tight text-stone-900">Sky Sign</span>
                         )}
                     </Link>
                     {!sidebarCollapsed && (
                         <button
                             onClick={() => setSidebarCollapsed(true)}
-                            className="p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600"
+                            className="p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 cursor-pointer"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
@@ -310,20 +331,20 @@ export default function CreatePage() {
                             <button
                                 key={item.id}
                                 onClick={() => handleSectionClick(item.id, item.tier, (item as { href?: string }).href)}
-                                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${isActive
-                                    ? 'bg-stone-900 text-white'
-                                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-sm font-medium ${isActive
+                                    ? 'bg-stone-900 text-white shadow-lg shadow-stone-900/10 scale-[1.02]'
+                                    : 'text-stone-500 hover:bg-stone-100/80 hover:text-stone-900'
                                     } ${sidebarCollapsed ? 'justify-center' : ''}`}
                             >
-                                <span className={isLocked ? 'opacity-50' : ''}>{item.icon}</span>
+                                <span className={`${isLocked ? 'opacity-50' : ''} ${isActive ? 'text-stone-200' : 'text-stone-400 group-hover:text-stone-600'}`}>{item.icon}</span>
                                 {!sidebarCollapsed && (
                                     <>
-                                        <span className={`font-medium flex-1 text-left ${isLocked ? 'opacity-50' : ''}`}>
+                                        <span className={`flex-1 text-left ${isLocked ? 'opacity-50' : ''}`}>
                                             {item.label}
                                         </span>
                                         {item.tier !== 'free' && (
-                                            <span className={`text-xs px-2 py-0.5 rounded-full ${tierBadgeColors[item.tier as keyof typeof tierBadgeColors]}`}>
-                                                {item.tier.toUpperCase()}
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${tierBadgeColors[item.tier as keyof typeof tierBadgeColors]}`}>
+                                                {item.tier}
                                             </span>
                                         )}
                                         {isLocked && (
@@ -343,7 +364,7 @@ export default function CreatePage() {
                     <div className="p-3">
                         <button
                             onClick={() => setSidebarCollapsed(false)}
-                            className="w-full p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 flex justify-center"
+                            className="w-full p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 flex justify-center cursor-pointer"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -363,18 +384,20 @@ export default function CreatePage() {
                 )}
 
                 {/* Import PDF Button */}
-                <div className="absolute bottom-24 left-0 right-0 px-3">
+                <div className="absolute bottom-24 left-0 right-0 px-4">
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-dashed border-stone-300 text-stone-600 hover:bg-stone-50 hover:border-stone-400 transition-all ${sidebarCollapsed ? 'justify-center' : ''
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 hover:border-stone-300 transition-all cursor-pointer shadow-sm ${sidebarCollapsed ? 'justify-center !px-3' : ''
                             }`}
                     >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                        <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-3.5 h-3.5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        </div>
                         {!sidebarCollapsed && (
-                            <span className="font-medium">
-                                {documentFile ? 'Change PDF' : 'Import PDF'}
+                            <span className="text-sm">
+                                {documentFile ? 'Change PDF' : 'Import a PDF'}
                             </span>
                         )}
                     </button>
@@ -383,6 +406,8 @@ export default function CreatePage() {
                 {/* User Section */}
                 <div className={`absolute bottom-0 left-0 right-0 p-3 border-t border-stone-200 bg-white flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
                     <UserButton
+                        userProfileMode="navigation"
+                        userProfileUrl="/dashboard"
                         appearance={{
                             elements: {
                                 avatarBox: {
@@ -429,7 +454,7 @@ export default function CreatePage() {
                             <button
                                 onClick={handleFinalize}
                                 disabled={isSaving}
-                                className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2"
+                                className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2 cursor-pointer"
                             >
                                 {isSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
                                 Finalize & Download
@@ -557,13 +582,80 @@ export default function CreatePage() {
                             <span>Document loaded: <strong className="text-stone-700">{documentFile.name}</strong></span>
                             <button
                                 onClick={() => setDocumentFile(null)}
-                                className="text-stone-400 hover:text-stone-600 transition-colors"
+                                className="text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
                             >
                                 Remove
                             </button>
                         </motion.div>
                     )}
                 </div>
+
+                {/* Export Options Section */}
+                {activeSection === 'export' && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="max-w-4xl mx-auto"
+                    >
+                        <div className="bg-white rounded-3xl border border-stone-200 p-8 shadow-sm">
+                            <h2 className="text-xl font-semibold text-stone-900 mb-6">Export Options</h2>
+                            <p className="text-stone-500 mb-8">
+                                Choose a format to export your signature or document. Some formats require a Pro plan.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Format Selection */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-2">File Format</h3>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {['PNG', 'SVG', 'PDF', 'JSON'].map((fmt) => (
+                                            <button
+                                                key={fmt}
+                                                disabled={!isPro && fmt !== 'PNG'}
+                                                className={`p-4 rounded-xl text-left transition-all border ${!isPro && fmt !== 'PNG'
+                                                    ? 'bg-stone-50 border-stone-100 opacity-60 cursor-not-allowed'
+                                                    : 'bg-white border-stone-200 hover:border-stone-900 hover:shadow-md cursor-pointer group'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="font-bold text-stone-900 group-hover:text-stone-900">{fmt}</span>
+                                                    {!isPro && fmt !== 'PNG' && (
+                                                        <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wide">PRO</span>
+                                                    )}
+                                                </div>
+                                                <p className="text-xs text-stone-500">
+                                                    {fmt === 'PNG' && 'Standard image format (Transparent)'}
+                                                    {fmt === 'SVG' && 'Vector format (Infinite scaling)'}
+                                                    {fmt === 'PDF' && 'Document format (Print ready)'}
+                                                    {fmt === 'JSON' && 'Full data backup (Import/Export)'}
+                                                </p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Export Actions */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-2">Actions</h3>
+                                    <div className="h-full p-6 bg-stone-50 rounded-2xl border border-stone-200 text-center flex flex-col items-center justify-center">
+                                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-stone-100">
+                                            <svg className="w-6 h-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-sm text-stone-600 mb-6">
+                                            Select a format on the left to export current signature.
+                                        </p>
+                                        <button className="px-8 py-3 bg-stone-900 text-white font-medium rounded-xl hover:bg-stone-800 transition-colors shadow-lg shadow-stone-900/10 cursor-pointer w-full max-w-xs">
+                                            Download File
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
             </div>
 
             {/* Signature preview modal */}
@@ -583,6 +675,13 @@ export default function CreatePage() {
                         pdfBlob={signedBlob}
                         documentName={documentFile?.name || 'signed_document.pdf'}
                         onClose={() => setShowSharing(false)}
+                    />
+                )}
+                {showLimitModal && (
+                    <LimitModal
+                        isOpen={showLimitModal}
+                        onClose={() => setShowLimitModal(false)}
+                        plan={plan}
                     />
                 )}
             </AnimatePresence>

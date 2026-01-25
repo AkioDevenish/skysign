@@ -38,6 +38,13 @@ const laws = [
         description: 'Various federal and provincial laws recognize electronic signatures, including PIPEDA for personal information protection.',
         year: '2000+',
     },
+    {
+        country: '🇦🇺',
+        name: 'Electronic Transactions Act',
+        region: 'Australia',
+        description: 'A Commonwealth law that ensures that a transaction is not invalid simply because it took place by means of one or more electronic communications',
+        year: '1999',
+    },
 ];
 
 const validUses = [

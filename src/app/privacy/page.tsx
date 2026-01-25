@@ -160,7 +160,7 @@ export default function PrivacyPage() {
                         </section>
 
                         <section className="mb-10">
-                            <h2 className="text-2xl font-bold text-stone-900 mb-4">9. Children's Privacy</h2>
+                            <h2 className="text-2xl font-bold text-stone-900 mb-4">9. Children&apos;s Privacy</h2>
                             <p className="text-stone-600">
                                 Sky Sign is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such collection, we will delete the information immediately.
                             </p>

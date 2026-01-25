@@ -302,7 +302,7 @@ export function useHandTracking(
                             fingerPosition: smoothedFinger,
                             handPosition: { x: indexFingerMcp.x, y: indexFingerMcp.y },
                             isDrawing: effectiveGesture === 'drawing',
-                            gesture: effectiveGesture as any,
+                            gesture: effectiveGesture as HandTrackingState['gesture'],
                         }));
 
                         if (optionsRef.current.onPositionUpdate) {
@@ -376,6 +376,7 @@ export function useHandTracking(
                 cameraRef.current = null;
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return state;

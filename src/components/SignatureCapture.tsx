@@ -247,32 +247,45 @@ export default function SignatureCapture({
             <AnimatePresence>
                 {showInstructions && !isLoading && !error && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-40 p-6 text-center"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-white/98 backdrop-blur-md z-40 p-6"
                     >
-                        <h3 className="text-stone-900 text-xl font-bold mb-6">
-                            ✋ Show your hand to begin
-                        </h3>
-                        <div className="flex gap-8 text-stone-600 text-sm">
-                            <div>
-                                <div className="text-2xl mb-2">☝️</div>
-                                <p className="font-medium">Point to draw</p>
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-stone-50 border border-stone-200 rounded-3xl pt-8 px-8 pb-20 max-w-2xl w-full text-center shadow-xl shadow-stone-900/5 my-auto"
+                        >
+                            <div className="w-16 h-16 bg-stone-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-stone-900/20">
+                                <span className="text-3xl">✋</span>
                             </div>
-                            <div>
-                                <div className="text-2xl mb-2">✊</div>
-                                <p className="font-medium">Stop</p>
+
+                            <h3 className="text-2xl font-bold text-stone-900 mb-2">
+                                Ready to Sign?
+                            </h3>
+                            <p className="text-stone-500 mb-10 max-w-sm mx-auto">
+                                Raise your hand in front of the camera to begin. Ensure your hand is clearly visible.
+                            </p>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                    { icon: '☝️', label: 'Draw', desc: 'Point finger' },
+                                    { icon: '✊', label: 'Stop', desc: 'Make a fist' },
+                                    { icon: '👍', label: 'Save', desc: 'Thumbs up' },
+                                    { icon: '🖐️', label: 'Clear', desc: 'Open palm' }
+                                ].map((step, i) => (
+                                    <div key={i} className="flex flex-col items-center">
+                                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl mb-3 shadow-sm border border-stone-100">
+                                            {step.icon}
+                                        </div>
+                                        <p className="font-bold text-stone-900 text-sm mb-0.5">{step.label}</p>
+                                        <p className="text-xs text-stone-400">{step.desc}</p>
+                                    </div>
+                                ))}
                             </div>
-                            <div>
-                                <div className="text-2xl mb-2">👍</div>
-                                <p className="font-medium">Save</p>
-                            </div>
-                            <div>
-                                <div className="text-2xl mb-2">🖐️</div>
-                                <p className="font-medium">Clear</p>
-                            </div>
-                        </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -295,7 +308,7 @@ export default function SignatureCapture({
                 <button
                     onClick={handleClear}
                     disabled={!hasContent}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${hasContent
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${hasContent
                         ? 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 shadow-sm'
                         : 'bg-stone-100 text-stone-400 cursor-not-allowed'
                         }`}
@@ -305,7 +318,7 @@ export default function SignatureCapture({
                 <button
                     onClick={handleSave}
                     disabled={!hasContent}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${hasContent
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${hasContent
                         ? 'bg-stone-900 text-white hover:bg-stone-800 shadow-md'
                         : 'bg-stone-200 text-stone-400 cursor-not-allowed'
                         }`}

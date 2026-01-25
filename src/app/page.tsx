@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import BlurText from "@/components/reactbits/BlurText";
 import DecryptedText from "@/components/reactbits/DecryptedText";
@@ -12,16 +13,23 @@ import FAQ from "@/components/FAQ";
 import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
+import Footer from "@/components/Footer";
 import { getAuditStats } from "../lib/auditTrail";
 
+// Premium "Sky Sign" Hand Animation
+
+
 export default function Home() {
+  const router = useRouter();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [signatureCount, setSignatureCount] = useState(0);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
   // Load real stats on mount
   useEffect(() => {
     const stats = getAuditStats();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSignatureCount(stats.totalCreated);
   }, []);
 
@@ -76,18 +84,19 @@ export default function Home() {
   const handleCheckout = async (planId: string, planName: string) => {
     if (planName === 'Free') {
       // Free plan - just go to create
-      window.location.href = '/create';
+      router.push('/create');
       return;
     }
 
     alert('Payment integration coming soon! Stay tuned for Pro plan access.');
   };
 
-  const plans = [
+  const pricingTiers = [
     {
       name: "Free",
       planId: "free",
-      price: "$0",
+      monthlyPrice: "$0",
+      yearlyPrice: "$0",
       period: "forever",
       description: "Perfect for personal use and individuals",
       features: [
@@ -104,7 +113,8 @@ export default function Home() {
     {
       name: "Pro",
       planId: "pro",
-      price: "Coming Soon",
+      monthlyPrice: "$12",
+      yearlyPrice: "$9",
       period: "per month",
       description: "For professionals who sign daily",
       features: [
@@ -122,7 +132,8 @@ export default function Home() {
     {
       name: "Pro Plus",
       planId: "proplus",
-      price: "Coming Soon",
+      monthlyPrice: "$29",
+      yearlyPrice: "$22",
       period: "per month",
       description: "For teams and organizations",
       features: [
@@ -192,6 +203,8 @@ export default function Home() {
                 Create Signature
               </Link>
               <UserButton
+                userProfileMode="navigation"
+                userProfileUrl="/dashboard"
                 appearance={{
                   elements: {
                     avatarBox: {
@@ -294,9 +307,9 @@ export default function Home() {
                 <div className="flex items-center gap-6 pt-6 border-t border-stone-200">
                   <p className="text-sm text-stone-400">Trusted by professionals:</p>
                   <div className="flex -space-x-2">
-                    {['A', 'M', 'J', 'S'].map((initial, i) => (
-                      <div key={i} className="w-8 h-8 rounded-full bg-stone-200 border-2 border-white flex items-center justify-center text-xs font-medium text-stone-600">
-                        {initial}
+                    {['https://i.pravatar.cc/100?img=33', 'https://i.pravatar.cc/100?img=47', 'https://i.pravatar.cc/100?img=12', 'https://i.pravatar.cc/100?img=5'].map((src, i) => (
+                      <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center overflow-hidden bg-stone-200">
+                        <img src={src} alt="User" className="w-full h-full object-cover" />
                       </div>
                     ))}
                     <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-white flex items-center justify-center text-xs font-medium text-white">
@@ -316,7 +329,7 @@ export default function Home() {
                       <button
                         key={idx}
                         onClick={() => setActiveCardIndex(idx)}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === activeCardIndex
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${idx === activeCardIndex
                           ? 'bg-stone-900 w-6'
                           : 'bg-stone-300 hover:bg-stone-400'
                           }`}
@@ -444,8 +457,8 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-2xl flex items-center justify-center mb-8 text-4xl group-hover:scale-105 transition-transform">
-                  ☝️
+                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
+                  <span className="text-4xl">👆</span>
                 </div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 01</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Point</h3>
@@ -455,8 +468,8 @@ export default function Home() {
               </SpotlightCard>
 
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-2xl flex items-center justify-center mb-8 text-4xl group-hover:scale-105 transition-transform">
-                  👍
+                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
+                  <span className="text-4xl">👍</span>
                 </div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 02</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Save</h3>
@@ -466,8 +479,8 @@ export default function Home() {
               </SpotlightCard>
 
               <SpotlightCard className="bg-stone-50 rounded-3xl p-10 h-full border border-stone-200/60 group hover:bg-stone-100/50 transition-colors" spotlightColor="rgba(0, 0, 0, 0.03)">
-                <div className="w-20 h-20 bg-stone-900 rounded-2xl flex items-center justify-center mb-8 text-4xl group-hover:scale-105 transition-transform">
-                  ✋
+                <div className="w-20 h-20 bg-stone-900 rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform shadow-xl shadow-stone-900/10 border-4 border-stone-100">
+                  <span className="text-4xl">✋</span>
                 </div>
                 <span className="text-sm font-medium text-stone-400 uppercase tracking-widest mb-3 block">Step 03</span>
                 <h3 className="text-2xl font-semibold text-stone-900 mb-3">Clear</h3>
@@ -498,46 +511,70 @@ export default function Home() {
                 Transparent pricing for <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-stone-900 via-stone-700 to-stone-900">every signer</span>
               </h2>
-              <p className="text-stone-500 max-w-lg mx-auto text-lg leading-relaxed">
+              <p className="text-stone-500 max-w-lg mx-auto text-lg leading-relaxed mb-10">
                 Scale as you grow. Start with our generous free tier and upgrade as your needs evolve.
               </p>
+
+              {/* Billing Toggle */}
+              <div className="flex items-center justify-center gap-4 mb-16">
+                <span className={`text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'text-stone-900' : 'text-stone-400'}`}>Monthly</span>
+                <button
+                  onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'yearly' : 'monthly')}
+                  className="relative w-14 h-7 bg-stone-200 rounded-full p-1 transition-colors hover:bg-stone-300"
+                >
+                  <motion.div
+                    animate={{ x: billingCycle === 'monthly' ? 0 : 28 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    className="w-5 h-5 bg-white rounded-full shadow-sm"
+                  />
+                </button>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium transition-colors ${billingCycle === 'yearly' ? 'text-stone-900' : 'text-stone-400'}`}>Yearly</span>
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Save up to 25%</span>
+                </div>
+              </div>
             </div>
 
             {/* Pricing Cards */}
             {/* Pricing Cards */}
             <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 items-stretch">
-              {plans.map((plan, idx) => (
+              {pricingTiers.map((plan, idx) => (
                 <div
                   key={plan.name}
                   className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col flex-1 ${plan.highlighted
-                    ? 'bg-stone-900 text-white shadow-2xl shadow-stone-900/20 scale-[1.02] lg:scale-[1.05] z-20'
-                    : 'bg-white/70 backdrop-blur-xl border border-stone-200/60 hover:border-stone-400 hover:shadow-xl hover:shadow-stone-200/50 z-10'
+                    ? 'bg-white shadow-[0_20px_60px_-15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/20 scale-[1.02] lg:scale-[1.05] z-20'
+                    : 'bg-white/60 backdrop-blur-xl border border-stone-200/60 hover:border-stone-400 hover:shadow-xl hover:shadow-stone-200/30 z-10'
                     }`}
                 >
+                  {/* Highlight Glow for Pro */}
+                  {plan.highlighted && (
+                    <div className="absolute -inset-[1px] rounded-[2.5rem] bg-gradient-to-b from-emerald-500/20 to-transparent opacity-50 pointer-events-none" />
+                  )}
+
                   {/* Popular Badge */}
-                  {plan.highlighted && !plan.comingSoon && (
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30">
-                      <span className="px-6 py-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 text-white text-[10px] tracking-[0.2em] font-bold rounded-full shadow-lg shadow-emerald-500/20 uppercase whitespace-nowrap">
-                        Most Popular
+                  {plan.highlighted && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30">
+                      <span className="px-5 py-1.5 bg-stone-900 text-white text-[10px] tracking-widest font-bold rounded-full shadow-lg border border-stone-700 uppercase">
+                        Recommended
                       </span>
                     </div>
                   )}
 
                   {/* Plan Header */}
-                  <div className="mb-10">
+                  <div className="mb-8 relative z-10">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className={`text-2xl font-bold tracking-tight ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      <h3 className="text-2xl font-bold tracking-tight text-stone-900">
                         {plan.name}
                       </h3>
-                      {plan.highlighted && (
-                        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                          <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      {plan.highlighted && !plan.comingSoon && (
+                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                         </div>
                       )}
                     </div>
-                    <p className={`text-base leading-relaxed ${plan.highlighted ? 'text-stone-400' : 'text-stone-500'}`}>
+                    <p className="text-base leading-relaxed text-stone-500">
                       {plan.description}
                     </p>
                   </div>
@@ -545,15 +582,18 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-10">
                     <div className="flex items-baseline gap-1">
-                      <span className={`${plan.comingSoon ? 'text-4xl' : 'text-5xl lg:text-6xl'} font-bold tracking-tighter ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
-                        {plan.price}
+                      <span className="text-5xl lg:text-6xl font-bold tracking-tighter text-stone-900">
+                        {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                       </span>
-                      {!plan.comingSoon && (
-                        <span className={`text-stone-500 font-medium ${plan.highlighted ? 'text-stone-400' : ''}`}>
-                          /{plan.period === 'forever' ? 'forever' : 'mo'}
-                        </span>
-                      )}
+                      <span className="text-stone-500 font-medium">
+                        /{plan.period === 'forever' ? 'forever' : 'mo'}
+                      </span>
                     </div>
+                    {billingCycle === 'yearly' && plan.name !== 'Free' && (
+                      <p className="text-[10px] text-stone-400 font-medium mt-1 uppercase tracking-wider">
+                        Billed annually
+                      </p>
+                    )}
                   </div>
 
                   {/* CTA Button */}
@@ -561,9 +601,12 @@ export default function Home() {
                     <button
                       onClick={() => handleCheckout(plan.planId, plan.name)}
                       disabled={checkoutLoading === plan.name || plan.comingSoon}
-                      className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed group/btn ${plan.highlighted
-                        ? 'bg-white text-stone-900 hover:bg-stone-50 shadow-xl shadow-white/5'
-                        : 'bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-900/10'
+                      className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-300 cursor-pointer group/btn 
+                        ${plan.comingSoon
+                          ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
+                          : plan.highlighted
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg hover:shadow-emerald-500/25'
+                            : 'bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-900/10'
                         }`}
                     >
                       {checkoutLoading === plan.name ? (
@@ -588,19 +631,19 @@ export default function Home() {
                   </div>
 
                   {/* Features */}
-                  <div className={`pt-8 border-t ${plan.highlighted ? 'border-stone-800' : 'border-stone-100'}`}>
-                    <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-6 ${plan.highlighted ? 'text-stone-500' : 'text-stone-400'}`}>
+                  <div className="pt-8 border-t border-stone-100">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-6 text-stone-400">
                       What&apos;s included
                     </p>
                     <ul className="space-y-4">
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-4 text-sm group/item">
-                          <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`}>
+                          <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-emerald-100 text-emerald-600' : 'bg-emerald-50 text-emerald-600'}`}>
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                           </div>
-                          <span className={plan.highlighted ? 'text-stone-300' : 'text-stone-600'}>
+                          <span className="text-stone-600">
                             {feature}
                           </span>
                         </li>
@@ -615,8 +658,10 @@ export default function Home() {
               <p className="text-stone-400 text-sm">
                 Secure payment processing by
                 <span className="mx-2 inline-flex items-center gap-1.5 px-2 py-0.5 bg-stone-100 rounded-md font-semibold text-stone-700">
-                  <svg className="w-4 h-4 text-[#FFCC00]" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                  {/* Paddle Brand Icon */}
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                    <rect width="24" height="24" rx="6" fill="#18181B" />
+                    <path d="M12 6L13.4 10.6L18 12L13.4 13.4L12 18L10.6 13.4L6 12L10.6 10.6L12 6Z" fill="#FACC15" />
                   </svg>
                   Paddle
                 </span>
@@ -645,39 +690,7 @@ export default function Home() {
       </FadeContent>
 
       {/* Footer */}
-      <footer className="py-12 px-8 lg:px-12 border-t border-stone-200/60 bg-stone-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-stone-900 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 text-stone-50"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
-                  />
-                </svg>
-              </div>
-              <span className="text-sm font-medium text-stone-700">Sky Sign</span>
-            </div>
-            <div className="flex items-center gap-8 text-sm text-stone-500">
-              <Link href="/privacy" className="hover:text-stone-900 transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-stone-900 transition-colors">Terms</Link>
-              <Link href="/refund" className="hover:text-stone-900 transition-colors">Refund</Link>
-              <Link href="/support" className="hover:text-stone-900 transition-colors">Support</Link>
-            </div>
-            <p className="text-sm text-stone-400">
-              © 2026 Sky Sign. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

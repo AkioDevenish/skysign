@@ -38,7 +38,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: FAQItemProps) => 
     return (
         <div className="border-b border-stone-200 last:border-0">
             <button
-                className="w-full py-7 flex items-center justify-between text-left focus:outline-none group"
+                className="w-full py-7 flex items-center justify-between text-left focus:outline-none group cursor-pointer"
                 onClick={onClick}
             >
                 <div className="flex items-center gap-6">

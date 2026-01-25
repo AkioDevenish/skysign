@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { useHandTracking } from '@/hooks/useHandTracking';
 
 const SignatureCapture = dynamic(() => import('./SignatureCapture'), {
     ssr: false,
@@ -36,7 +38,7 @@ export default function SignatureCreator({
     strokeColor = '#1c1917',
     strokeWidth = 3,
 }: SignatureCreatorProps) {
-    const [mode, setMode] = useState<InputMode>('draw');
+    const [mode, setMode] = useState<InputMode>('air');
     const [typedName, setTypedName] = useState('');
     const [selectedFont, setSelectedFont] = useState(signatureFonts[0]);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -164,10 +166,10 @@ export default function SignatureCreator({
     };
 
     const modes: { id: InputMode; label: string; icon: React.ReactNode }[] = [
+        { id: 'air', label: 'Air Draw', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" /></svg> },
         { id: 'draw', label: 'Draw', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg> },
         { id: 'type', label: 'Type', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg> },
         { id: 'upload', label: 'Upload', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> },
-        { id: 'air', label: 'Air Draw', icon: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" /></svg> },
     ];
 
     return (
@@ -176,7 +178,7 @@ export default function SignatureCreator({
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h2 className="text-lg font-semibold text-stone-900">Create Your Signature</h2>
-                    <p className="text-sm text-stone-500">Choose how you'd like to create your signature</p>
+                    <p className="text-sm text-stone-500">Choose how you&apos;d like to create your signature</p>
                 </div>
             </div>
 
@@ -186,7 +188,7 @@ export default function SignatureCreator({
                     <button
                         key={m.id}
                         onClick={() => setMode(m.id)}
-                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${mode === m.id
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${mode === m.id
                             ? 'bg-white text-stone-900 shadow-sm'
                             : 'text-stone-500 hover:text-stone-700'
                             }`}
@@ -260,7 +262,7 @@ export default function SignatureCreator({
                                 <button
                                     key={font.name}
                                     onClick={() => setSelectedFont(font)}
-                                    className={`py-3 px-3 rounded-xl border-2 transition-all text-center ${selectedFont.name === font.name
+                                    className={`py-3 px-3 rounded-xl border-2 transition-all text-center cursor-pointer ${selectedFont.name === font.name
                                         ? 'border-stone-900 bg-stone-900 text-white'
                                         : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
                                         }`}
@@ -300,14 +302,16 @@ export default function SignatureCreator({
                         />
                         {uploadedImage ? (
                             <div className="h-[250px] bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-center relative group overflow-hidden">
-                                <img
+                                <Image
                                     src={uploadedImage}
                                     alt="Uploaded"
-                                    className="max-h-full max-w-full object-contain p-4"
+                                    fill
+                                    className="object-contain p-4"
+                                    unoptimized
                                 />
                                 <button
                                     onClick={() => setUploadedImage(null)}
-                                    className="absolute top-3 right-3 w-8 h-8 bg-stone-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-lg hover:bg-stone-800"
+                                    className="absolute top-3 right-3 w-8 h-8 bg-stone-900 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-lg hover:bg-stone-800 cursor-pointer"
                                 >
                                     ×
                                 </button>
@@ -315,7 +319,7 @@ export default function SignatureCreator({
                         ) : (
                             <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="w-full h-[250px] bg-stone-50 rounded-xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-3 text-stone-400 hover:border-stone-400 hover:text-stone-500 hover:bg-stone-100 transition-all"
+                                className="w-full h-[250px] bg-stone-50 rounded-xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-3 text-stone-400 hover:border-stone-400 hover:text-stone-500 hover:bg-stone-100 transition-all cursor-pointer"
                             >
                                 <div className="w-14 h-14 rounded-full bg-stone-200 flex items-center justify-center">
                                     <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -351,30 +355,40 @@ export default function SignatureCreator({
                 )}
             </AnimatePresence>
 
-            {/* Action Buttons */}
-            {mode !== 'air' && (
-                <div className="flex justify-end gap-3 mt-6">
-                    <button
-                        onClick={handleClear}
-                        className="px-5 py-2.5 text-sm font-medium text-stone-600 bg-stone-100 rounded-xl hover:bg-stone-200 transition-colors"
-                    >
-                        Clear
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={!canSave}
-                        className="px-6 py-2.5 text-sm font-semibold text-white bg-stone-900 rounded-xl hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    >
-                        Save Signature
-                    </button>
-                </div>
-            )}
+
 
             {/* Google Fonts */}
             <link
                 href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Caveat:wght@600&family=Allura&display=swap"
                 rel="stylesheet"
             />
+
+            {/* Gesture Listener for non-air modes */}
+            {mode !== 'air' && (
+                <GestureListener
+                    onGesture={(gesture) => {
+                        if (gesture === 'save') handleSave();
+                        if (gesture === 'clear') handleClear();
+                    }}
+                />
+            )}
         </div>
+    );
+}
+
+function GestureListener({ onGesture }: { onGesture: (g: 'save' | 'clear') => void }) {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    useHandTracking(videoRef, {
+        onGesture,
+    });
+
+    return (
+        <video
+            ref={videoRef}
+            className="fixed top-0 left-0 w-1 h-1 opacity-0 pointer-events-none"
+            autoPlay
+            playsInline
+            muted
+        />
     );
 }
