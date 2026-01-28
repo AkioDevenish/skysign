@@ -276,7 +276,11 @@ export function useHandTracking(
                             pendingGestureStartTimeRef.current = now;
                         } else {
                             if (rawGesture !== activeGestureRef.current) {
-                                if (now - pendingGestureStartTimeRef.current > 1000) {
+                                // Fast transition for drawing/idle, slower for actions to prevent accidental triggers
+                                const isActionGesture = rawGesture === 'save' || rawGesture === 'clear';
+                                const requiredDelay = isActionGesture ? 1000 : 50;
+                                
+                                if (now - pendingGestureStartTimeRef.current > requiredDelay) {
                                     activeGestureRef.current = rawGesture;
                                     effectiveGesture = rawGesture;
 

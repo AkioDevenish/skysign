@@ -178,7 +178,7 @@ export default function PrivacyPage() {
                             <p className="text-stone-600 mb-4">For privacy-related questions or concerns:</p>
                             <ul className="text-stone-600 space-y-2">
                                 <li><strong>Email:</strong> <a href="mailto:privacy@skysign.io" className="text-stone-900 underline">privacy@skysign.io</a></li>
-                                <li><strong>Address:</strong> Sky Sign Inc., 123 Innovation Way, San Francisco, CA 94105</li>
+                                <li><strong>Address:</strong> Adevstudio (Sky Sign), 123 Innovation Way, San Francisco, CA 94105</li>
                                 <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@skysign.io" className="text-stone-900 underline">dpo@skysign.io</a></li>
                             </ul>
                         </section>
@@ -189,7 +189,7 @@ export default function PrivacyPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 Sky Sign. All rights reserved.</p>
+                    <p>© 2026 Adevstudio. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/terms" className="hover:text-stone-900">Terms of Service</Link>
                         <Link href="/refund" className="hover:text-stone-900">Refund Policy</Link>
