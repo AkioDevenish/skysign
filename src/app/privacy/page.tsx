@@ -178,7 +178,7 @@ export default function PrivacyPage() {
                             <p className="text-stone-600 mb-4">For privacy-related questions or concerns:</p>
                             <ul className="text-stone-600 space-y-2">
                                 <li><strong>Email:</strong> <a href="mailto:privacy@skysign.io" className="text-stone-900 underline">privacy@skysign.io</a></li>
-                                <li><strong>Address:</strong> Adevstudio (Sky Sign), 123 Innovation Way, San Francisco, CA 94105</li>
+                                <li><strong>Address:</strong> Adevstudio (Sky Sign), Trinidad and Tobago</li>
                                 <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@skysign.io" className="text-stone-900 underline">dpo@skysign.io</a></li>
                             </ul>
                         </section>

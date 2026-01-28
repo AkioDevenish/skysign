@@ -225,12 +225,12 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">12.1 Governing Law</h3>
                             <p className="text-stone-600 mb-4">
-                                These Terms are governed by the laws of the State of California, without regard to conflict of law principles.
+                                These Terms are governed by the laws of Trinidad and Tobago, without regard to conflict of law principles.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">12.2 Arbitration</h3>
                             <p className="text-stone-600 mb-4">
-                                Any disputes arising from these Terms or the Service shall be resolved through binding arbitration in San Francisco, California, in accordance with the rules of the American Arbitration Association.
+                                Any disputes arising from these Terms or the Service shall be resolved through binding arbitration in Trinidad and Tobago, in accordance with applicable arbitration rules.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">12.3 Class Action Waiver</h3>
@@ -262,7 +262,7 @@ export default function TermsPage() {
                             <p className="text-stone-600 mb-4">For questions about these Terms:</p>
                             <ul className="text-stone-600 space-y-2">
                                 <li><strong>Email:</strong> <a href="mailto:legal@skysign.io" className="text-stone-900 underline">legal@skysign.io</a></li>
-                                <li><strong>Address:</strong> Adevstudio (Sky Sign), 123 Innovation Way, San Francisco, CA 94105</li>
+                                <li><strong>Address:</strong> Adevstudio (Sky Sign), Trinidad and Tobago</li>
                                 <li><strong>Support:</strong> <Link href="/support" className="text-stone-900 underline">Visit our Support Center</Link></li>
                             </ul>
                         </section>
