@@ -189,7 +189,7 @@ export default function PrivacyPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 Adevstudio. All rights reserved.</p>
+                    <p>© 2026 skysign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/terms" className="hover:text-stone-900">Terms of Service</Link>
                         <Link href="/refund" className="hover:text-stone-900">Refund Policy</Link>
