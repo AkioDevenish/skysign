@@ -261,7 +261,7 @@ export default function TermsPage() {
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">Contact Us</h2>
                             <p className="text-stone-600 mb-4">For questions about these Terms:</p>
                             <ul className="text-stone-600 space-y-2">
-                                <li><strong>Email:</strong> <a href="mailto:legal@skysign.io" className="text-stone-900 underline">legal@skysign.io</a></li>
+                                <li><strong>Email:</strong> <a href="mailto:hello@skysign.io" className="text-stone-900 underline">hello@skysign.io</a></li>
                                 <li><strong>Address:</strong> Adevstudio (Sky Sign), Trinidad and Tobago</li>
                                 <li><strong>Support:</strong> <Link href="/support" className="text-stone-900 underline">Visit our Support Center</Link></li>
                             </ul>
@@ -273,7 +273,7 @@ export default function TermsPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 skysign. All rights reserved.</p>
+                    <p>© 2026 Skysign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/privacy" className="hover:text-stone-900">Privacy Policy</Link>
                         <Link href="/support" className="hover:text-stone-900">Support</Link>

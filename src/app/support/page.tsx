@@ -176,7 +176,7 @@ export default function SupportPage() {
                             <Link href="/refund" className="hover:text-stone-900 transition-colors">Refund</Link>
                             <Link href="/support" className="text-stone-900 font-medium">Support</Link>
                         </div>
-                        <p className="text-sm text-stone-400">© 2026 skysign. All rights reserved.</p>
+                        <p className="text-sm text-stone-400">© 2026 Skysign. All rights reserved.</p>
                     </div>
                 </div>
             </footer>

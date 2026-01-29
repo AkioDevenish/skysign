@@ -31,7 +31,7 @@ export default function Footer() {
                         <Link href="/compliance" className="hover:text-stone-900 transition-colors">Global Compliance</Link>
                     </div>
                     <p className="text-sm text-stone-400">
-                        © 2026 skysign. All rights reserved.
+                        © 2026 Skysign. All rights reserved.
                     </p>
                 </div>
             </div>
