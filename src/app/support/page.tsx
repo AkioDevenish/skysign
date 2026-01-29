@@ -157,8 +157,8 @@ export default function SupportPage() {
                     <div className="mt-12 text-center">
                         <p className="text-stone-500">
                             You can also reach us at{' '}
-                            <a href="mailto:support@skysign.app" className="text-stone-900 underline hover:no-underline">
-                                support@skysign.app
+                            <a href="mailto:hello@skysign.io" className="text-stone-900 underline hover:no-underline">
+                                hello@skysign.io
                             </a>
                         </p>
                     </div>
