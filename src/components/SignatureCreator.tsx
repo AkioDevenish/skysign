@@ -173,7 +173,7 @@ export default function SignatureCreator({
     ];
 
     return (
-        <div className="p-6 relative">
+        <div className="p-4 md:p-6 relative">
             {/* Gesture Indicators Overlay for non-air modes */}
             {mode !== 'air' && (
                 <div className="absolute top-8 right-8 flex gap-3 pointer-events-none z-20">
@@ -198,26 +198,26 @@ export default function SignatureCreator({
             )}
 
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
-                    <h2 className="text-lg font-semibold text-stone-900">Create Your Signature</h2>
-                    <p className="text-sm text-stone-500">Choose how you&apos;d like to create your signature</p>
+                    <h2 className="text-base md:text-lg font-semibold text-stone-900">Create Your Signature</h2>
+                    <p className="text-xs md:text-sm text-stone-500">Choose how you&apos;d like to create your signature</p>
                 </div>
             </div>
 
             {/* Mode Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-xl mb-6">
+            <div className="grid grid-cols-4 gap-1 p-1 bg-stone-100 rounded-xl mb-4 md:mb-6">
                 {modes.map((m) => (
                     <button
                         key={m.id}
                         onClick={() => setMode(m.id)}
-                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${mode === m.id
+                        className={`flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${mode === m.id
                             ? 'bg-white text-stone-900 shadow-sm'
                             : 'text-stone-500 hover:text-stone-700'
                             }`}
                     >
                         {m.icon}
-                        <span className="text-xs md:text-sm">{m.label}</span>
+                        <span className="text-[10px] md:text-sm leading-tight">{m.label}</span>
                     </button>
                 ))}
             </div>
@@ -280,28 +280,28 @@ export default function SignatureCreator({
                         />
 
                         {/* Font Selection */}
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                             {signatureFonts.map((font) => (
                                 <button
                                     key={font.name}
                                     onClick={() => setSelectedFont(font)}
-                                    className={`py-3 px-3 rounded-xl border-2 transition-all text-center cursor-pointer ${selectedFont.name === font.name
+                                    className={`py-2.5 md:py-3 px-2 md:px-3 rounded-xl border-2 transition-all text-center cursor-pointer ${selectedFont.name === font.name
                                         ? 'border-stone-900 bg-stone-900 text-white'
                                         : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300'
                                         }`}
                                 >
                                     <span className="text-lg block" style={{ fontFamily: font.family }}>Aa</span>
-                                    <span className="text-xs opacity-70 block mt-1">{font.name}</span>
+                                    <span className="text-[10px] md:text-xs opacity-70 block mt-1">{font.name}</span>
                                 </button>
                             ))}
                         </div>
 
                         {/* Preview */}
                         <div
-                            className="h-[120px] flex items-center justify-center bg-stone-50 rounded-xl border border-stone-200"
+                            className="h-[100px] md:h-[120px] flex items-center justify-center bg-stone-50 rounded-xl border border-stone-200 px-4"
                             style={{ fontFamily: selectedFont.family }}
                         >
-                            <span className="text-4xl text-stone-900">
+                            <span className="text-2xl md:text-4xl text-stone-900 truncate max-w-full">
                                 {typedName || 'Your Signature'}
                             </span>
                         </div>
@@ -365,7 +365,7 @@ export default function SignatureCreator({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="h-[300px] md:h-[500px] min-h-[300px] rounded-xl overflow-hidden border border-stone-200"
+                        className="h-[280px] md:h-[500px] min-h-[280px] rounded-xl overflow-hidden border border-stone-200"
                     >
                         <SignatureCapture
                             onSave={onSave}

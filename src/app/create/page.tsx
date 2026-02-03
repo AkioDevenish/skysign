@@ -507,7 +507,7 @@ export default function CreatePage() {
                 </nav>
 
                 {/* Main content area */}
-                <div className={`pt-20 pb-20 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[80dvh] md:min-h-screen flex flex-col md:justify-center' : ''}`}>
+                <div className={`pt-16 pb-6 px-3 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-80px)] md:min-h-screen flex flex-col justify-center items-center' : ''}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div
@@ -549,7 +549,7 @@ export default function CreatePage() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-3xl border border-stone-200 shadow-lg overflow-hidden w-full max-w-4xl"
+                            className="bg-white rounded-2xl md:rounded-3xl border border-stone-200 shadow-lg overflow-hidden w-full max-w-4xl mx-auto"
                         >
                             <SignatureCreator
                                 onSave={handleSave}
