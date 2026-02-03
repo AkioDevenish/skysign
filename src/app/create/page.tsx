@@ -479,7 +479,7 @@ export default function CreatePage() {
                 style={{ marginLeft: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
             >
                 {/* Top Navigation */}
-                <nav className="fixed top-0 right-0 bg-stone-50/90 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
+                <nav className="fixed top-0 right-0 bg-stone-50/95 backdrop-blur-md z-40 border-b border-stone-200/60 transition-all duration-300"
                     style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
                 >
                     <div className="px-4 py-3 md:px-8 md:py-5 flex items-center justify-between w-full">
@@ -507,7 +507,7 @@ export default function CreatePage() {
                 </nav>
 
                 {/* Main content area */}
-                <div className={`pt-24 pb-8 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-screen flex items-center justify-center' : ''}`}>
+                <div className={`pt-20 pb-20 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[80dvh] md:min-h-screen flex flex-col md:justify-center' : ''}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div

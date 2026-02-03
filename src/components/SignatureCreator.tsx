@@ -217,7 +217,7 @@ export default function SignatureCreator({
                             }`}
                     >
                         {m.icon}
-                        <span className="hidden sm:inline">{m.label}</span>
+                        <span className="text-xs md:text-sm">{m.label}</span>
                     </button>
                 ))}
             </div>
@@ -234,7 +234,7 @@ export default function SignatureCreator({
                     >
                         <div
                             ref={containerRef}
-                            className="relative h-[250px] bg-stone-50 rounded-xl border border-stone-200 overflow-hidden"
+                            className="relative h-[200px] md:h-[250px] bg-stone-50 rounded-xl border border-stone-200 overflow-hidden"
                         >
                             <canvas
                                 ref={drawCanvasRef}
@@ -365,7 +365,7 @@ export default function SignatureCreator({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="h-[500px] min-h-[500px] rounded-xl overflow-hidden border border-stone-200"
+                        className="h-[300px] md:h-[500px] min-h-[300px] rounded-xl overflow-hidden border border-stone-200"
                     >
                         <SignatureCapture
                             onSave={onSave}

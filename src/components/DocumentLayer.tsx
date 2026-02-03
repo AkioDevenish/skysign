@@ -129,12 +129,12 @@ export default function DocumentLayer({
                     <button
                         onClick={prevPage}
                         disabled={currentPage <= 1}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${currentPage <= 1
+                        className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all ${currentPage <= 1
                             ? 'text-stone-300 cursor-not-allowed'
                             : 'text-stone-600 hover:bg-stone-100'
                             }`}
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
