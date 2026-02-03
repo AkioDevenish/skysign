@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ import TemplateGallery from '@/components/TemplateGallery';
 import { signPdf } from '@/utils/pdfUtils';
 // import { saveSignature, canSaveMore } from '@/lib/signatureStorage'; // Deprecated
 // import { logAuditEntry } from '@/lib/auditTrail'; // Deprecated
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import SignaturePlacer from '@/components/SignaturePlacer';
 import FieldPlacer, { Field } from '@/components/FieldPlacer';
@@ -116,10 +116,18 @@ export default function CreatePage() {
     const [showSharing, setShowSharing] = useState(false);
     const [signedBlob, setSignedBlob] = useState<Blob | null>(null);
     const [showLimitModal, setShowLimitModal] = useState(false);
+    const [currentSignatureId, setCurrentSignatureId] = useState<string | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     // Convex Mutations
     const createSig = useMutation(api.signatures.create);
-    const logAudit = useMutation(api.audit.log);
     const signatureCount = useQuery(api.signatures.getCount);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -134,6 +142,9 @@ export default function CreatePage() {
         setGalleryKey(prev => prev + 1);
     }, []);
 
+    const generateUploadUrl = useMutation(api.signatures.generateUploadUrl);
+    const generateAudit = useAction(api.audit.generate);
+
     const handleSave = async (dataUrl: string) => {
         setSavedSignature(dataUrl);
         if (documentFile) {
@@ -141,17 +152,37 @@ export default function CreatePage() {
         } else {
             // Save to Convex
             try {
-                // Check limits (backend also checks, but good for UI feedback)
+                // Check limits
                 if (plan === 'free' && (signatureCount ?? 0) >= 5) {
                     setShowLimitModal(true);
                     return;
                 }
 
-                await createSig({
-                    name: `Signature ${new Date().toLocaleString()}`,
-                    dataUrl,
-                    plan,
+                // 1. Convert Data URL to Blob
+                const res = await fetch(dataUrl);
+                const blob = await res.blob();
+
+                // 2. Generate Upload URL
+                const postUrl = await generateUploadUrl();
+
+                // 3. Upload File
+                const result = await fetch(postUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": blob.type },
+                    body: blob,
                 });
+                const { storageId } = await result.json();
+
+                // 4. Save Signature with Storage ID
+                const newSignatureId = await createSig({
+                    name: `Signature ${new Date().toLocaleString()}`,
+                    storageId,
+                    plan,
+                    userAgent: navigator.userAgent,
+                });
+                
+                // Store ID for audit trail generation later
+                setCurrentSignatureId(newSignatureId);
 
                 refreshGallery();
                 setShowPreview(true);
@@ -160,7 +191,8 @@ export default function CreatePage() {
                 if (msg && msg.includes('Free plan limit reached')) {
                     setShowLimitModal(true);
                 } else {
-                    alert(msg || 'Failed to save signature');
+                    console.error("Save error:", msg); // Log full error in console
+                    alert(`Failed to save signature: ${msg}`);
                 }
             }
         }
@@ -173,16 +205,25 @@ export default function CreatePage() {
             setIsSaving(true);
             const { clientWidth, clientHeight, scrollTop } = containerRef.current;
 
-            // Log audit via Convex
-            await logAudit({
-                action: 'signed',
-                signatureName: documentFile.name,
-                userAgent: navigator.userAgent,
-            });
+            // Generate Audit Trail (Server-Side)
+            // We use the signature ID created during the 'Save' step
+            let auditStorageId = null;
+            if (currentSignatureId) {
+                 try {
+                    auditStorageId = await generateAudit({
+                        signatureId: currentSignatureId as any, // ID type casting
+                        signerName: user?.fullName || 'Authenticated User',
+                        signerEmail: user?.primaryEmailAddress?.emailAddress,
+                        ipAddress: 'Recorded', // Real IP would be captured by info() in action if accessed via HTTP, or client passes it
+                        userAgent: navigator.userAgent,
+                        timestamp: new Date().toISOString(),
+                    });
+                 } catch (e) {
+                     console.error("Failed to generate audit trail:", e);
+                 }
+            }
 
-            // For now, we still need an ID for the PDF metadata if we want it.
-            // We can just use a random string or omit it if not critical.
-            const auditId = `audit_${Date.now()}`;
+            const auditId = auditStorageId || `audit_${Date.now()}`;
 
             const signedPdfBytes = await signPdf(
                 documentFile,
@@ -210,6 +251,8 @@ export default function CreatePage() {
             setIsSaving(false);
             setSignedBlob(blob);
             setShowSharing(true);
+            // We pass the currentSignatureId to the dialog so it can fetch the Audit Trail URL
+            // (The auditStorageId is stored on the signature record)
         } catch (error) {
             console.error("Error signing PDF:", error);
             alert("Failed to sign PDF");
@@ -432,19 +475,19 @@ export default function CreatePage() {
 
             {/* Main Content */}
             <div
-                className="flex-1 transition-all duration-300"
-                style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
+                className="flex-1 transition-all duration-300 w-full"
+                style={{ marginLeft: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
             >
                 {/* Top Navigation */}
                 <nav className="fixed top-0 right-0 bg-stone-50/90 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
-                    style={{ left: sidebarCollapsed ? '64px' : '256px' }}
+                    style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
                 >
-                    <div className="px-8 py-5 flex items-center justify-between w-full">
+                    <div className="px-4 py-3 md:px-8 md:py-5 flex items-center justify-between w-full">
                         <div>
-                            <h1 className="text-xl font-semibold text-stone-900">
+                            <h1 className="text-lg md:text-xl font-semibold text-stone-900">
                                 {documentFile ? 'Sign Your Document' : 'Create Your Signature'}
                             </h1>
-                            <p className="text-sm text-stone-500">
+                            <p className="text-xs md:text-sm text-stone-500 hidden sm:block">
                                 {documentFile
                                     ? (placementMode ? 'Drag signature to desired position' : 'Draw your signature over the document')
                                     : 'Point your index finger at the camera and draw in the air'}
@@ -464,7 +507,7 @@ export default function CreatePage() {
                 </nav>
 
                 {/* Main content area */}
-                <div className={`pt-28 pb-16 px-8 ${activeSection === 'create' && !documentFile ? 'min-h-screen flex items-center justify-center' : ''}`}>
+                <div className={`pt-24 pb-8 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-screen flex items-center justify-center' : ''}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div
@@ -675,6 +718,7 @@ export default function CreatePage() {
                         pdfBlob={signedBlob}
                         documentName={documentFile?.name || 'signed_document.pdf'}
                         onClose={() => setShowSharing(false)}
+                        signatureId={currentSignatureId}
                     />
                 )}
                 {showLimitModal && (

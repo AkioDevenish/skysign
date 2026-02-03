@@ -2,6 +2,8 @@
 import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { z } from "zod";
+import { PLAN_LIMITS } from "./config";
 
 export const getMembers = query({
     args: {},
@@ -16,6 +18,12 @@ export const getMembers = query({
     },
 });
 
+// Define validation schema
+const addMemberSchema = z.object({
+    name: z.string().min(1, "Name is required").max(100, "Name too long"),
+    email: z.string().email("Invalid email address"),
+});
+
 export const addMember = mutation({
     args: {
         name: v.string(),
@@ -25,15 +33,21 @@ export const addMember = mutation({
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Not authenticated");
 
-        // Check limits (e.g. max 10 for pro plus) - this logic ideally checks plan properly
-        // For now we assume the frontend checked the "Pro Plus" gate, backend check is good too
+        // Zod Validation
+        const validation = addMemberSchema.safeParse(args);
+        if (!validation.success) {
+            throw new Error(validation.error.issues[0].message);
+        }
+
+        // Check limits
         const currentMembers = await ctx.db
             .query("teamMembers")
             .withIndex("by_owner", (q) => q.eq("ownerUserId", identity.subject))
             .collect();
 
-        if (currentMembers.length >= 10) {
-            throw new Error("Team limit reached (10 members).");
+        const limit = PLAN_LIMITS.proplus.teamMembers;
+        if (currentMembers.length >= limit) {
+            throw new Error(`Team limit reached (${limit} members).`);
         }
 
         const memberId = await ctx.db.insert("teamMembers", {

@@ -18,7 +18,7 @@ export default function TermsPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
                             </svg>
                         </div>
-                        <span className="text-lg font-semibold text-stone-900">Sky Sign</span>
+                        <span className="text-lg font-semibold text-stone-900">SkySign</span>
                     </Link>
                     <Link href="/create" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-stone-800 transition-all">
                         Get Started
@@ -39,14 +39,14 @@ export default function TermsPage() {
                     <div className="prose prose-stone max-w-none">
                         <div className="bg-white rounded-2xl border border-stone-200 p-8 mb-8">
                             <p className="text-lg text-stone-600 leading-relaxed">
-                                Welcome to Sky Sign. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the Sky Sign electronic signature platform, including our website, applications, and related services (collectively, the &quot;Service&quot;). By accessing or using the Service, you agree to be bound by these Terms.
+                                Welcome to SkySign. These Terms of Service (&quot;Terms&quot;) govern your access to and use of the SkySign electronic signature platform, including our website, applications, and related services (collectively, the &quot;Service&quot;). By accessing or using the Service, you agree to be bound by these Terms.
                             </p>
                         </div>
 
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">1. Acceptance of Terms</h2>
                             <p className="text-stone-600 mb-4">
-                                By creating an account or using Sky Sign, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you may not access or use the Service.
+                                By creating an account or using SkySign, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you may not access or use the Service.
                             </p>
                             <p className="text-stone-600">
                                 If you are using the Service on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms.
@@ -55,7 +55,7 @@ export default function TermsPage() {
 
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">2. Description of Service</h2>
-                            <p className="text-stone-600 mb-4">Sky Sign provides an electronic signature platform that enables users to:</p>
+                            <p className="text-stone-600 mb-4">SkySign provides an electronic signature platform that enables users to:</p>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2">
                                 <li>Create digital signatures through drawing, typing, or uploading</li>
                                 <li>Use hand-tracking technology for air-drawn signatures</li>
@@ -85,7 +85,7 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">3.3 Age Requirement</h3>
                             <p className="text-stone-600">
-                                You must be at least 18 years old to use the Service. By using Sky Sign, you represent and warrant that you meet this age requirement.
+                                You must be at least 18 years old to use the Service. By using SkySign, you represent and warrant that you meet this age requirement.
                             </p>
                         </section>
 
@@ -94,13 +94,13 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">4.1 Free and Paid Plans</h3>
                             <p className="text-stone-600 mb-4">
-                                Sky Sign offers both free and paid subscription plans. Free plans include limited features, while paid plans (Pro and Team) provide access to advanced functionality.
+                                SkySign offers both free and paid subscription plans. Free plans include limited features, while paid plans (Pro and Team) provide access to advanced functionality.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">4.2 Billing</h3>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2 mb-4">
                                 <li>Paid subscriptions are billed in advance on a monthly or annual basis</li>
-                                <li>All fees are non-refundable unless otherwise stated</li>
+                                <li>All fees are non-refundable, except as expressly provided in our <Link href="/refund" className="text-stone-900 underline">Refund Policy</Link> (including the 14-day money-back guarantee)</li>
                                 <li>We may change pricing with 30 days&apos; notice</li>
                                 <li>Failure to pay may result in suspension or termination of your account</li>
                             </ul>
@@ -116,7 +116,7 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">5.1 Legal Validity</h3>
                             <p className="text-stone-600 mb-4">
-                                Electronic signatures created through Sky Sign are intended to be legally binding under applicable laws, including:
+                                Electronic signatures created through SkySign are intended to be legally binding under applicable laws, including:
                             </p>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2 mb-4">
                                 <li><strong>ESIGN Act:</strong> U.S. Electronic Signatures in Global and National Commerce Act</li>
@@ -126,7 +126,7 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">5.2 User Responsibility</h3>
                             <p className="text-stone-600 mb-4">
-                                While Sky Sign facilitates electronic signatures, you are responsible for:
+                                While SkySign facilitates electronic signatures, you are responsible for:
                             </p>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2">
                                 <li>Ensuring electronic signatures are appropriate for your specific use case</li>
@@ -162,7 +162,7 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">7.1 Our Intellectual Property</h3>
                             <p className="text-stone-600 mb-4">
-                                The Service, including all software, designs, logos, and content created by Sky Sign, is protected by copyright, trademark, and other intellectual property laws. You may not copy, modify, or distribute our intellectual property without permission.
+                                The Service, including all software, designs, logos, and content created by SkySign, is protected by copyright, trademark, and other intellectual property laws. You may not copy, modify, or distribute our intellectual property without permission.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">7.2 Your Content</h3>
@@ -193,7 +193,7 @@ export default function TermsPage() {
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">9.2 Limitation of Liability</h3>
                             <p className="text-stone-600 mb-4">
-                                TO THE MAXIMUM EXTENT PERMITTED BY LAW, SKY SIGN SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, DATA, OR BUSINESS OPPORTUNITIES ARISING FROM YOUR USE OF THE SERVICE.
+                                TO THE MAXIMUM EXTENT PERMITTED BY LAW, SKYSIGN SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, DATA, OR BUSINESS OPPORTUNITIES ARISING FROM YOUR USE OF THE SERVICE.
                             </p>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">9.3 Maximum Liability</h3>
@@ -205,7 +205,7 @@ export default function TermsPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">10. Indemnification</h2>
                             <p className="text-stone-600">
-                                You agree to indemnify, defend, and hold harmless Sky Sign and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys&apos; fees) arising from your use of the Service, your violation of these Terms, or your infringement of any third-party rights.
+                                You agree to indemnify, defend, and hold harmless SkySign and its officers, directors, employees, and agents from any claims, damages, losses, or expenses (including reasonable attorneys&apos; fees) arising from your use of the Service, your violation of these Terms, or your infringement of any third-party rights.
                             </p>
                         </section>
 
@@ -249,7 +249,7 @@ export default function TermsPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">14. General Provisions</h2>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2">
-                                <li><strong>Entire Agreement:</strong> These Terms constitute the entire agreement between you and Sky Sign</li>
+                                <li><strong>Entire Agreement:</strong> These Terms constitute the entire agreement between you and SkySign</li>
                                 <li><strong>Severability:</strong> If any provision is found unenforceable, the remaining provisions remain in effect</li>
                                 <li><strong>Waiver:</strong> Failure to enforce any right does not constitute a waiver</li>
                                 <li><strong>Assignment:</strong> You may not assign these Terms; we may assign them freely</li>
@@ -262,7 +262,7 @@ export default function TermsPage() {
                             <p className="text-stone-600 mb-4">For questions about these Terms:</p>
                             <ul className="text-stone-600 space-y-2">
                                 <li><strong>Email:</strong> <a href="mailto:hello@skysign.io" className="text-stone-900 underline">hello@skysign.io</a></li>
-                                <li><strong>Address:</strong> Adevstudio (Sky Sign), Trinidad and Tobago</li>
+                                <li><strong>Address:</strong> Adevstudio (SkySign), Trinidad and Tobago</li>
                                 <li><strong>Support:</strong> <Link href="/support" className="text-stone-900 underline">Visit our Support Center</Link></li>
                             </ul>
                         </section>
@@ -273,7 +273,7 @@ export default function TermsPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 Skysign. All rights reserved.</p>
+                    <p>© 2026 SkySign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/privacy" className="hover:text-stone-900">Privacy Policy</Link>
                         <Link href="/support" className="hover:text-stone-900">Support</Link>

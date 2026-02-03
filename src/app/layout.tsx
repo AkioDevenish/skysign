@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import ConvexClientProvider from "./ConvexClientProvider";
 import "./globals.css";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -79,8 +80,12 @@ export default function RootLayout({
             `}
           </Script>
         </head>
+
+
         <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <PostHogProvider>
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>

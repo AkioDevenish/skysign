@@ -181,7 +181,7 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <span className="text-xl font-semibold tracking-tight text-stone-900">Sky Sign</span>
+            <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
           </div>
           <div className="hidden md:flex items-center gap-10">
             <a href="#features" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">Features</a>

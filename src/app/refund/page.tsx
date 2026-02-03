@@ -17,7 +17,7 @@ export default function RefundPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
                             </svg>
                         </div>
-                        <span className="text-lg font-semibold text-stone-900">Sky Sign</span>
+                        <span className="text-lg font-semibold text-stone-900">SkySign</span>
                     </Link>
                     <Link href="/create" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-stone-800 transition-all">
                         Get Started
@@ -38,7 +38,7 @@ export default function RefundPage() {
                     <div className="prose prose-stone max-w-none">
                         <div className="bg-white rounded-2xl border border-stone-200 p-8 mb-8">
                             <p className="text-lg text-stone-600 leading-relaxed">
-                                At Sky Sign, we want you to be completely satisfied with your subscription. This Refund Policy outlines our commitment to fair and transparent refund practices for all our subscription plans.
+                                At SkySign, we want you to be completely satisfied with your subscription. This Refund Policy outlines our commitment to fair and transparent refund practices for all our subscription plans.
                             </p>
                         </div>
 
@@ -55,20 +55,15 @@ export default function RefundPage() {
                                     <div>
                                         <h3 className="text-lg font-semibold text-emerald-900 mb-2">14-Day Money-Back Guarantee</h3>
                                         <p className="text-emerald-700">
-                                            If you&apos;re not satisfied with Sky Sign within the first 14 days of your initial subscription, we&apos;ll provide a full refund—no questions asked.
+                                            If you&apos;re not satisfied with SkySign within the first 14 days of your initial subscription, we&apos;ll provide a full refund—no questions asked.
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
                             <p className="text-stone-600 mb-4">
-                                This guarantee applies to:
+                                This guarantee applies to all subscription plans (Pro, Pro Plus, and Team) without exceptions or conditions.
                             </p>
-                            <ul className="list-disc pl-6 text-stone-600 space-y-2">
-                                <li><strong>Pro Plan:</strong> First-time subscribers only</li>
-                                <li><strong>Pro Plus Plan:</strong> First-time subscribers only</li>
-                                <li><strong>Team Plans:</strong> First-time team subscriptions</li>
-                            </ul>
                         </section>
 
                         <section className="mb-10">
@@ -77,8 +72,7 @@ export default function RefundPage() {
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">2.1 Full Refund Eligible</h3>
                             <ul className="list-disc pl-6 text-stone-600 space-y-2 mb-6">
                                 <li>Request made within 14 days of initial subscription purchase</li>
-                                <li>First-time subscription to a paid plan</li>
-                                <li>Account in good standing (no violation of Terms of Service)</li>
+                                <li>Any subscription plan (Monthly or Yearly)</li>
                             </ul>
 
                             <h3 className="text-lg font-semibold text-stone-800 mb-3">2.2 Partial Refund Eligible</h3>
@@ -192,7 +186,7 @@ export default function RefundPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 Skysign. All rights reserved.</p>
+                    <p>© 2026 SkySign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/privacy" className="hover:text-stone-900">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-stone-900">Terms of Service</Link>

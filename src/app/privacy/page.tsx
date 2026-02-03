@@ -17,7 +17,7 @@ export default function PrivacyPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
                             </svg>
                         </div>
-                        <span className="text-lg font-semibold text-stone-900">Sky Sign</span>
+                        <span className="text-lg font-semibold text-stone-900">SkySign</span>
                     </Link>
                     <Link href="/create" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-stone-800 transition-all">
                         Get Started
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
                     <div className="prose prose-stone max-w-none">
                         <div className="bg-white rounded-2xl border border-stone-200 p-8 mb-8">
                             <p className="text-lg text-stone-600 leading-relaxed">
-                                At Sky Sign, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our electronic signature platform.
+                                At SkySign, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our electronic signature platform.
                             </p>
                         </div>
 
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">9. Children&apos;s Privacy</h2>
                             <p className="text-stone-600">
-                                Sky Sign is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such collection, we will delete the information immediately.
+                                SkySign is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such collection, we will delete the information immediately.
                             </p>
                         </section>
 
@@ -178,7 +178,7 @@ export default function PrivacyPage() {
                             <p className="text-stone-600 mb-4">For privacy-related questions or concerns:</p>
                             <ul className="text-stone-600 space-y-2">
                                 <li><strong>Email:</strong> <a href="mailto:hello@skysign.io" className="text-stone-900 underline">hello@skysign.io</a></li>
-                                <li><strong>Address:</strong> Adevstudio (Sky Sign), Trinidad and Tobago</li>
+                                <li><strong>Address:</strong> Adevstudio (SkySign), Trinidad and Tobago</li>
                             </ul>
                         </section>
                     </div>
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
             {/* Footer */}
             <footer className="border-t border-stone-200 bg-white py-8">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 Skysign. All rights reserved.</p>
+                    <p>© 2026 SkySign. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/terms" className="hover:text-stone-900">Terms of Service</Link>
                         <Link href="/refund" className="hover:text-stone-900">Refund Policy</Link>

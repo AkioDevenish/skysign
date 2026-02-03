@@ -13,6 +13,9 @@ import { AuditEntry } from '@/lib/auditTrail'; // Keep type if useful
 // import { getApiKeys, createApiKey, deleteApiKey, ApiKey } from '@/lib/apiKeyUtils';
 // import { getSignatureCount } from '@/lib/signatureStorage';
 import Modal from '@/components/Modal';
+import TeamSection from '@/components/dashboard/TeamSection';
+import ApiKeysSection from '@/components/dashboard/ApiKeysSection';
+import SubscriptionSection from '@/components/dashboard/SubscriptionSection';
 
 type TabId = 'overview' | 'profile' | 'preferences' | 'subscription' | 'api';
 
@@ -276,86 +279,18 @@ export default function DashboardPage() {
                                         </div>
 
                                         {/* Team Section */}
-                                        <div className="bg-white rounded-3xl border border-stone-200 overflow-hidden">
-                                            <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between">
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <h2 className="text-lg font-semibold text-stone-900">Team Members</h2>
-                                                        {!isProPlus && (
-                                                            <span className="px-2 py-0.5 bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-amber-100">Pro Plus</span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                {isProPlus && (
-                                                    <button
-                                                        onClick={() => setIsAddingMember(true)}
-                                                        className="px-4 py-2 bg-stone-900 text-white text-xs font-medium rounded-xl hover:bg-stone-800 transition-all shadow-md cursor-pointer"
-                                                    >
-                                                        + Add Member
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {!isProPlus ? (
-                                                <div className="px-6 py-8 text-center bg-stone-50/50">
-                                                    <p className="text-sm text-stone-500 mb-4 max-w-xs mx-auto">
-                                                        Upgrade to Pro Plus to manage your team.
-                                                    </p>
-                                                    <Link
-                                                        href="/#pricing"
-                                                        className="inline-flex items-center gap-2 px-6 py-2 bg-stone-900 text-white text-sm font-bold rounded-xl"
-                                                    >
-                                                        Upgrade Now
-                                                    </Link>
-                                                </div>
-                                            ) : (
-                                                <div className="divide-y divide-stone-100">
-                                                    {isAddingMember && (
-                                                        <div className="p-6 bg-stone-50/50">
-                                                            <form onSubmit={handleAddMember} className="flex flex-col md:flex-row gap-4 items-end">
-                                                                <div className="flex-1 space-y-1 w-full">
-                                                                    <label className="text-[10px] font-bold text-stone-400 uppercase">Full Name</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        required
-                                                                        className="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm"
-                                                                        value={newMember.name}
-                                                                        onChange={e => setNewMember({ ...newMember, name: e.target.value })}
-                                                                    />
-                                                                </div>
-                                                                <div className="flex-1 space-y-1 w-full">
-                                                                    <label className="text-[10px] font-bold text-stone-400 uppercase">Email</label>
-                                                                    <input
-                                                                        type="email"
-                                                                        required
-                                                                        className="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm"
-                                                                        value={newMember.email}
-                                                                        onChange={e => setNewMember({ ...newMember, email: e.target.value })}
-                                                                    />
-                                                                </div>
-                                                                <button type="submit" className="px-6 py-2 bg-stone-900 text-white text-sm font-bold rounded-xl cursor-pointer">Invite</button>
-                                                            </form>
-                                                        </div>
-                                                    )}
-                                                    {team.map((member: { _id: Id<"teamMembers">, name: string, email: string }) => (
-                                                        <div key={member._id} className="px-6 py-4 flex items-center justify-between hover:bg-stone-50/50">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center font-bold text-stone-500">{member.name.charAt(0)}</div>
-                                                                <div>
-                                                                    <p className="text-sm font-semibold text-stone-900">{member.name}</p>
-                                                                    <p className="text-xs text-stone-400">{member.email}</p>
-                                                                </div>
-                                                            </div>
-                                                            <button onClick={() => handleRemoveMember(member._id)} className="text-stone-400 hover:text-red-500 cursor-pointer">
-                                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
+                                        <TeamSection
+                                            team={team}
+                                            isProPlus={isProPlus}
+                                            isAddingMember={isAddingMember}
+                                            setIsAddingMember={setIsAddingMember}
+                                            newMember={newMember}
+                                            setNewMember={setNewMember}
+                                            onAddMember={handleAddMember}
+                                            onRemoveMember={handleRemoveMember}
+                                        />
                                     </div>
-                                )}
+                                )}{/* OVERVIEW TAB END - NOTE: The original code closed the overview tab div here */}
 
                                 {/* PROFILE TAB */}
                                 {activeTab === 'profile' && (
@@ -452,73 +387,14 @@ export default function DashboardPage() {
                                 )}
 
                                 {/* SUBSCRIPTION TAB */}
+                                {/* SUBSCRIPTION TAB */}
                                 {activeTab === 'subscription' && (
-                                    <div className="bg-white rounded-3xl border border-stone-200 p-8">
-                                        <div className="flex items-center justify-between mb-8">
-                                            <h2 className="text-xl font-semibold text-stone-900">Subscription</h2>
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${isPro ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-600'}`}>
-                                                {plan.toUpperCase()} PLAN
-                                            </span>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            {/* Usage Stats */}
-                                            <div className="space-y-6">
-                                                <div className="p-5 bg-stone-50 rounded-2xl border border-stone-100">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <p className="font-medium text-stone-900">Signatures Created</p>
-                                                        <p className="text-sm text-stone-500 font-mono">{sigCount} / {isPro ? '∞' : '5'}</p>
-                                                    </div>
-                                                    <div className="h-2 bg-stone-200 rounded-full overflow-hidden mb-2">
-                                                        <div className="h-full bg-stone-900" style={{ width: `${Math.min(100, (sigCount / (isPro ? sigCount + 10 : 5)) * 100)}%` }} />
-                                                    </div>
-                                                    <p className="text-xs text-stone-400">
-                                                        {isPro ? 'You have unlimited signatures.' : `${5 - sigCount} signatures remaining on Free plan.`}
-                                                    </p>
-                                                </div>
-
-                                                <div className="p-5 bg-stone-50 rounded-2xl border border-stone-100 opacity-70">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <p className="font-medium text-stone-900">Team Members</p>
-                                                        <p className="text-sm text-stone-500 font-mono">0 / {isProPlus ? '10' : '0'}</p>
-                                                    </div>
-                                                    <div className="h-2 bg-stone-200 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-stone-900" style={{ width: '0%' }} />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Plan Details */}
-                                            <div className="p-6 rounded-2xl border border-stone-200 bg-white">
-                                                <h3 className="font-semibold text-stone-900 mb-4">Current Plan Details</h3>
-                                                <ul className="space-y-3 mb-6">
-                                                    <li className="flex items-center gap-3 text-sm text-stone-600">
-                                                        <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                                        {isPro ? 'Unlimited signatures' : '5 signatures per month'}
-                                                    </li>
-                                                    <li className="flex items-center gap-3 text-sm text-stone-600">
-                                                        <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                                        {isPro ? 'Advanced Export (SVG, PDF)' : 'Standard PNG Export'}
-                                                    </li>
-                                                    <li className="flex items-center gap-3 text-sm text-stone-600">
-                                                        <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                                        {isPro ? 'Cloud Backup & Sync' : 'Local Browser Storage'}
-                                                    </li>
-                                                </ul>
-
-                                                {!isPro && (
-                                                    <Link href="/#pricing" className="block w-full py-3 bg-stone-900 text-white text-center rounded-xl font-bold hover:bg-stone-800 transition-colors">
-                                                        Upgrade to Pro
-                                                    </Link>
-                                                )}
-                                                {isPro && (
-                                                    <button disabled className="block w-full py-3 bg-stone-100 text-stone-400 text-center rounded-xl font-bold cursor-not-allowed">
-                                                        Plan Active
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <SubscriptionSection
+                                        plan={plan}
+                                        sigCount={sigCount}
+                                        isPro={isPro}
+                                        isProPlus={isProPlus}
+                                    />
                                 )}
 
                                 {/* EXPORT TAB */}
@@ -526,202 +402,23 @@ export default function DashboardPage() {
 
                                 {/* API TAB */}
                                 {activeTab === 'api' && (
-                                    <div className="space-y-8">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <h2 className="text-xl font-semibold text-stone-900">API Gateway</h2>
-                                                <p className="text-sm text-stone-500">Manage API keys and monitor usage</p>
-                                            </div>
-                                            <div className="flex gap-3">
-                                                <Link href="/docs" className="px-4 py-2 border border-stone-200 rounded-xl text-sm font-medium hover:bg-stone-50 transition-colors text-stone-600 cursor-pointer flex items-center justify-center">
-                                                    Read Documentation
-                                                </Link>
-                                                {isProPlus && (
-                                                    <button
-                                                        onClick={openCreateKeyModal}
-                                                        className="px-4 py-2 bg-stone-900 text-white rounded-xl text-sm font-medium hover:bg-stone-800 transition-colors cursor-pointer shadow-md"
-                                                    >
-                                                        + Create New Key
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {!isProPlus ? (
-                                            <div className="bg-stone-50 rounded-3xl p-12 text-center border border-stone-200 border-dashed">
-                                                <div className="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">⚡</div>
-                                                <h3 className="text-lg font-bold text-stone-900 mb-2">Connect your workflow</h3>
-                                                <p className="text-stone-500 max-w-md mx-auto mb-8">
-                                                    Upgrade to Pro Plus to access our REST API and integrate Sky Sign signatures directly into your own applications.
-                                                </p>
-                                                <Link href="/#pricing" className="inline-block px-8 py-3 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800">
-                                                    Upgrade to Pro Plus
-                                                </Link>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-8">
-                                                {/* (Creation Form Moved to Modal) */}
-
-                                                {/* Keys Table */}
-                                                <div>
-                                                    <h3 className="text-sm font-bold text-stone-900 mb-4 px-1">Active Keys</h3>
-                                                    <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
-                                                        <table className="w-full text-left">
-                                                            <thead className="bg-stone-50 border-b border-stone-200">
-                                                                <tr>
-                                                                    <th className="px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Name</th>
-                                                                    <th className="px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Key Hint</th>
-                                                                    <th className="px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Created</th>
-                                                                    <th className="px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider text-right">Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody className="divide-y divide-stone-100">
-                                                                {apiKeys.map((k: { _id: Id<"apiKeys">, name: string, key?: string, createdAt: string }) => (
-                                                                    <tr key={k._id} className="hover:bg-stone-50/50 transition-colors">
-                                                                        <td className="px-6 py-4">
-                                                                            <div className="flex items-center gap-3">
-                                                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                                                <span className="text-sm font-medium text-stone-900">{k.name}</span>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td className="px-6 py-4">
-                                                                            <code className="text-xs font-mono text-stone-500 bg-stone-100 px-2 py-1 rounded">sk_...{k.key?.slice(-4) || '????'}</code>
-                                                                        </td>
-                                                                        <td className="px-6 py-4 text-sm text-stone-500">
-                                                                            {new Date(k.createdAt).toLocaleDateString()}
-                                                                        </td>
-                                                                        <td className="px-6 py-4 text-right">
-                                                                            <button
-                                                                                onClick={() => handleDeleteKey(k._id)}
-                                                                                className="text-stone-400 hover:text-red-600 transition-colors text-sm font-medium px-3 py-1 hover:bg-red-50 rounded-lg cursor-pointer"
-                                                                            >
-                                                                                Revoke
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
-                                                                {apiKeys.length === 0 && (
-                                                                    <tr>
-                                                                        <td colSpan={4} className="px-6 py-12 text-center text-stone-400 text-sm">
-                                                                            No active API keys found.
-                                                                        </td>
-                                                                    </tr>
-                                                                )}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                    <ApiKeysSection
+                                        apiKeys={apiKeys}
+                                        isProPlus={isProPlus}
+                                        isCreatingKey={isCreatingKey}
+                                        setIsCreatingKey={setIsCreatingKey}
+                                        showKey={showKey}
+                                        newKeyName={newKeyName}
+                                        setNewKeyName={setNewKeyName}
+                                        onCreateKey={handleCreateKey}
+                                        onDeleteKey={handleDeleteKey}
+                                        openCreateKeyModal={openCreateKeyModal}
+                                    />
                                 )}
                             </motion.div>
                         </AnimatePresence>
                     </div>
                 </div>
-
-                {/* Create Key Modal */}
-                <AnimatePresence>
-                    {isCreatingKey && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/20 backdrop-blur-sm p-4"
-                        >
-                            <motion.div
-                                initial={{ scale: 0.95, opacity: 0, y: 10 }}
-                                animate={{ scale: 1, opacity: 1, y: 0 }}
-                                exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                                className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <h3 className="text-lg font-bold text-stone-900">
-                                            {showKey ? 'Secret Key Generated' : 'Create New API Key'}
-                                        </h3>
-                                        {!showKey && (
-                                            <button onClick={() => setIsCreatingKey(false)} className="text-stone-400 hover:text-stone-600 cursor-pointer">
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {showKey ? (
-                                        <div className="space-y-6">
-                                            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
-                                                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                                <p className="text-emerald-800 font-medium">Key created successfully!</p>
-                                            </div>
-
-                                            <div>
-                                                <p className="text-xs text-stone-500 mb-2">Copy this key now. You won&apos;t be able to see it again.</p>
-                                                <div className="flex items-center gap-3 bg-stone-50 p-3 rounded-xl border border-stone-200">
-                                                    <code className="text-sm font-mono text-stone-800 flex-1 break-all">{showKey}</code>
-                                                    <button
-                                                        onClick={() => {
-                                                            navigator.clipboard.writeText(showKey);
-                                                            // Optional: Show copied feedback
-                                                        }}
-                                                        className="p-2 hover:bg-white rounded-lg text-stone-400 hover:text-stone-900 transition-colors cursor-pointer shadow-sm"
-                                                        title="Copy to clipboard"
-                                                    >
-                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <button
-                                                onClick={() => setIsCreatingKey(false)}
-                                                className="w-full py-3 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors cursor-pointer"
-                                            >
-                                                Done
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <form onSubmit={handleCreateKey}>
-                                            <div className="space-y-4 mb-6">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-stone-700 mb-1">Key Name</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full px-4 py-3 rounded-xl border border-stone-200 text-sm focus:outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-colors"
-                                                        placeholder="e.g. Production Server, CI/CD Pipeline"
-                                                        value={newKeyName}
-                                                        onChange={e => setNewKeyName(e.target.value)}
-                                                        required
-                                                        autoFocus
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsCreatingKey(false)}
-                                                    className="flex-1 py-3 border border-stone-200 text-stone-600 font-bold rounded-xl hover:bg-stone-50 transition-colors cursor-pointer"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="flex-1 py-3 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800 transition-colors cursor-pointer"
-                                                >
-                                                    Create Key
-                                                </button>
-                                            </div>
-                                        </form>
-                                    )}
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
 
 
 

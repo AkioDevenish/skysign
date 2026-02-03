@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, usePaginatedQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { exportSignature, SavedSignature } from '@/lib/signatureStorage';
 import { Id } from "../../convex/_generated/dataModel";
@@ -16,7 +16,7 @@ interface SignatureGalleryProps {
 
 export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
     // Convex hooks
-    const signatures = useQuery(api.signatures.get);
+    const { results: signatures, status, loadMore } = usePaginatedQuery(api.signatures.get, {}, { initialNumItems: 10 });
     const deleteSig = useMutation(api.signatures.remove);
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -177,6 +177,18 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
                     ))}
                 </AnimatePresence>
             </div>
+
+            {/* Load More */}
+            {status === "CanLoadMore" && (
+                <div className="mt-4 text-center">
+                    <button
+                        onClick={() => loadMore(10)}
+                        className="px-4 py-2 text-sm text-stone-500 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
+                    >
+                        Load More
+                    </button>
+                </div>
+            )}
 
             {/* Remaining slots indicator */}
             {remainingSlots > 0 && remainingSlots < 3 && (

@@ -3,18 +3,26 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logAuditEntry } from '@/lib/auditTrail';
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
 interface SharingDialogProps {
     pdfBlob: Blob | null;
     documentName: string;
     onClose: () => void;
+    signatureId?: string | null;
 }
 
-export default function SharingDialog({ pdfBlob, documentName, onClose }: SharingDialogProps) {
+export default function SharingDialog({ pdfBlob, documentName, onClose, signatureId }: SharingDialogProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
     const [shareUrl, setShareUrl] = useState('');
+
+    const auditUrl = useQuery(api.signatures.getAuditUrl, 
+        signatureId ? { signatureId: signatureId as Id<"signatures"> } : "skip"
+    );
 
     const handleEmailShare = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -188,7 +196,20 @@ export default function SharingDialog({ pdfBlob, documentName, onClose }: Sharin
                     </div>
                 </div>
 
-                <div className="p-4 bg-stone-50 border-t border-stone-100 px-6">
+                <div className="p-4 bg-stone-50 border-t border-stone-100 px-6 space-y-3">
+                    {auditUrl && (
+                        <a 
+                            href={auditUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-2 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium hover:bg-emerald-100 transition-colors"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Download Legal Audit Certificate
+                        </a>
+                    )}
                     <p className="text-xs text-stone-400 text-center">
                         Documents are encrypted and links expire after 7 days.
                     </p>

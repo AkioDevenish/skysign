@@ -5,7 +5,7 @@ import Footer from '../../components/Footer';
 import ComplianceGrid from '../../components/ComplianceGrid';
 
 export const metadata: Metadata = {
-    title: 'Global E-Signature Compliance | Sky Sign',
+    title: 'Global E-Signature Compliance | SkySign',
     description: 'Explore electronic signature laws and compliance standards for over 180 countries worldwide.',
 };
 
@@ -26,7 +26,7 @@ export default function CompliancePage() {
                         Global Compliance Guide
                     </h1>
                     <p className="text-lg text-stone-500 max-w-2xl mx-auto leading-relaxed">
-                        Sky Sign follows international standards to ensure your signatures are legally binding.
+                        SkySign follows international standards to ensure your signatures are legally binding.
                         Browse our guide to understand e-signature laws in your region.
                     </p>
                 </div>

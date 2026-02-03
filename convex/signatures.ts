@@ -1,45 +1,90 @@
 
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { PLANS, PLAN_LIMITS } from "./config";
+import { z } from "zod";
+import { checkRateLimit } from "./rateLimit";
 
-// Get all signatures for the current user
+// Generate upload URL for file storage
+export const generateUploadUrl = mutation(async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+});
+
+// Get all signatures for the current user (Paginated)
 export const get = query({
-    args: {},
-    handler: async (ctx) => {
+    args: {
+        paginationOpts: v.object({
+            numItems: v.number(),
+            cursor: v.union(v.string(), v.null()),
+        }),
+    },
+    handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
-        if (!identity) return [];
+        if (!identity) throw new Error("Not authenticated");
 
-        return await ctx.db
+        const signatures = await ctx.db
             .query("signatures")
             .withIndex("by_user", (q) => q.eq("userId", identity.subject))
             .order("desc")
-            .collect();
+            .paginate(args.paginationOpts);
+
+        // Map over results to add storage URL if needed
+        return {
+            ...signatures,
+            page: await Promise.all(signatures.page.map(async (sig) => {
+                let dataUrl = sig.dataUrl;
+                if (sig.storageId) {
+                    const url = await ctx.storage.getUrl(sig.storageId);
+                    if (url) dataUrl = url;
+                }
+                return { ...sig, dataUrl: dataUrl || "" }; // Fallback to empty string if no URL
+            }))
+        };
     },
+});
+
+// Validation Schemas
+const createSignatureSchema = z.object({
+    name: z.string().min(1).max(100),
+    dataUrl: z.string().startsWith("data:image/", "Must be a valid image data URL"),
+    style: z.optional(z.string().max(50)),
+    userAgent: z.optional(z.string().max(200)),
 });
 
 // Create a new signature
 export const create = mutation({
     args: {
         name: v.string(),
-        dataUrl: v.string(),
+        dataUrl: v.optional(v.string()), // Optional now
+        storageId: v.optional(v.id("_storage")), // File storage ID
         style: v.optional(v.string()),
         plan: v.string(), // 'free', 'pro', etc. to enforce limits
+        userAgent: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Not authenticated");
 
+        // Rate Limit Check (20 signatures / min)
+        await checkRateLimit(ctx, "signatures", identity.subject, 20);
+
+        // Zod Validation (simplified for now, dataUrl or storageId required)
+        if (!args.dataUrl && !args.storageId) {
+            throw new Error("Either dataUrl or storageId is required");
+        }
+
         const userId = identity.subject;
 
         // Check limits for free plan
-        if (args.plan === "free") {
+        if (args.plan === PLANS.FREE) {
             const count = await ctx.db
                 .query("signatures")
                 .withIndex("by_user", (q) => q.eq("userId", userId))
                 .collect();
 
-            if (count.length >= 5) {
-                throw new Error("Free plan limit reached (5 signatures). Upgrade to Pro for unlimited.");
+            const limit = PLAN_LIMITS.free.signatures;
+            if (count.length >= limit) {
+                throw new Error(`Free plan limit reached (${limit} signatures). Upgrade to Pro for unlimited.`);
             }
         }
 
@@ -50,6 +95,7 @@ export const create = mutation({
             userId,
             name: args.name,
             dataUrl: args.dataUrl,
+            storageId: args.storageId,
             style: args.style,
             createdAt: now,
             updatedAt: now,
@@ -62,7 +108,7 @@ export const create = mutation({
             signatureId: signatureId,
             signatureName: args.name,
             timestamp: now,
-            userAgent: "Server/Convex", // Can't easily get client UA here safely without passing it
+            userAgent: args.userAgent || "Server/Convex",
         });
 
         return signatureId;
@@ -96,7 +142,10 @@ export const update = mutation({
 
 // Delete a signature
 export const remove = mutation({
-    args: { id: v.id("signatures") },
+    args: { 
+        id: v.id("signatures"),
+        userAgent: v.optional(v.string()),
+    },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Not authenticated");
@@ -115,7 +164,7 @@ export const remove = mutation({
             signatureId: args.id,
             signatureName: existing.name,
             timestamp: new Date().toISOString(),
-            userAgent: "Server/Convex",
+            userAgent: args.userAgent || "Server/Convex",
         });
     },
 });
@@ -134,4 +183,16 @@ export const getCount = query({
 
         return results.length;
     }
+});
+// Internal mutation to update audit trail storage ID
+export const updateAuditTrail = mutation({
+    args: {
+        signatureId: v.id("signatures"),
+        auditStorageId: v.id("_storage"),
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.patch(args.signatureId, {
+            auditStorageId: args.auditStorageId,
+        });
+    },
 });

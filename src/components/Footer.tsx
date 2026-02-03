@@ -21,7 +21,7 @@ export default function Footer() {
                                 />
                             </svg>
                         </div>
-                        <span className="text-sm font-medium text-stone-700">Sky Sign</span>
+                        <span className="text-sm font-medium text-stone-700">SkySign</span>
                     </div>
                     <div className="flex items-center gap-8 text-sm text-stone-500">
                         <Link href="/privacy" className="hover:text-stone-900 transition-colors">Privacy</Link>
@@ -31,7 +31,7 @@ export default function Footer() {
                         <Link href="/compliance" className="hover:text-stone-900 transition-colors">Global Compliance</Link>
                     </div>
                     <p className="text-sm text-stone-400">
-                        © 2026 Skysign. All rights reserved.
+                        © 2026 SkySign. All rights reserved.
                     </p>
                 </div>
             </div>

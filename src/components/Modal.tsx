@@ -53,6 +53,10 @@ export default function Modal({ isOpen, onClose, title, message, type = 'error' 
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
+                aria-describedby="modal-message"
                 className="relative w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl overflow-hidden"
             >
                 {/* Decorative blob */}
@@ -77,13 +81,14 @@ export default function Modal({ isOpen, onClose, title, message, type = 'error' 
                         )}
                     </div>
 
-                    <h3 className={`text-2xl font-bold ${style.text} mb-2`}>{title}</h3>
-                    <p className="text-stone-500 mb-8 leading-relaxed">
+                    <h3 id="modal-title" className={`text-2xl font-bold ${style.text} mb-2`}>{title}</h3>
+                    <p id="modal-message" className="text-stone-500 mb-8 leading-relaxed">
                         {message}
                     </p>
 
                     <button
                         onClick={onClose}
+                        autoFocus
                         className="w-full py-3.5 bg-stone-900 text-white font-bold rounded-xl transition-all shadow-lg shadow-stone-900/10 hover:bg-stone-800 hover:shadow-xl hover:shadow-stone-900/20 active:scale-[0.98] cursor-pointer"
                     >
                         Okay

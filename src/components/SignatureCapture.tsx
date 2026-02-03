@@ -69,12 +69,6 @@ export default function SignatureCapture({
         onPositionUpdate: (x, y, isDrawing) => {
             // Drawing logic
             addPoint(x, y, isDrawing);
-            // We can't access `gesture` state reliably in the callback loop if it's running high frequency.
-
-            // Actually, we can use a ref for `gesture` in THIS component if we sync it?
-            // Wait, `useHandTracking` returns `fingerPosition` and `gesture`.
-            // We can use a `useEffect` on `fingerPosition` change?
-            // If `gesture === 'grabbing'`, calculate delta.
         },
         onGesture: (g) => {
             if (g === 'save' && hasContent) {

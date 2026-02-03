@@ -6,7 +6,9 @@ export default defineSchema({
     signatures: defineTable({
         userId: v.string(), // Clerk user ID
         name: v.string(),
-        dataUrl: v.string(),
+        dataUrl: v.optional(v.string()), // Deprecated but kept for backward compatibility
+        storageId: v.optional(v.id("_storage")), // New field for file storage
+        auditStorageId: v.optional(v.id("_storage")), // For the generated Audit Trail PDF
         style: v.optional(v.string()),
         thumbnail: v.optional(v.string()),
         createdAt: v.string(), // ISO string
@@ -36,7 +38,8 @@ export default defineSchema({
     apiKeys: defineTable({
         userId: v.string(),
         name: v.string(),
-        key: v.string(), // Hashed or raw? For now likely raw as per existing simple impl
+        hashedKey: v.string(), // SHA-256 hash
+        last4: v.string(), // Last 4 chars for identification
         createdAt: v.string(),
         lastUsed: v.optional(v.string()),
     }).index("by_user", ["userId"]),
