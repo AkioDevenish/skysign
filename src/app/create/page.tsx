@@ -483,14 +483,14 @@ export default function CreatePage() {
                     style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
                 >
                     <div className="px-4 py-3 md:px-8 md:py-5 flex items-center justify-between w-full">
-                        <div>
-                            <h1 className="text-lg md:text-xl font-semibold text-stone-900">
+                        <div className="ml-12 md:ml-0 flex-1 min-w-0">
+                            <h1 className="text-base md:text-xl font-semibold text-stone-900 truncate">
                                 {documentFile ? 'Sign Your Document' : 'Create Your Signature'}
                             </h1>
-                            <p className="text-xs md:text-sm text-stone-500 hidden sm:block">
+                            <p className="text-xs md:text-sm text-stone-500 hidden md:block">
                                 {documentFile
                                     ? (placementMode ? 'Drag signature to desired position' : 'Draw your signature over the document')
-                                    : 'Point your index finger at the camera and draw in the air'}
+                                    : 'Choose how you would like to create your signature'}
                             </p>
                         </div>
                         {placementMode && (
