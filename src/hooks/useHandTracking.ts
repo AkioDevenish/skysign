@@ -249,9 +249,9 @@ export function useHandTracking(
 
                 hands.setOptions({
                     maxNumHands: 1,
-                    modelComplexity: 1,
-                    minDetectionConfidence: 0.7, // Increased from 0.6
-                    minTrackingConfidence: 0.7, // Increased from 0.5
+                    modelComplexity: 0, // Use lite model for better mobile performance
+                    minDetectionConfidence: 0.6,
+                    minTrackingConfidence: 0.5,
                 });
 
                 hands.onResults((results: HandResults) => {
@@ -341,6 +341,8 @@ export function useHandTracking(
 
                 setState(prev => ({ ...prev, loadingStatus: 'Requesting camera access...' }));
 
+                // Use lower resolution for mobile to reduce CPU/GPU load and prevent overheating
+                const isMobile = window.innerWidth < 768;
                 const camera = new window.Camera(videoRef.current, {
                     onFrame: async () => {
                         // Check isActive inside the frame loop to stop sending if unmounted
@@ -349,8 +351,8 @@ export function useHandTracking(
                             await handsRef.current.send({ image: videoRef.current });
                         }
                     },
-                    width: 1280,
-                    height: 720,
+                    width: isMobile ? 480 : 640,
+                    height: isMobile ? 360 : 480,
                 });
 
                 await camera.start();

@@ -38,7 +38,7 @@ export default function SignatureCreator({
     strokeColor = '#1c1917',
     strokeWidth = 3,
 }: SignatureCreatorProps) {
-    const [mode, setMode] = useState<InputMode>('air');
+    const [mode, setMode] = useState<InputMode>('draw'); // Default to draw mode to save battery/prevent overheating
     const [typedName, setTypedName] = useState('');
     const [selectedFont, setSelectedFont] = useState(signatureFonts[0]);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
