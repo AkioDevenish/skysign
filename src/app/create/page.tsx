@@ -304,9 +304,9 @@ export default function CreatePage() {
             {/* Mobile Menu Toggle */}
             <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="fixed top-4 left-4 z-50 md:hidden p-3 bg-white rounded-xl shadow-lg border border-stone-200 cursor-pointer"
+                className="fixed top-3 left-3 z-50 md:hidden p-2.5 bg-white rounded-xl shadow-lg border border-stone-200 cursor-pointer"
             >
-                <svg className="w-6 h-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {mobileMenuOpen ? (
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     ) : (
