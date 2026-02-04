@@ -19,6 +19,7 @@ import FieldPlacer, { Field } from '@/components/FieldPlacer';
 import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
 import LimitModal from '@/components/LimitModal';
+import Logo from '@/components/Logo';
 
 // Dynamic import for DocumentLayer (SSR false)
 const DocumentLayer = dynamic(() => import('@/components/DocumentLayer'), {
@@ -304,9 +305,9 @@ export default function CreatePage() {
             {/* Mobile Menu Toggle */}
             <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="fixed top-3 left-3 z-50 md:hidden p-2.5 bg-white rounded-xl shadow-lg border border-stone-200 cursor-pointer"
+                className="fixed top-4 left-4 z-50 md:hidden p-3 bg-white rounded-xl shadow-lg border border-stone-200 cursor-pointer"
             >
-                <svg className="w-5 h-5 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {mobileMenuOpen ? (
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     ) : (
@@ -323,36 +324,22 @@ export default function CreatePage() {
                 />
             )}
 
-            {/* Sidebar */}
+            {/* Sidebar - always expanded on mobile when open */}
             <aside
-                className={`fixed top-0 left-0 h-full bg-white border-r border-stone-200 z-40 transition-all duration-300 
-                    ${sidebarCollapsed ? 'w-16' : 'w-64'}
-                    ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                className={`fixed top-0 left-0 h-full bg-white border-r border-stone-200 z-40
+                    ${sidebarCollapsed && !mobileMenuOpen ? 'w-16' : 'w-64'}
+                    ${mobileMenuOpen ? 'translate-x-0 transition-transform duration-300' : '-translate-x-full md:translate-x-0'}
                 `}
             >
                 {/* Sidebar Header */}
-                <div className={`h-20 flex items-center border-b border-stone-200 ${sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
+                <div className={`h-20 flex items-center border-b border-stone-200 ${sidebarCollapsed && !mobileMenuOpen ? 'justify-center px-2' : 'justify-between px-4'}`}>
                     <Link href="/" className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-stone-900/20">
-                            <svg
-                                className="w-5 h-5 text-stone-50"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
-                                />
-                            </svg>
-                        </div>
-                        {!sidebarCollapsed && (
-                            <span className="text-xl font-bold tracking-tight text-stone-900">Sky Sign</span>
+                        <Logo size="md" />
+                        {(!sidebarCollapsed || mobileMenuOpen) && (
+                            <span className="text-xl font-bold tracking-tight text-stone-900">SkySign</span>
                         )}
                     </Link>
-                    {!sidebarCollapsed && (
+                    {(!sidebarCollapsed || mobileMenuOpen) && !isMobile && (
                         <button
                             onClick={() => setSidebarCollapsed(true)}
                             className="p-2 rounded-lg hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 cursor-pointer"
@@ -377,10 +364,10 @@ export default function CreatePage() {
                                 className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 cursor-pointer text-sm font-medium ${isActive
                                     ? 'bg-stone-900 text-white shadow-lg shadow-stone-900/10 scale-[1.02]'
                                     : 'text-stone-500 hover:bg-stone-100/80 hover:text-stone-900'
-                                    } ${sidebarCollapsed ? 'justify-center' : ''}`}
+                                    } ${sidebarCollapsed && !mobileMenuOpen ? 'justify-center' : ''}`}
                             >
                                 <span className={`${isLocked ? 'opacity-50' : ''} ${isActive ? 'text-stone-200' : 'text-stone-400 group-hover:text-stone-600'}`}>{item.icon}</span>
-                                {!sidebarCollapsed && (
+                                {(!sidebarCollapsed || mobileMenuOpen) && (
                                     <>
                                         <span className={`flex-1 text-left ${isLocked ? 'opacity-50' : ''}`}>
                                             {item.label}
@@ -403,7 +390,7 @@ export default function CreatePage() {
                 </nav>
 
                 {/* Expand button when collapsed */}
-                {sidebarCollapsed && (
+                {sidebarCollapsed && !mobileMenuOpen && (
                     <div className="p-3">
                         <button
                             onClick={() => setSidebarCollapsed(false)}
@@ -416,38 +403,54 @@ export default function CreatePage() {
                     </div>
                 )}
 
-                {!sidebarCollapsed && (
-                    <div className="px-3 py-4">
-                        <SignerManager
-                            signers={signers}
-                            onSignersChange={setSigners}
-                            currentUserId={user?.id}
-                        />
+                {(!sidebarCollapsed || mobileMenuOpen) && (
+                    <div className="flex-1 overflow-hidden flex flex-col">
+                        {/* Scrollable Signer Manager area */}
+                        <div className="px-3 py-4 flex-1 overflow-y-auto">
+                            <SignerManager
+                                signers={signers}
+                                onSignersChange={setSigners}
+                                currentUserId={user?.id}
+                            />
+                        </div>
+                        
+                        {/* Import PDF Button - fixed at bottom of this section */}
+                        <div className="px-3 py-3 border-t border-stone-100 bg-white mt-auto">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 hover:border-stone-300 transition-all cursor-pointer shadow-sm"
+                            >
+                                <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-3.5 h-3.5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                    </svg>
+                                </div>
+                                <span className="text-sm">
+                                    {documentFile ? 'Change PDF' : 'Import a PDF'}
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 )}
 
-                {/* Import PDF Button */}
-                <div className="absolute bottom-24 left-0 right-0 px-4">
-                    <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 hover:border-stone-300 transition-all cursor-pointer shadow-sm ${sidebarCollapsed ? 'justify-center !px-3' : ''
-                            }`}
-                    >
-                        <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
-                            <svg className="w-3.5 h-3.5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                        </div>
-                        {!sidebarCollapsed && (
-                            <span className="text-sm">
-                                {documentFile ? 'Change PDF' : 'Import a PDF'}
-                            </span>
-                        )}
-                    </button>
-                </div>
+                {/* Import PDF Button - only show when sidebar is collapsed */}
+                {(sidebarCollapsed && !mobileMenuOpen) && (
+                    <div className="absolute bottom-[4.5rem] left-0 right-0 px-3">
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full flex items-center justify-center px-3 py-3.5 rounded-2xl bg-white border border-stone-200 text-stone-700 font-medium hover:bg-stone-50 hover:border-stone-300 transition-all cursor-pointer shadow-sm"
+                        >
+                            <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-3.5 h-3.5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                )}
 
                 {/* User Section */}
-                <div className={`absolute bottom-0 left-0 right-0 p-3 border-t border-stone-200 bg-white flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
+                <div className={`absolute bottom-0 left-0 right-0 p-3 border-t border-stone-200 bg-white flex items-center ${sidebarCollapsed && !mobileMenuOpen ? 'justify-center' : 'gap-3'}`}>
                     <UserButton
                         userProfileMode="navigation"
                         userProfileUrl="/dashboard"
@@ -460,7 +463,7 @@ export default function CreatePage() {
                             },
                         }}
                     />
-                    {!sidebarCollapsed && (
+                    {(!sidebarCollapsed || mobileMenuOpen) && (
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-stone-900 truncate">
                                 {user?.firstName || 'User'}
@@ -479,35 +482,36 @@ export default function CreatePage() {
                 style={{ marginLeft: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
             >
                 {/* Top Navigation */}
-                <nav className="fixed top-0 right-0 bg-stone-50/95 backdrop-blur-md z-40 border-b border-stone-200/60 transition-all duration-300"
+                <nav className="fixed top-0 right-0 bg-stone-50/95 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
                     style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
                 >
-                    <div className="px-4 py-3 md:px-8 md:py-5 flex items-center justify-between w-full">
-                        <div className="ml-12 md:ml-0 flex-1 min-w-0">
-                            <h1 className="text-base md:text-xl font-semibold text-stone-900 truncate">
+                    <div className="pl-16 pr-4 py-4 md:pl-8 md:pr-8 md:py-5 flex items-center justify-between w-full min-h-[60px]">
+                        <div>
+                            <h1 className="text-lg md:text-xl font-semibold text-stone-900">
                                 {documentFile ? 'Sign Your Document' : 'Create Your Signature'}
                             </h1>
-                            <p className="text-xs md:text-sm text-stone-500 hidden md:block">
+                            <p className="text-xs md:text-sm text-stone-500 hidden sm:block">
                                 {documentFile
                                     ? (placementMode ? 'Drag signature to desired position' : 'Draw your signature over the document')
-                                    : 'Choose how you would like to create your signature'}
+                                    : 'Choose how you\'d like to create your signature'}
                             </p>
                         </div>
                         {placementMode && (
                             <button
                                 onClick={handleFinalize}
                                 disabled={isSaving}
-                                className="px-6 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2 cursor-pointer"
+                                className="px-4 py-2 md:px-6 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2 cursor-pointer text-sm md:text-base"
                             >
                                 {isSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
-                                Finalize & Download
+                                <span className="hidden sm:inline">Finalize & Download</span>
+                                <span className="sm:hidden">Download</span>
                             </button>
                         )}
                     </div>
                 </nav>
 
                 {/* Main content area */}
-                <div className={`pt-16 pb-6 px-3 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-80px)] md:min-h-screen flex flex-col justify-center items-center' : ''}`}>
+                <div className={`pt-20 pb-6 px-3 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-80px)] md:min-h-screen flex flex-col justify-center items-center' : ''}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div

@@ -250,32 +250,32 @@ export default function SignatureCapture({
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-stone-50 border border-stone-200 rounded-3xl pt-8 px-8 pb-20 max-w-3xl w-full text-center shadow-xl shadow-stone-900/5 my-auto"
+                            className="bg-stone-50 border border-stone-200 rounded-3xl p-6 md:pt-8 md:px-8 md:pb-8 max-w-3xl w-full text-center shadow-xl shadow-stone-900/5 my-auto max-h-[90vh] overflow-y-auto"
                         >
-                            <div className="flex items-center justify-center mx-auto mb-6">
-                                <span className="text-5xl">✋</span>
+                            <div className="flex items-center justify-center mx-auto mb-4 md:mb-6">
+                                <span className="text-4xl md:text-5xl">✋</span>
                             </div>
 
-                            <h3 className="text-2xl font-bold text-stone-900 mb-2">
+                            <h3 className="text-xl md:text-2xl font-bold text-stone-900 mb-2">
                                 Ready to Sign?
                             </h3>
-                            <p className="text-stone-500 mb-10 max-w-sm mx-auto">
+                            <p className="text-stone-500 mb-6 md:mb-8 max-w-sm mx-auto text-sm md:text-base">
                                 Raise your hand in front of the camera to begin. Ensure your hand is clearly visible.
                             </p>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                                 {[
                                     { icon: '☝️', label: 'Draw', desc: 'Point finger' },
                                     { icon: '✊', label: 'Stop', desc: 'Make a fist' },
                                     { icon: '👍', label: 'Save', desc: 'Thumbs up' },
                                     { icon: '🖐️', label: 'Clear', desc: 'Open palm' }
                                 ].map((step, i) => (
-                                    <div key={i} className="flex flex-col items-center">
-                                        <div className="flex items-center justify-center text-3xl mb-3">
+                                    <div key={i} className="flex flex-col items-center p-2">
+                                        <div className="flex items-center justify-center text-2xl md:text-3xl mb-2 md:mb-3">
                                             {step.icon}
                                         </div>
-                                        <p className="font-bold text-stone-900 text-sm mb-0.5">{step.label}</p>
-                                        <p className="text-xs text-stone-400">{step.desc}</p>
+                                        <p className="font-bold text-stone-900 text-xs md:text-sm mb-0.5">{step.label}</p>
+                                        <p className="text-[10px] md:text-xs text-stone-400">{step.desc}</p>
                                     </div>
                                 ))}
                             </div>

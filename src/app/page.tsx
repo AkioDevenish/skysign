@@ -14,6 +14,7 @@ import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
+import Logo from "@/components/Logo";
 import { getAuditStats } from "../lib/auditTrail";
 
 // Premium "Sky Sign" Hand Animation
@@ -25,12 +26,25 @@ export default function Home() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [signatureCount, setSignatureCount] = useState(0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [liveUsers, setLiveUsers] = useState<{ id: string; imageUrl: string; firstName: string | null }[]>([]);
+  const [userCount, setUserCount] = useState(0);
 
-  // Load real stats on mount
+  // Load real stats and users on mount
   useEffect(() => {
     const stats = getAuditStats();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSignatureCount(stats.totalCreated);
+    
+    // Fetch live users from Clerk
+    fetch('/api/users')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.users) {
+          setLiveUsers(data.users);
+          setUserCount(data.totalCount || data.users.length);
+        }
+      })
+      .catch(console.error);
   }, []);
 
   // Signature card data for carousel
@@ -166,21 +180,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 bg-stone-50/90 backdrop-blur-md z-50 border-b border-stone-200/60">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-stone-900 rounded-xl flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-stone-50"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
-                />
-              </svg>
-            </div>
+            <Logo size="md" />
             <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
           </div>
           <div className="hidden md:flex items-center gap-10">
@@ -303,18 +303,31 @@ export default function Home() {
                   </a>
                 </div>
 
-                {/* Sample signatures with names */}
+                {/* Live users display */}
                 <div className="flex items-center gap-6 pt-6 border-t border-stone-200">
                   <p className="text-sm text-stone-400">Trusted by professionals:</p>
                   <div className="flex -space-x-2">
-                    {['https://i.pravatar.cc/100?img=33', 'https://i.pravatar.cc/100?img=47', 'https://i.pravatar.cc/100?img=12', 'https://i.pravatar.cc/100?img=5'].map((src, i) => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center overflow-hidden bg-stone-200">
-                        <img src={src} alt="User" className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                    <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-white flex items-center justify-center text-xs font-medium text-white">
-                      +180
-                    </div>
+                    {liveUsers.length > 0 ? (
+                      <>
+                        {liveUsers.slice(0, 4).map((user) => (
+                          <div key={user.id} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center overflow-hidden bg-stone-200">
+                            <img src={user.imageUrl} alt={user.firstName || 'User'} className="w-full h-full object-cover" />
+                          </div>
+                        ))}
+                        {userCount > 4 && (
+                          <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-white flex items-center justify-center text-xs font-medium text-white">
+                            +{userCount - 4}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      // Fallback while loading
+                      <>
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-stone-200 animate-pulse" />
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

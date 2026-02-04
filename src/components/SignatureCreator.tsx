@@ -174,13 +174,32 @@ export default function SignatureCreator({
 
     return (
         <div className="p-4 md:p-6 relative">
-
-            {/* Header */}
+            {/* Header with gesture indicators inline */}
             <div className="flex items-center justify-between mb-4 md:mb-6">
                 <div>
                     <h2 className="text-base md:text-lg font-semibold text-stone-900">Create Your Signature</h2>
-                    <p className="text-xs md:text-sm text-stone-500">Choose how you&apos;d like to create your signature</p>
+                    <p className="text-xs md:text-sm text-stone-500 hidden sm:block">Choose how you&apos;d like to create your signature</p>
                 </div>
+                {/* Gesture indicators - inline on the right */}
+                {mode !== 'air' && (
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleSave}
+                            disabled={!canSave}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${canSave ? 'bg-stone-900 text-white hover:bg-stone-800 cursor-pointer' : 'bg-stone-100 text-stone-400 cursor-not-allowed'}`}
+                        >
+                            <span className="text-sm">👍</span>
+                            <span className="uppercase tracking-wide">Save</span>
+                        </button>
+                        <button
+                            onClick={handleClear}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 text-stone-600 text-xs font-semibold hover:bg-stone-200 transition-all cursor-pointer"
+                        >
+                            <span className="text-sm">✋</span>
+                            <span className="uppercase tracking-wide">Clear</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Mode Tabs */}
