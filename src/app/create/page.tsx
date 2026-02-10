@@ -20,6 +20,8 @@ import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
 import LimitModal from '@/components/LimitModal';
 import Logo from '@/components/Logo';
+import SendForSignatureModal from '@/components/SendForSignatureModal';
+import SignatureRequestsDashboard from '@/components/SignatureRequestsDashboard';
 
 // Dynamic import for DocumentLayer (SSR false)
 const DocumentLayer = dynamic(() => import('@/components/DocumentLayer'), {
@@ -89,6 +91,16 @@ const sidebarItems = [
         ),
         tier: 'pro',
     },
+    {
+        id: 'requests',
+        label: 'Sent Requests',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+        ),
+        tier: 'free',
+    },
 
 ];
 
@@ -110,15 +122,17 @@ export default function CreatePage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [galleryKey, setGalleryKey] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [_totalPages, setTotalPages] = useState(1);
     const [signers, setSigners] = useState<Signer[]>([]);
-    const [fields, setFields] = useState<Field[]>([]);
+    const [_fields, setFields] = useState<Field[]>([]);
     const [placementMode, setPlacementMode] = useState(false);
     const [showSharing, setShowSharing] = useState(false);
     const [signedBlob, setSignedBlob] = useState<Blob | null>(null);
     const [showLimitModal, setShowLimitModal] = useState(false);
     const [currentSignatureId, setCurrentSignatureId] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [showSendModal, setShowSendModal] = useState(false);
+    const [currentStorageId, setCurrentStorageId] = useState<string | null>(null);
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -182,8 +196,9 @@ export default function CreatePage() {
                     userAgent: navigator.userAgent,
                 });
                 
-                // Store ID for audit trail generation later
+                // Store IDs for send feature and audit trail
                 setCurrentSignatureId(newSignatureId);
+                setCurrentStorageId(storageId);
 
                 refreshGallery();
                 setShowPreview(true);
@@ -212,7 +227,8 @@ export default function CreatePage() {
             if (currentSignatureId) {
                  try {
                     auditStorageId = await generateAudit({
-                        signatureId: currentSignatureId as any, // ID type casting
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        signatureId: currentSignatureId as unknown as Parameters<typeof generateAudit>[0]['signatureId'],
                         signerName: user?.fullName || 'Authenticated User',
                         signerEmail: user?.primaryEmailAddress?.emailAddress,
                         ipAddress: 'Recorded', // Real IP would be captured by info() in action if accessed via HTTP, or client passes it
@@ -511,7 +527,7 @@ export default function CreatePage() {
                 </nav>
 
                 {/* Main content area */}
-                <div className={`pt-20 pb-6 px-3 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-80px)] md:min-h-screen flex flex-col justify-center items-center' : ''}`}>
+                <div className={`pt-24 pb-6 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-96px)] md:min-h-screen flex flex-col justify-start md:justify-center items-center' : ''}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div
@@ -545,6 +561,17 @@ export default function CreatePage() {
                                     setActiveSection('create');
                                 }}
                             />
+                        </motion.div>
+                    )}
+
+                    {/* Sent Requests View */}
+                    {activeSection === 'requests' && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-8 bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden"
+                        >
+                            <SignatureRequestsDashboard />
                         </motion.div>
                     )}
 
@@ -707,11 +734,15 @@ export default function CreatePage() {
 
             {/* Signature preview modal */}
             <AnimatePresence>
-                {showPreview && (
+                            {showPreview && (
                     <SignaturePreview
                         signatureDataUrl={savedSignature}
                         onClose={() => setShowPreview(false)}
                         onRetry={handleRetry}
+                        onSendForSignature={() => {
+                            setShowPreview(false);
+                            setShowSendModal(true);
+                        }}
                     />
                 )}
             </AnimatePresence>
@@ -730,6 +761,14 @@ export default function CreatePage() {
                         isOpen={showLimitModal}
                         onClose={() => setShowLimitModal(false)}
                         plan={plan}
+                    />
+                )}
+                {showSendModal && currentStorageId && (
+                    <SendForSignatureModal
+                        isOpen={showSendModal}
+                        onClose={() => setShowSendModal(false)}
+                        documentStorageId={currentStorageId as Parameters<typeof SendForSignatureModal>[0]['documentStorageId']}
+                        documentName={`Signature ${new Date().toLocaleString()}`}
                     />
                 )}
             </AnimatePresence>

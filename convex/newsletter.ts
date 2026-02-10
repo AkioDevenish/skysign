@@ -1,5 +1,5 @@
 
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const subscribe = mutation({

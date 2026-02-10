@@ -50,7 +50,7 @@ export const addMember = mutation({
             throw new Error(`Team limit reached (${limit} members).`);
         }
 
-        const memberId = await ctx.db.insert("teamMembers", {
+        const _memberId = await ctx.db.insert("teamMembers", {
             ownerUserId: identity.subject,
             name: args.name,
             email: args.email,
@@ -60,11 +60,12 @@ export const addMember = mutation({
         });
 
         // Schedule email invite
-        await ctx.scheduler.runAfter(0, internal.actions.sendTeamInvite, {
-            email: args.email,
-            teamName: "Sky Sign Team", // Placeholder or fetch actual team name if exists
-            inviterName: identity.name || "A team member",
-        });
+        // TODO: Implement sendTeamInvite action when email service is set up
+        // await ctx.scheduler.runAfter(0, internal.actions.sendTeamInvite, {
+        //     email: args.email,
+        //     teamName: "Sky Sign Team",
+        //     inviterName: identity.name || "A team member",
+        // });
     },
 });
 

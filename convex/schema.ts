@@ -49,6 +49,12 @@ export default defineSchema({
         autoSave: v.boolean(),
         defaultFormat: v.string(), // 'png', 'svg', 'pdf'
         darkMode: v.optional(v.boolean()),
+        // Google Drive integration
+        googleAccessToken: v.optional(v.string()),
+        googleRefreshToken: v.optional(v.string()),
+        googleTokenExpiry: v.optional(v.string()),
+        googleEmail: v.optional(v.string()),
+        googleConnectedAt: v.optional(v.string()),
     }).index("by_user", ["userId"]),
 
     newsletter: defineTable({
@@ -56,4 +62,25 @@ export default defineSchema({
         subscribedAt: v.string(),
         active: v.boolean(),
     }).index("by_email", ["email"]),
+
+    // Signature Requests - for sending documents to others for signing
+    signatureRequests: defineTable({
+        senderId: v.string(),                           // Clerk user ID of sender
+        recipientEmail: v.string(),
+        recipientName: v.optional(v.string()),
+        documentStorageId: v.id("_storage"),            // Original PDF
+        documentName: v.string(),
+        status: v.string(),                             // 'pending' | 'viewed' | 'signed' | 'declined' | 'expired'
+        message: v.optional(v.string()),                // Optional message to signer
+        expiresAt: v.optional(v.string()),              // ISO date string
+        signedAt: v.optional(v.string()),
+        signedStorageId: v.optional(v.id("_storage")),  // Signed PDF
+        signatureStorageId: v.optional(v.id("_storage")), // The signature image used
+        accessToken: v.string(),                        // Unique token for secure signing link
+        createdAt: v.string(),
+        reminderSentAt: v.optional(v.string()),
+    }).index("by_sender", ["senderId"])
+      .index("by_token", ["accessToken"])
+      .index("by_status", ["status"])
+      .index("by_recipient", ["recipientEmail"]),
 });

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { useHandTracking } from '@/hooks/useHandTracking';
 
 const SignatureCapture = dynamic(() => import('./SignatureCapture'), {
     ssr: false,
@@ -382,33 +381,6 @@ export default function SignatureCreator({
                 href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Caveat:wght@600&family=Allura&display=swap"
                 rel="stylesheet"
             />
-
-            {/* Gesture Listener for non-air modes */}
-            {mode !== 'air' && (
-                <GestureListener
-                    onGesture={(gesture) => {
-                        if (gesture === 'save') handleSave();
-                        if (gesture === 'clear') handleClear();
-                    }}
-                />
-            )}
         </div>
-    );
-}
-
-function GestureListener({ onGesture }: { onGesture: (g: 'save' | 'clear') => void }) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    useHandTracking(videoRef, {
-        onGesture,
-    });
-
-    return (
-        <video
-            ref={videoRef}
-            className="fixed top-0 left-0 w-1 h-1 opacity-0 pointer-events-none"
-            autoPlay
-            playsInline
-            muted
-        />
     );
 }

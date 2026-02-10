@@ -60,7 +60,7 @@ export async function exportAsPdf(signature: SavedSignature): Promise<void> {
     });
 
     const pdfBytes = await pdfDoc.save();
-    downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `${sanitizeFilename(signature.name)}.pdf`);
+    downloadBlob(new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' }), `${sanitizeFilename(signature.name)}.pdf`);
 }
 
 /**

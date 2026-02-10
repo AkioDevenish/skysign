@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "convex": "^1.31.6",
     "framer-motion": "^12.25.0",
+    "googleapis": "^171.4.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "pdf-lib": "^1.17.1",
@@ -27,7 +28,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-pdf": "^10.3.0",
-    "resend": "^6.8.0",
+    "resend": "^6.9.1",
     "stripe": "^20.2.0",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"

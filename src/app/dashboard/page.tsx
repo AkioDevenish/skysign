@@ -1,13 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserButton, useUser, UserProfile } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
-import { AuditEntry } from '@/lib/auditTrail'; // Keep type if useful
+// Convex audit entry type
+interface AuditEntryType {
+    _id: string;
+    action: string;
+    signatureName?: string;
+    timestamp: string;
+}
 // import { getAuditTrail, AuditEntry } from '@/lib/auditTrail';
 // import { getTeamMembers, TeamMember, addTeamMember, removeTeamMember, getTeamCount } from '@/lib/teamStorage';
 // import { getApiKeys, createApiKey, deleteApiKey, ApiKey } from '@/lib/apiKeyUtils';
@@ -31,7 +37,7 @@ const tabs = [
 export default function DashboardPage() {
     const { user, isLoaded } = useUser();
     // Convex Queries
-    const entries = useQuery(api.audit.get) || [];
+    const entries = useQuery(api.auditQueries.get) || [];
     const team = useQuery(api.team.getMembers) || [];
     const apiKeys = useQuery(api.apiKeys.get) || [];
     const sigCount = useQuery(api.signatures.getCount) || 0;
@@ -54,7 +60,7 @@ export default function DashboardPage() {
     const [newMember, setNewMember] = useState({ name: '', email: '' });
 
     // Settings State (derived from Convex)
-    const cloudBackup = false; // Always cloud backed up with Convex
+    const _cloudBackup = false; // Always cloud backed up with Convex
     const autoSave = settings?.autoSave ?? false;
     const defaultFormat = settings?.defaultFormat ?? 'png';
     const newKeyNameState = useState(''); // Need to keep this one
@@ -114,7 +120,7 @@ export default function DashboardPage() {
 
     const filteredEntries = filter === 'all'
         ? entries
-        : entries.filter(e => e.action === filter);
+        : entries.filter((e: AuditEntryType) => e.action === filter);
 
     const getActionStyle = (action: string) => {
         switch (action) {
@@ -236,7 +242,7 @@ export default function DashboardPage() {
 
                                             <div className="divide-y divide-stone-100">
                                                 {filteredEntries.length > 0 ? (
-                                                    filteredEntries.slice(0, 10).map((entry, i) => {
+                                                    filteredEntries.slice(0, 10).map((entry: AuditEntryType, _i: number) => {
                                                         const style = getActionStyle(entry.action);
                                                         return (
                                                             <div key={entry._id} className="px-6 py-4 flex items-center gap-4 hover:bg-stone-50/50 transition-colors">

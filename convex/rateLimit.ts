@@ -1,5 +1,4 @@
-import { ActionCtx, MutationCtx, QueryCtx } from "./_generated/server";
-import { GenericId } from "convex/values";
+import { MutationCtx } from "./_generated/server";
 
 /**
  * Checks if a user has exceeded a rate limit for a specific action.
@@ -13,7 +12,8 @@ import { GenericId } from "convex/values";
  */
 export async function checkRateLimit(
     ctx: MutationCtx,
-    tableName: any, // Typed as any to avoid complex generic types for now
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tableName: "signatures" | "auditTrail" | "apiKeys",
     userId: string,
     limit: number = 10,
     windowMs: number = 60 * 1000
@@ -26,11 +26,12 @@ export async function checkRateLimit(
     // and an index "by_user" on "userId"
     const recentItems = await ctx.db
         .query(tableName)
-        .withIndex("by_user", (q: any) => q.eq("userId", userId))
-        .filter((q: any) => q.gt(q.field("createdAt"), windowStart))
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .filter((q) => q.gt(q.field("createdAt"), windowStart))
         .take(limit + 1);
 
     if (recentItems.length > limit) {
         throw new Error(`Rate limit exceeded. Please wait a moment before trying again.`);
     }
 }
+

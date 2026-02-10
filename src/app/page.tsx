@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import BlurText from "@/components/reactbits/BlurText";
 import DecryptedText from "@/components/reactbits/DecryptedText";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
@@ -24,7 +24,7 @@ export default function Home() {
   const router = useRouter();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
-  const [signatureCount, setSignatureCount] = useState(0);
+  const [_signatureCount, setSignatureCount] = useState(0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [liveUsers, setLiveUsers] = useState<{ id: string; imageUrl: string; firstName: string | null }[]>([]);
   const [userCount, setUserCount] = useState(0);

@@ -8,12 +8,14 @@ interface SignaturePreviewProps {
     signatureDataUrl: string | null;
     onClose: () => void;
     onRetry: () => void;
+    onSendForSignature?: () => void;
 }
 
 export default function SignaturePreview({
     signatureDataUrl,
     onClose,
     onRetry,
+    onSendForSignature,
 }: SignaturePreviewProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [processedDataUrl, setProcessedDataUrl] = useState<string | null>(null);
@@ -207,6 +209,17 @@ export default function SignaturePreview({
                             Try Again
                         </button>
                         <div className="flex gap-3">
+                            {onSendForSignature && (
+                                <button
+                                    onClick={onSendForSignature}
+                                    className="px-6 py-3 rounded-full border-2 border-stone-900 text-stone-900 font-bold hover:bg-stone-100 transition-all flex items-center gap-2 cursor-pointer"
+                                >
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    Send for Signature
+                                </button>
+                            )}
                             <button
                                 onClick={() => handleDownload('png')}
                                 className="px-8 py-3 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 flex items-center gap-2 hover:-translate-y-0.5 cursor-pointer"

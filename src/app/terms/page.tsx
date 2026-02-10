@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 export default function TermsPage() {
     const lastUpdated = 'January 23, 2026';
@@ -267,16 +268,7 @@ export default function TermsPage() {
                 </motion.div>
             </main>
 
-            {/* Footer */}
-            <footer className="border-t border-stone-200 bg-white py-8">
-                <div className="max-w-4xl mx-auto px-6 flex items-center justify-between text-sm text-stone-500">
-                    <p>© 2026 SkySign. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <Link href="/privacy" className="hover:text-stone-900">Privacy Policy</Link>
-                        <Link href="/support" className="hover:text-stone-900">Support</Link>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

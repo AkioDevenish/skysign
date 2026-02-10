@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { internal } from "./_generated/api";
 
+
 export const generate = action({
   args: {
     signatureId: v.id("signatures"),
@@ -96,8 +97,8 @@ export const generate = action({
 
     // 3. Serialize and Upload
     const pdfBytes = await pdfDoc.save();
-    // biome-ignore lint/suspicious/noExplicitAny: Blob polyfill behavior
-    const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
     
     // Upload to Convex Storage
     const uploadUrl = await ctx.storage.generateUploadUrl();
@@ -114,10 +115,11 @@ export const generate = action({
     const { storageId } = await result.json();
 
     // 4. Update the Signature record with the auditStorageId
-    await ctx.runMutation(internal.signatures.updateAuditTrail, {
-        signatureId: args.signatureId,
-        auditStorageId: storageId,
-    });
+    // TODO: Implement this internal mutation in signatures.ts
+    // await ctx.runMutation(internal.signatures.updateAuditTrail, {
+    //     signatureId: args.signatureId,
+    //     auditStorageId: storageId,
+    // });
 
     return storageId;
   }

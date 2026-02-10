@@ -44,7 +44,7 @@ export const get = query({
 });
 
 // Validation Schemas
-const createSignatureSchema = z.object({
+const _createSignatureSchema = z.object({
     name: z.string().min(1).max(100),
     dataUrl: z.string().startsWith("data:image/", "Must be a valid image data URL"),
     style: z.optional(z.string().max(50)),
@@ -194,5 +194,27 @@ export const updateAuditTrail = mutation({
         await ctx.db.patch(args.signatureId, {
             auditStorageId: args.auditStorageId,
         });
+    },
+});
+
+// Get the audit trail PDF URL for a signature
+export const getAuditUrl = query({
+    args: {
+        signatureId: v.id("signatures"),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) return null;
+
+        const signature = await ctx.db.get(args.signatureId);
+        if (!signature || signature.userId !== identity.subject) {
+            return null;
+        }
+
+        if (!signature.auditStorageId) {
+            return null;
+        }
+
+        return await ctx.storage.getUrl(signature.auditStorageId);
     },
 });

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 export default function SupportPage() {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -152,21 +153,7 @@ export default function SupportPage() {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="py-12 px-8 lg:px-12 border-t border-stone-200/60 bg-stone-50">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <span className="text-sm font-medium text-stone-700">SkySign</span>
-                        <div className="flex items-center gap-8 text-sm text-stone-500">
-                            <Link href="/privacy" className="hover:text-stone-900 transition-colors">Privacy</Link>
-                            <Link href="/terms" className="hover:text-stone-900 transition-colors">Terms</Link>
-                            <Link href="/refund" className="hover:text-stone-900 transition-colors">Refund</Link>
-                            <Link href="/support" className="text-stone-900 font-medium">Support</Link>
-                        </div>
-                        <p className="text-sm text-stone-400">© 2026 SkySign. All rights reserved.</p>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }
