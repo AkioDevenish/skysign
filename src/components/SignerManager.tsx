@@ -28,7 +28,7 @@ export default function SignerManager({
     currentUserId,
 }: SignerManagerProps) {
     const sendInvite = useAction(api.email.sendInvite);
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(signers.length > 0);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 

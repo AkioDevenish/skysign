@@ -14,7 +14,7 @@ import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
-import Logo from "@/components/Logo";
+
 import { getAuditStats } from "../lib/auditTrail";
 
 // Premium "Sky Sign" Hand Animation
@@ -35,16 +35,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSignatureCount(stats.totalCreated);
     
-    // Fetch live users from Clerk
-    fetch('/api/users')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.users) {
-          setLiveUsers(data.users);
-          setUserCount(data.totalCount || data.users.length);
-        }
-      })
-      .catch(console.error);
+    // Use demo user data
+    setLiveUsers([
+      { id: '1', imageUrl: '', firstName: 'Claire' },
+      { id: '2', imageUrl: '', firstName: 'Carlos' },
+      { id: '3', imageUrl: '', firstName: 'Aisha' },
+      { id: '4', imageUrl: '', firstName: 'Jordan' },
+    ]);
+    setUserCount(128);
   }, []);
 
   // Signature card data for carousel
@@ -180,7 +178,6 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 bg-stone-50/90 backdrop-blur-md z-50 border-b border-stone-200/60">
         <div className="max-w-6xl mx-auto px-8 lg:px-12 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Logo size="md" />
             <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
           </div>
           <div className="hidden md:flex items-center gap-10">
@@ -198,9 +195,12 @@ export default function Home() {
             <SignedIn>
               <Link
                 href="/create"
-                className="px-6 py-2.5 bg-stone-900 text-stone-50 rounded-full text-sm font-medium hover:bg-stone-800 transition-all hover:shadow-lg hover:shadow-stone-900/10"
+                className="w-10 h-10 bg-stone-900 text-stone-50 rounded-full flex items-center justify-center hover:bg-stone-800 transition-all hover:shadow-lg hover:shadow-stone-900/10"
+                title="Create Signature"
               >
-                Create Signature
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
               </Link>
               <UserButton
                 userProfileMode="navigation"
@@ -307,26 +307,15 @@ export default function Home() {
                 <div className="flex items-center gap-6 pt-6 border-t border-stone-200">
                   <p className="text-sm text-stone-400">Trusted by professionals:</p>
                   <div className="flex -space-x-2">
-                    {liveUsers.length > 0 ? (
-                      <>
-                        {liveUsers.slice(0, 4).map((user) => (
-                          <div key={user.id} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center overflow-hidden bg-stone-200">
-                            <img src={user.imageUrl} alt={user.firstName || 'User'} className="w-full h-full object-cover" />
-                          </div>
-                        ))}
-                        {userCount > 4 && (
-                          <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-white flex items-center justify-center text-xs font-medium text-white">
-                            +{userCount - 4}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      // Fallback while loading
-                      <>
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-stone-200 animate-pulse" />
-                        ))}
-                      </>
+                    {liveUsers.slice(0, 4).map((user) => (
+                      <div key={user.id} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center bg-stone-200 text-xs font-semibold text-stone-600">
+                        {user.firstName?.charAt(0) || 'U'}
+                      </div>
+                    ))}
+                    {userCount > 4 && (
+                      <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-white flex items-center justify-center text-xs font-medium text-white">
+                        +{userCount - 4}
+                      </div>
                     )}
                   </div>
                 </div>

@@ -19,7 +19,7 @@ import FieldPlacer, { Field } from '@/components/FieldPlacer';
 import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
 import LimitModal from '@/components/LimitModal';
-import Logo from '@/components/Logo';
+
 import SendForSignatureModal from '@/components/SendForSignatureModal';
 import SignatureRequestsDashboard from '@/components/SignatureRequestsDashboard';
 
@@ -309,6 +309,11 @@ export default function CreatePage() {
 
     return (
         <main className="min-h-screen bg-stone-50 flex">
+            {/* Subtle background pattern for visual depth */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-stone-200/30 via-transparent to-transparent rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-[30%] w-[500px] h-[500px] bg-gradient-to-tr from-amber-100/20 via-transparent to-transparent rounded-full blur-3xl" />
+            </div>
             {/* Hidden File Input */}
             <input
                 type="file"
@@ -350,7 +355,6 @@ export default function CreatePage() {
                 {/* Sidebar Header */}
                 <div className={`h-20 flex items-center border-b border-stone-200 ${sidebarCollapsed && !mobileMenuOpen ? 'justify-center px-2' : 'justify-between px-4'}`}>
                     <Link href="/" className="flex items-center gap-3">
-                        <Logo size="md" />
                         {(!sidebarCollapsed || mobileMenuOpen) && (
                             <span className="text-xl font-bold tracking-tight text-stone-900">SkySign</span>
                         )}
@@ -497,37 +501,46 @@ export default function CreatePage() {
                 className="flex-1 transition-all duration-300 w-full"
                 style={{ marginLeft: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
             >
-                {/* Top Navigation */}
-                <nav className="fixed top-0 right-0 bg-stone-50/95 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
-                    style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
-                >
-                    <div className="pl-16 pr-4 py-4 md:pl-8 md:pr-8 md:py-5 flex items-center justify-between w-full min-h-[60px]">
-                        <div>
-                            <h1 className="text-lg md:text-xl font-semibold text-stone-900">
-                                {documentFile ? 'Sign Your Document' : 'Create Your Signature'}
-                            </h1>
-                            <p className="text-xs md:text-sm text-stone-500 hidden sm:block">
-                                {documentFile
-                                    ? (placementMode ? 'Drag signature to desired position' : 'Draw your signature over the document')
-                                    : 'Choose how you\'d like to create your signature'}
-                            </p>
+                {/* Top Navigation - only show when document is loaded or in placement mode */}
+                {(documentFile || activeSection !== 'create') && (
+                    <nav className="fixed top-0 right-0 bg-stone-50/95 backdrop-blur-md z-30 border-b border-stone-200/60 transition-all duration-300"
+                        style={{ left: isMobile ? '0px' : (sidebarCollapsed ? '64px' : '256px') }}
+                    >
+                        <div className="pl-16 pr-4 py-4 md:pl-8 md:pr-8 md:py-5 flex items-center justify-between w-full min-h-[60px]">
+                            <div>
+                                <h1 className="text-lg md:text-xl font-semibold text-stone-900">
+                                    {activeSection === 'signatures' ? 'My Signatures'
+                                        : activeSection === 'templates' ? 'Templates'
+                                        : activeSection === 'export' ? 'Export Options'
+                                        : activeSection === 'requests' ? 'Sent Requests'
+                                        : documentFile ? 'Sign Your Document' : 'Create Your Signature'}
+                                </h1>
+                                <p className="text-xs md:text-sm text-stone-500 hidden sm:block">
+                                    {documentFile
+                                        ? (placementMode ? 'Drag signature to desired position' : 'Draw your signature over the document')
+                                        : activeSection === 'signatures' ? 'View and manage your saved signatures'
+                                        : activeSection === 'templates' ? 'Choose from pre-built contract templates'
+                                        : activeSection === 'requests' ? 'Track documents sent for signature'
+                                        : ''}
+                                </p>
+                            </div>
+                            {placementMode && (
+                                <button
+                                    onClick={handleFinalize}
+                                    disabled={isSaving}
+                                    className="px-4 py-2 md:px-6 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2 cursor-pointer text-sm md:text-base"
+                                >
+                                    {isSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                                    <span className="hidden sm:inline">Finalize & Download</span>
+                                    <span className="sm:hidden">Download</span>
+                                </button>
+                            )}
                         </div>
-                        {placementMode && (
-                            <button
-                                onClick={handleFinalize}
-                                disabled={isSaving}
-                                className="px-4 py-2 md:px-6 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors flex items-center gap-2 cursor-pointer text-sm md:text-base"
-                            >
-                                {isSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
-                                <span className="hidden sm:inline">Finalize & Download</span>
-                                <span className="sm:hidden">Download</span>
-                            </button>
-                        )}
-                    </div>
-                </nav>
+                    </nav>
+                )}
 
                 {/* Main content area */}
-                <div className={`pt-24 pb-6 px-4 md:pt-28 md:pb-16 md:px-8 ${activeSection === 'create' && !documentFile ? 'min-h-[calc(100dvh-96px)] md:min-h-screen flex flex-col justify-start md:justify-center items-center' : ''}`}>
+                <div className={`pb-4 px-4 md:pb-4 md:px-8 ${activeSection === 'create' && !documentFile ? 'pt-4 md:pt-4 h-screen flex flex-col items-center' : 'pt-24 md:pt-28'}`}>
                     {/* My Signatures Gallery View */}
                     {activeSection === 'signatures' && (
                         <motion.div
@@ -540,7 +553,6 @@ export default function CreatePage() {
                                 onRefresh={refreshGallery}
                                 onSelect={(sig) => {
                                     // Could be used to apply a saved signature
-                                    console.log('Selected signature:', sig.name);
                                 }}
                             />
                         </motion.div>
@@ -556,7 +568,6 @@ export default function CreatePage() {
                             <TemplateGallery
                                 plan={plan as 'free' | 'pro' | 'team'}
                                 onSelect={(template) => {
-                                    console.log('Selected template:', template.name);
                                     // Switch to create section to apply template
                                     setActiveSection('create');
                                 }}
@@ -569,7 +580,7 @@ export default function CreatePage() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="mb-8 bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden"
+                            className="mb-8 bg-white rounded-2xl md:rounded-3xl border border-stone-200/80 shadow-xl shadow-stone-200/50 overflow-hidden"
                         >
                             <SignatureRequestsDashboard />
                         </motion.div>
@@ -580,7 +591,9 @@ export default function CreatePage() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-2xl md:rounded-3xl border border-stone-200 shadow-lg overflow-hidden w-full max-w-4xl mx-auto"
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                            className="bg-white rounded-2xl md:rounded-3xl border border-stone-200/80 shadow-xl shadow-stone-200/50 overflow-hidden w-full max-w-5xl mx-auto flex flex-col"
+                            style={{ height: 'calc(100dvh - 32px)' }}
                         >
                             <SignatureCreator
                                 onSave={handleSave}

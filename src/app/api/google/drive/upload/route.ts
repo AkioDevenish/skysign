@@ -93,7 +93,6 @@ export async function POST(request: NextRequest) {
             fields: 'id, name, webViewLink, webContentLink',
         });
 
-        console.log('[Drive] File uploaded:', response.data.id);
 
         return NextResponse.json({
             success: true,

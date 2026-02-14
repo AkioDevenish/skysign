@@ -58,7 +58,9 @@ export default function ApiKeysSection({
 
             {!isProPlus ? (
                 <div className="bg-stone-50 rounded-3xl p-12 text-center border border-stone-200 border-dashed">
-                    <div className="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">⚡</div>
+                    <div className="w-16 h-16 bg-stone-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg className="w-7 h-7 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                    </div>
                     <h3 className="text-lg font-bold text-stone-900 mb-2">Connect your workflow</h3>
                     <p className="text-stone-500 max-w-md mx-auto mb-8">
                         Upgrade to Pro Plus to access our REST API and integrate Sky Sign signatures directly into your own applications.

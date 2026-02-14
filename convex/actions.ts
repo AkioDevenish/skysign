@@ -1,10 +1,10 @@
 "use node";
 
-import { action } from "./_generated/server";
+import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
 import { Resend } from "resend";
 
-export const sendTeamInvite = action({
+export const sendTeamInvite = internalAction({
     args: {
         email: v.string(),
         teamName: v.string(),
@@ -31,7 +31,7 @@ export const sendTeamInvite = action({
                             <strong>${args.inviterName}</strong> has invited you to join their team <strong>"${args.teamName}"</strong> on Sky Sign.
                         </p>
                         <div style="margin-top: 32px;">
-                            <a href="http://localhost:3000" style="background-color: #1c1917; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}" style="background-color: #1c1917; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
                                 Accept Invitation
                             </a>
                         </div>

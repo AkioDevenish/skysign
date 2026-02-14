@@ -19,9 +19,6 @@ export const metadata: Metadata = {
   description: "Draw your signature in the air and capture it with your camera. The future of digital signatures.",
   keywords: ["signature", "e-signature", "digital signature", "air signature", "hand tracking", "document signing", "electronic signature"],
   authors: [{ name: "SkySign Team" }],
-  icons: {
-    icon: "/favicon.svg",
-  },
   metadataBase: new URL("https://skysign.app"),
   openGraph: {
     title: "SkySign | Sign Documents in the Air",

@@ -42,7 +42,8 @@ export default defineSchema({
         last4: v.string(), // Last 4 chars for identification
         createdAt: v.string(),
         lastUsed: v.optional(v.string()),
-    }).index("by_user", ["userId"]),
+    }).index("by_user", ["userId"])
+      .index("by_hashed_key", ["hashedKey"]),
 
     userSettings: defineTable({
         userId: v.string(),

@@ -21,7 +21,6 @@ export const checkAndSendReminders = internalAction({
         // Query all pending/viewed requests that haven't been reminded recently
         const pendingRequests = await ctx.runQuery(internal.reminderQueries.getPendingRequestsForReminder) as PendingRequest[];
         
-        console.log(`[Reminder] Found ${pendingRequests.length} requests needing reminders`);
 
         for (const request of pendingRequests) {
             // Calculate days remaining
@@ -49,7 +48,6 @@ export const checkAndSendReminders = internalAction({
                         requestId: request._id as any,
                     });
 
-                    console.log(`[Reminder] Sent reminder for request ${request._id}`);
                 } catch (error) {
                     console.error(`[Reminder] Failed to send reminder for ${request._id}:`, error);
                 }

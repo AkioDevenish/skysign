@@ -19,6 +19,14 @@ export default function Newsletter() {
 
         try {
             await subscribe({ email });
+
+            // Send welcome email via Resend (fire-and-forget, non-blocking)
+            fetch('/api/newsletter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            }).catch(() => {}); // Silent fail — DB subscription is the priority
+
             setStatus("success");
             setEmail("");
         } catch (error: unknown) {

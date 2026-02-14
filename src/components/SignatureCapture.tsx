@@ -231,7 +231,12 @@ export default function SignatureCapture({
             {/* Error overlay */}
             {error && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-50 p-8 text-center">
-                    <div className="text-4xl mb-4">📷</div>
+                    <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                        </svg>
+                    </div>
                     <h3 className="text-stone-900 font-semibold mb-2">Camera Access Required</h3>
                     <p className="text-stone-500 max-w-sm">{error}</p>
                 </div>
@@ -291,9 +296,24 @@ export default function SignatureCapture({
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-stone-900 text-white text-sm font-medium shadow-lg z-30"
                 >
-                    {gesture === 'drawing' && '✍️ Drawing'}
-                    {gesture === 'save' && '💾 Saving...'}
-                    {gesture === 'clear' && '🗑️ Clearing...'}
+                    {gesture === 'drawing' && (
+                        <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            Drawing
+                        </span>
+                    )}
+                    {gesture === 'save' && (
+                        <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            Saving...
+                        </span>
+                    )}
+                    {gesture === 'clear' && (
+                        <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            Clearing...
+                        </span>
+                    )}
                 </motion.div>
             )}
 

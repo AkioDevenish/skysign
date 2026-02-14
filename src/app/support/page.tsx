@@ -14,11 +14,22 @@ export default function SupportPage() {
         e.preventDefault();
         setFormStatus('loading');
 
-        // Simulate form submission
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const response = await fetch('/api/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
 
-        setFormStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+            if (response.ok) {
+                setFormStatus('success');
+                setFormData({ name: '', email: '', subject: '', message: '' });
+            } else {
+                setFormStatus('error');
+            }
+        } catch {
+            setFormStatus('error');
+        }
     };
 
     return (
@@ -34,7 +45,10 @@ export default function SupportPage() {
                         href="/"
                         className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium"
                     >
-                        ← Back to Home
+                        <span className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                            Back to Home
+                        </span>
                     </Link>
                 </div>
             </nav>
@@ -130,6 +144,11 @@ export default function SupportPage() {
                                         placeholder="Tell us how we can help..."
                                     />
                                 </div>
+                                {formStatus === 'error' && (
+                                    <p className="text-red-600 text-sm text-center">
+                                        Something went wrong. Please try again or email us directly.
+                                    </p>
+                                )}
                                 <button
                                     type="submit"
                                     disabled={formStatus === 'loading'}

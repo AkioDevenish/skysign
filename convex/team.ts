@@ -60,12 +60,11 @@ export const addMember = mutation({
         });
 
         // Schedule email invite
-        // TODO: Implement sendTeamInvite action when email service is set up
-        // await ctx.scheduler.runAfter(0, internal.actions.sendTeamInvite, {
-        //     email: args.email,
-        //     teamName: "Sky Sign Team",
-        //     inviterName: identity.name || "A team member",
-        // });
+        await ctx.scheduler.runAfter(0, internal.actions.sendTeamInvite, {
+            email: args.email,
+            teamName: "Sky Sign Team",
+            inviterName: identity.name || "A team member",
+        });
     },
 });
 

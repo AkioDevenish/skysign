@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { clerkClient } from '@clerk/nextjs/server';
 import crypto from 'crypto';
 
 // Paddle webhook secret for signature verification
@@ -62,6 +63,29 @@ function verifyPaddleSignature(
     }
 }
 
+/**
+ * Helper to update Clerk user's publicMetadata with subscription info.
+ * This is what the dashboard reads to determine the user's plan.
+ */
+async function updateUserPlan(
+    clerkUserId: string,
+    metadata: {
+        plan: string;
+        subscriptionId: string | null;
+        subscriptionStatus: string;
+    }
+) {
+    try {
+        const client = await clerkClient();
+        await client.users.updateUserMetadata(clerkUserId, {
+            publicMetadata: metadata,
+        });
+    } catch (err) {
+        console.error(`[Webhook] Failed to update Clerk metadata for ${clerkUserId}:`, err);
+        throw err; // Re-throw so the webhook returns 500 and Paddle retries
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const rawBody = await request.text();
@@ -78,8 +102,6 @@ export async function POST(request: NextRequest) {
 
         const event: PaddleWebhookEvent = JSON.parse(rawBody);
 
-        console.log('Paddle webhook received:', event.event_type);
-
         // Handle the event
         switch (event.event_type) {
             case 'subscription.created':
@@ -88,76 +110,66 @@ export async function POST(request: NextRequest) {
                 const clerkUserId = custom_data?.clerkUserId;
                 const planId = custom_data?.planId;
 
-                console.log('Subscription created:', {
-                    planId,
-                    clerkUserId,
-                    status,
-                    subscriptionId: event.data.id,
-                });
-
-                // TODO: Update user's subscription in Clerk
-                // import { clerkClient } from '@clerk/nextjs/server';
-                // if (clerkUserId) {
-                //     await clerkClient.users.updateUserMetadata(clerkUserId, {
-                //         publicMetadata: {
-                //             plan: planId,
-                //             subscriptionId: event.data.id,
-                //             subscriptionStatus: status,
-                //         },
-                //     });
-                // }
+                if (clerkUserId && planId) {
+                    await updateUserPlan(clerkUserId, {
+                        plan: planId,
+                        subscriptionId: event.data.id,
+                        subscriptionStatus: status,
+                    });
+                }
 
                 break;
             }
 
             case 'subscription.updated': {
                 const { status, custom_data } = event.data;
-                console.log('Subscription updated:', {
-                    id: event.data.id,
-                    status,
-                    clerkUserId: custom_data?.clerkUserId,
-                });
+                const clerkUserId = custom_data?.clerkUserId;
+                const planId = custom_data?.planId;
 
-                // TODO: Update subscription status
+                if (clerkUserId) {
+                    await updateUserPlan(clerkUserId, {
+                        plan: planId || 'pro',
+                        subscriptionId: event.data.id,
+                        subscriptionStatus: status,
+                    });
+                }
+
                 break;
             }
 
             case 'subscription.canceled':
             case 'subscription.past_due': {
                 const { custom_data, status } = event.data;
-                console.log('Subscription cancelled/past due:', {
-                    id: event.data.id,
-                    status,
-                    clerkUserId: custom_data?.clerkUserId,
-                });
+                const clerkUserId = custom_data?.clerkUserId;
 
-                // TODO: Downgrade user to free tier
-                // if (custom_data?.clerkUserId) {
-                //     await clerkClient.users.updateUserMetadata(custom_data.clerkUserId, {
-                //         publicMetadata: {
-                //             plan: 'free',
-                //             subscriptionId: null,
-                //             subscriptionStatus: status,
-                //         },
-                //     });
-                // }
+                if (clerkUserId) {
+                    await updateUserPlan(clerkUserId, {
+                        plan: 'free',
+                        subscriptionId: null,
+                        subscriptionStatus: status,
+                    });
+                }
 
                 break;
             }
 
             case 'transaction.completed': {
-                console.log('Transaction completed:', event.data.id);
                 break;
             }
 
             case 'transaction.payment_failed': {
-                console.log('Payment failed for transaction:', event.data.id);
-                // TODO: Notify user of failed payment
+                // Log the failed payment for monitoring
+                const clerkUserId = event.data.custom_data?.clerkUserId;
+                if (clerkUserId) {
+                    console.error(
+                        `[Webhook] Payment failed for user ${clerkUserId}, subscription ${event.data.id}`
+                    );
+                }
                 break;
             }
 
             default:
-                console.log(`Unhandled Paddle event type: ${event.event_type}`);
+                // Unhandled event type
         }
 
         return NextResponse.json({ received: true });

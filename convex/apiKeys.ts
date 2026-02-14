@@ -68,3 +68,22 @@ export const remove = mutation({
         await ctx.db.delete(args.id);
     },
 });
+
+// Look up an API key by its hashed value (for public API authentication)
+export const getByHashedKey = query({
+    args: { hashedKey: v.string() },
+    handler: async (ctx, args) => {
+        const key = await ctx.db
+            .query("apiKeys")
+            .withIndex("by_hashed_key", (q) => q.eq("hashedKey", args.hashedKey))
+            .first();
+
+        if (!key) return null;
+
+        return {
+            userId: key.userId,
+            name: key.name,
+            _id: key._id,
+        };
+    },
+});

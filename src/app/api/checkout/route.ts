@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Price IDs from Paddle Dashboard
 const PRICE_IDS = {
@@ -6,7 +6,7 @@ const PRICE_IDS = {
     proplus: process.env.PADDLE_PROPLUS_PRICE_ID || '',
 };
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
     try {
         const { planId, email, clerkUserId } = await request.json();
 
@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
 
         // Check if Paddle is configured
         if (!process.env.NEXT_PUBLIC_PADDLE_VENDOR_ID) {
-            console.log('Paddle not configured. Plan:', planId, 'Email:', email);
             return NextResponse.json(
                 {
                     error: 'Payment system not configured',

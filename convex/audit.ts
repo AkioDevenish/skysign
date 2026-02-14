@@ -115,11 +115,10 @@ export const generate = action({
     const { storageId } = await result.json();
 
     // 4. Update the Signature record with the auditStorageId
-    // TODO: Implement this internal mutation in signatures.ts
-    // await ctx.runMutation(internal.signatures.updateAuditTrail, {
-    //     signatureId: args.signatureId,
-    //     auditStorageId: storageId,
-    // });
+    await ctx.runMutation(internal.signatures.updateAuditTrail, {
+        signatureId: args.signatureId,
+        auditStorageId: storageId,
+    });
 
     return storageId;
   }

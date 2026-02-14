@@ -12,7 +12,7 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.NEXT_PUBLIC_APP_URL 
         ? `${process.env.NEXT_PUBLIC_APP_URL}/api/google/callback`
-        : 'http://localhost:3000/api/google/callback'
+        : 'https://skysign.io/api/google/callback'
 );
 
 // GET /api/google/callback - Handle OAuth callback
@@ -72,7 +72,6 @@ export async function GET(request: NextRequest) {
             email: userInfo.email || undefined,
         });
 
-        console.log('[Google OAuth] Successfully connected for user:', userId);
 
         // Redirect back to dashboard with success
         return NextResponse.redirect(

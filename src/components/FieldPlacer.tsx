@@ -66,7 +66,7 @@ export default function FieldPlacer({
         } else if (type === 'initials') {
             value = getInitials(userName);
         } else if (type === 'signature') {
-            value = '✍️ Signature';
+            value = 'Signature';
         }
 
         const newField: Field = {
@@ -130,9 +130,37 @@ export default function FieldPlacer({
     }, [draggingId, handleMouseMove, handleMouseUp]);
 
     const fieldButtons = [
-        { type: 'date' as FieldType, icon: '📅', label: 'Date', color: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
-        { type: 'initials' as FieldType, icon: '✍️', label: 'Initials', color: 'bg-green-50 text-green-700 hover:bg-green-100' },
-        { type: 'signature' as FieldType, icon: '🖊️', label: 'Signature', color: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
+        {
+            type: 'date' as FieldType,
+            icon: (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            ),
+            label: 'Date',
+            color: 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/60'
+        },
+        {
+            type: 'initials' as FieldType,
+            icon: (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+            ),
+            label: 'Initials',
+            color: 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/60'
+        },
+        {
+            type: 'signature' as FieldType,
+            icon: (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2 20c2-1 4-3 6-3s3 2 5 2 3-2 5-2" />
+                </svg>
+            ),
+            label: 'Signature',
+            color: 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/60'
+        },
     ];
 
     return (
@@ -143,9 +171,10 @@ export default function FieldPlacer({
                     <button
                         key={btn.type}
                         onClick={() => addField(btn.type)}
-                        className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${btn.color}`}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${btn.color}`}
                     >
-                        {btn.icon} {btn.label}
+                        {btn.icon}
+                        {btn.label}
                     </button>
                 ))}
             </div>

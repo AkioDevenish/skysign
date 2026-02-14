@@ -164,7 +164,7 @@ export const sendSignatureRequest = action({
   },
   handler: async (ctx, args) => {
     if (!process.env.RESEND_API_KEY) {
-      console.log('[Email] RESEND_API_KEY not set, skipping email');
+      console.warn('[Email] RESEND_API_KEY not set, skipping email');
       return { success: false, error: 'Email not configured' };
     }
 
@@ -185,7 +185,6 @@ export const sendSignatureRequest = action({
       });
 
       if (error) throw new Error(error.message);
-      console.log('[Email] Signature request sent to:', args.recipientEmail);
       return { success: true, id: data?.id };
     } catch (err) {
       console.error('[Email] Failed to send:', err);
@@ -226,7 +225,6 @@ export const sendReminder = action({
       });
 
       if (error) throw new Error(error.message);
-      console.log('[Email] Reminder sent to:', args.recipientEmail);
       return { success: true, id: data?.id };
     } catch (err) {
       console.error('[Email] Failed to send reminder:', err);
@@ -267,7 +265,6 @@ export const sendSignedNotification = action({
       });
 
       if (error) throw new Error(error.message);
-      console.log('[Email] Signed notification sent to:', args.senderEmail);
       return { success: true, id: data?.id };
     } catch (err) {
       console.error('[Email] Failed to send notification:', err);
@@ -304,7 +301,6 @@ export const sendDeclinedNotification = action({
       });
 
       if (error) throw new Error(error.message);
-      console.log('[Email] Declined notification sent to:', args.senderEmail);
       return { success: true, id: data?.id };
     } catch (err) {
       console.error('[Email] Failed to send notification:', err);
@@ -321,7 +317,6 @@ export const sendScheduledReminder = internalAction({
   handler: async (ctx, args) => {
     // This will be called by the scheduler to send reminders
     // The actual implementation would fetch the request and send the reminder
-    console.log('[Email] Scheduled reminder for request:', args.requestId);
     return { success: true };
   },
 });
@@ -335,7 +330,7 @@ export const sendInvite = action({
     },
     handler: async (ctx, args) => {
         if (!process.env.RESEND_API_KEY) {
-            console.log('Resend API Key missing, skipping email send.');
+            console.warn('[Email] Resend API Key missing, skipping email send.');
             return { success: false, error: 'Configuration missing' };
         }
 
