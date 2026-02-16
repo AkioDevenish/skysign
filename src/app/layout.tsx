@@ -43,10 +43,6 @@ export const metadata: Metadata = {
     description: "Draw your signature in the air with AI hand-tracking. The future of digital signatures.",
     images: ["/og-image.png"],
   },
-  icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
-  },
 };
 
 
