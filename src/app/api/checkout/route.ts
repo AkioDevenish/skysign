@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createRateLimiter } from '@/lib/apiUtils';
 
 // Price IDs from Paddle Dashboard (hardcoded strings to avoid env var corruption/quotes)
 const PRICE_IDS = {
@@ -17,8 +18,21 @@ const PADDLE_API_KEY = (process.env.PADDLE_API_KEY || '').trim();
 
 export const dynamic = 'force-dynamic';
 
+// Rate limit: 10 checkout attempts per IP per 15 minutes
+const rateLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, maxRequests: 10 });
+
 export async function POST(request: Request) {
     try {
+        // Rate limiting
+        const forwarded = request.headers.get('x-forwarded-for');
+        const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+        if (!rateLimiter.check(ip)) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 }
+            );
+        }
+
         const { planId, email, clerkUserId, billingCycle = 'monthly' } = await request.json();
 
         // Validate plan
@@ -66,7 +80,6 @@ export async function POST(request: Request) {
         };
 
         const bodyString = JSON.stringify(transactionPayload);
-        console.log('Paddle request body:', bodyString);
 
         const paddleResponse = await fetch('https://api.paddle.com/transactions', {
             method: 'POST',
@@ -92,16 +105,8 @@ export async function POST(request: Request) {
 
         if (!paddleResponse.ok) {
             console.error('Paddle API error:', JSON.stringify(paddleData));
-            // Return detailed debug info so we can see exactly what was sent
             return NextResponse.json(
-                { 
-                    error: 'Failed to create transaction', 
-                    details: paddleData, 
-                    sentPayload: bodyString,
-                    usedPriceId: priceId,
-                    priceIdLength: priceId.length,
-                    apiKeyPrefix: PADDLE_API_KEY.substring(0, 8) + '...'
-                },
+                { error: 'Failed to create transaction' },
                 { status: 500 }
             );
         }

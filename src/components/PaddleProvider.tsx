@@ -16,6 +16,10 @@ declare global {
     }
 }
 
+/**
+ * Opens a Paddle checkout. Returns an object indicating success/failure
+ * so callers can show appropriate toast messages.
+ */
 export async function openPaddleCheckout({
     customerEmail,
     clerkUserId,
@@ -27,11 +31,9 @@ export async function openPaddleCheckout({
     clerkUserId?: string;
     planId: string;
     billingCycle?: 'monthly' | 'yearly';
-}) {
+}): Promise<{ ok: boolean; error?: string }> {
     if (!window.Paddle) {
-        console.error('Paddle.js not loaded');
-        alert('Payment system is loading. Please try again in a moment.');
-        return;
+        return { ok: false, error: 'Payment system is loading. Please try again in a moment.' };
     }
 
     try {
@@ -50,12 +52,8 @@ export async function openPaddleCheckout({
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('Checkout API error:', data);
-            
-            // Helpful message for the console/alert
             const errorMsg = data.error || 'Failed to start checkout.';
-            alert(`${errorMsg} Please check console for details.`);
-            return;
+            return { ok: false, error: errorMsg };
         }
 
         // Open checkout using the server-created transaction ID
@@ -70,11 +68,11 @@ export async function openPaddleCheckout({
             checkoutConfig.customer = { email: customerEmail };
         }
 
-        console.log('Opening Paddle checkout with transactionId:', data.transactionId);
         window.Paddle.Checkout.open(checkoutConfig);
+        return { ok: true };
     } catch (error) {
         console.error('Checkout error:', error);
-        alert('Failed to start checkout. Please try again.');
+        return { ok: false, error: 'Failed to start checkout. Please try again.' };
     }
 }
 
@@ -101,7 +99,6 @@ export default function PaddleProvider({ children }: { children: React.ReactNode
 
                 window.Paddle.Initialize({ token: clientToken });
                 initialized.current = true;
-                console.log('Paddle initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize Paddle:', error);
             }

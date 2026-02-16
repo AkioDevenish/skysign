@@ -22,6 +22,7 @@ import Modal from '@/components/Modal';
 import TeamSection from '@/components/dashboard/TeamSection';
 import ApiKeysSection from '@/components/dashboard/ApiKeysSection';
 import SubscriptionSection from '@/components/dashboard/SubscriptionSection';
+import { useToast } from '@/components/ToastProvider';
 
 type TabId = 'overview' | 'profile' | 'preferences' | 'subscription' | 'api';
 
@@ -78,9 +79,9 @@ export default function DashboardPage() {
     };
 
     const plan = (user?.publicMetadata?.plan as string) || 'free';
-    // const plan = 'proplus'; // TEMP UNLOCK
     const isPro = plan === 'pro' || plan === 'proplus';
     const isProPlus = plan === 'proplus';
+    const { toast, confirm: confirmDialog } = useToast();
 
     // Team Handlers
     const handleAddMember = async (e: React.FormEvent) => {
@@ -90,12 +91,18 @@ export default function DashboardPage() {
             setNewMember({ name: '', email: '' });
             setIsAddingMember(false);
         } catch (err: unknown) {
-            alert(err instanceof Error ? err.message : String(err));
+            toast(err instanceof Error ? err.message : String(err), 'error');
         }
     };
 
     const handleRemoveMember = async (id: string) => {
-        if (confirm('Are you sure you want to remove this team member?')) {
+        const confirmed = await confirmDialog({
+            title: 'Remove team member',
+            message: 'Are you sure you want to remove this team member? This action cannot be undone.',
+            confirmLabel: 'Remove',
+            destructive: true,
+        });
+        if (confirmed) {
             await removeMember({ id: id as Id<"teamMembers"> });
         }
     };
@@ -108,12 +115,18 @@ export default function DashboardPage() {
             setNewKeyName('');
             setShowKey(key.key);
         } catch (err: unknown) {
-            alert(err instanceof Error ? err.message : String(err));
+            toast(err instanceof Error ? err.message : String(err), 'error');
         }
     };
 
     const handleDeleteKey = async (id: string) => {
-        if (confirm('Are you sure you want to delete this API key?')) {
+        const confirmed = await confirmDialog({
+            title: 'Delete API key',
+            message: 'Are you sure you want to delete this API key? Any applications using it will lose access.',
+            confirmLabel: 'Delete',
+            destructive: true,
+        });
+        if (confirmed) {
             await deleteKey({ id: id as Id<"apiKeys"> });
         }
     };
@@ -344,7 +357,7 @@ export default function DashboardPage() {
                                                                     message: "Failed to update settings. Please try again or check your connection.",
                                                                     type: 'error'
                                                                 });
-                                                                // alert("Failed to update settings. Please try again.");
+
                                                             }
                                                         }}
                                                         className={`w-11 h-6 rounded-full transition-colors cursor-pointer relative ${autoSave ? 'bg-stone-900' : 'bg-stone-200'}`}

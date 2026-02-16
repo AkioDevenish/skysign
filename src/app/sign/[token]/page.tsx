@@ -27,6 +27,7 @@ export default function SignerPage() {
     const [submitted, setSubmitted] = useState(false);
     const [declined, setDeclined] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const lastPosRef = useRef({ x: 0, y: 0 });
@@ -154,13 +155,13 @@ export default function SignerPage() {
     };
 
     const handleDecline = async () => {
-        if (!confirm('Are you sure you want to decline this signature request?')) return;
-        
         try {
             await declineRequest({ accessToken: token });
             setDeclined(true);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to decline request');
+        } finally {
+            setShowDeclineConfirm(false);
         }
     };
 
@@ -421,7 +422,7 @@ export default function SignerPage() {
                             {isSubmitting ? 'Submitting...' : 'Sign Document'}
                         </button>
                         <button
-                            onClick={handleDecline}
+                            onClick={() => setShowDeclineConfirm(true)}
                             disabled={isSubmitting}
                             className="px-6 py-3 border border-stone-200 text-stone-600 rounded-xl font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
                         >
@@ -444,6 +445,48 @@ export default function SignerPage() {
 
             {/* Load Dancing Script font for typed signatures */}
             <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet" />
+
+            {/* Decline Confirmation Dialog */}
+            <AnimatePresence>
+                {showDeclineConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] flex items-center justify-center p-6"
+                    >
+                        <div
+                            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+                            onClick={() => setShowDeclineConfirm(false)}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="relative bg-white rounded-2xl border border-stone-200 shadow-2xl p-6 max-w-sm w-full"
+                        >
+                            <h3 className="text-lg font-semibold text-stone-900 mb-2">Decline Signature Request</h3>
+                            <p className="text-sm text-stone-500 mb-6 leading-relaxed">
+                                Are you sure you want to decline this signature request? The sender will be notified.
+                            </p>
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setShowDeclineConfirm(false)}
+                                    className="px-4 py-2 text-sm font-medium text-stone-600 border border-stone-200 rounded-xl hover:bg-stone-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDecline}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

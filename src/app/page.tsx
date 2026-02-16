@@ -15,6 +15,7 @@ import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
+import { useToast } from "@/components/ToastProvider";
 
 import { getAuditStats } from "../lib/auditTrail";
 
@@ -28,6 +29,7 @@ export default function Home() {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [_signatureCount, setSignatureCount] = useState(0);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const { toast } = useToast();
 
 
   // Load real stats and users on mount
@@ -100,15 +102,18 @@ export default function Home() {
 
     setCheckoutLoading(planName);
     try {
-      await openPaddleCheckout({
+      const result = await openPaddleCheckout({
         customerEmail: user.primaryEmailAddress?.emailAddress,
         clerkUserId: user.id,
         planId,
         billingCycle,
       });
+      if (!result.ok) {
+        toast(result.error || 'Failed to open checkout. Please try again.', 'error');
+      }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Failed to open checkout. Please try again.');
+      toast('Failed to open checkout. Please try again.', 'error');
     } finally {
       setCheckoutLoading(null);
     }

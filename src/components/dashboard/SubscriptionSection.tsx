@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { openPaddleCheckout } from '../PaddleProvider';
+import { useToast } from '../ToastProvider';
 
 interface SubscriptionSectionProps {
     plan: string;
@@ -16,20 +17,24 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
     const { user } = useUser();
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
     const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
 
     const handleUpgrade = async () => {
         if (!user) return;
         setIsLoading(true);
         try {
-            await openPaddleCheckout({
+            const result = await openPaddleCheckout({
                 customerEmail: user.primaryEmailAddress?.emailAddress,
                 clerkUserId: user.id,
                 planId: 'pro',
                 billingCycle,
             });
+            if (!result.ok) {
+                toast(result.error || 'Failed to start checkout. Please try again.', 'error');
+            }
         } catch (error) {
             console.error('Checkout failed:', error);
-            alert('Failed to start checkout. Please try again.');
+            toast('Failed to start checkout. Please try again.', 'error');
         } finally {
             setIsLoading(false);
         }

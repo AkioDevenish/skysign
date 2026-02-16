@@ -18,7 +18,7 @@ export default function SuccessPage() {
         </p>
         
         <Link 
-          href="/" 
+          href="/dashboard" 
           className="block w-full py-4 bg-stone-900 text-white rounded-xl font-bold hover:bg-stone-800 transition-colors shadow-lg shadow-stone-900/10"
         >
           Go to Dashboard

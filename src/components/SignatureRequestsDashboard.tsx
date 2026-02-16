@@ -5,6 +5,7 @@ import { api } from '../../convex/_generated/api';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Id } from '../../convex/_generated/dataModel';
+import { useToast } from './ToastProvider';
 
 const statusConfig = {
     pending: { 
@@ -75,6 +76,7 @@ export default function SignatureRequestsDashboard() {
     const stats = useQuery(api.signatureRequests.getStats);
     const removeRequest = useMutation(api.signatureRequests.remove);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const { confirm: confirmDialog } = useToast();
 
     const copyLink = async (token: string, id: string) => {
         const link = `${window.location.origin}/sign/${token}`;
@@ -84,7 +86,13 @@ export default function SignatureRequestsDashboard() {
     };
 
     const handleDelete = async (id: Id<"signatureRequests">) => {
-        if (!confirm('Are you sure you want to delete this request?')) return;
+        const confirmed = await confirmDialog({
+            title: 'Delete request',
+            message: 'Are you sure you want to delete this signature request? This cannot be undone.',
+            confirmLabel: 'Delete',
+            destructive: true,
+        });
+        if (!confirmed) return;
         await removeRequest({ id });
     };
 

@@ -80,7 +80,7 @@ async function updateUserPlan(
         await client.users.updateUserMetadata(clerkUserId, {
             publicMetadata: metadata,
         });
-        console.log(`[Webhook] Updated Clerk metadata for ${clerkUserId} to plan: ${metadata.plan}`);
+        // Plan updated successfully for user
     } catch (err) {
         console.error(`[Webhook] Failed to update Clerk metadata for ${clerkUserId}:`, err);
         throw err; // Re-throw so the webhook returns 500 and Paddle retries

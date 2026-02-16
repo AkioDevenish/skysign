@@ -19,6 +19,7 @@ import FieldPlacer, { Field } from '@/components/FieldPlacer';
 import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
 import LimitModal from '@/components/LimitModal';
+import { useToast } from '@/components/ToastProvider';
 
 import SendForSignatureModal from '@/components/SendForSignatureModal';
 import SignatureRequestsDashboard from '@/components/SignatureRequestsDashboard';
@@ -133,6 +134,7 @@ export default function CreatePage() {
     const [isMobile, setIsMobile] = useState(false);
     const [showSendModal, setShowSendModal] = useState(false);
     const [currentStorageId, setCurrentStorageId] = useState<string | null>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -208,7 +210,7 @@ export default function CreatePage() {
                     setShowLimitModal(true);
                 } else {
                     console.error("Save error:", msg); // Log full error in console
-                    alert(`Failed to save signature: ${msg}`);
+                    toast(`Failed to save signature: ${msg}`, 'error');
                 }
             }
         }
@@ -272,7 +274,7 @@ export default function CreatePage() {
             // (The auditStorageId is stored on the signature record)
         } catch (error) {
             console.error("Error signing PDF:", error);
-            alert("Failed to sign PDF");
+            toast('Failed to sign PDF. Please try again.', 'error');
             setIsSaving(false);
         }
     };
@@ -301,7 +303,7 @@ export default function CreatePage() {
 
         if (tier !== 'free' && plan === 'free') {
             // Show coming soon prompt for premium features
-            alert(`The ${tier.charAt(0).toUpperCase() + tier.slice(1)} features are coming soon!`);
+            toast(`${tier.charAt(0).toUpperCase() + tier.slice(1)} features require a Pro plan.`, 'info');
             return;
         }
         setActiveSection(sectionId);

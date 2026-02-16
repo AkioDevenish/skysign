@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
+import { createRateLimiter } from '@/lib/apiUtils';
 
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
 
+// Rate limit: 60 API requests per minute per IP
+const rateLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 60 });
 
 /**
  * Hash an API key using SHA-256 to match against stored hashed keys.
@@ -75,6 +78,16 @@ async function authenticateApiKey(
  */
 export async function GET(request: Request) {
     try {
+        // Rate limiting
+        const forwarded = request.headers.get('x-forwarded-for');
+        const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+        if (!rateLimiter.check(ip)) {
+            return NextResponse.json(
+                { error: 'Too many requests' },
+                { status: 429 }
+            );
+        }
+
         const auth = await authenticateApiKey(request);
         if (!auth) {
             return NextResponse.json(
@@ -152,6 +165,16 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
     try {
+        // Rate limiting
+        const forwarded = request.headers.get('x-forwarded-for');
+        const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+        if (!rateLimiter.check(ip)) {
+            return NextResponse.json(
+                { error: 'Too many requests' },
+                { status: 429 }
+            );
+        }
+
         const auth = await authenticateApiKey(request);
         if (!auth) {
             return NextResponse.json(

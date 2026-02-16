@@ -6,14 +6,15 @@ import PaddleProvider from "@/components/PaddleProvider";
 import ConvexClientProvider from "./ConvexClientProvider";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { ToastProvider } from "@/components/ToastProvider";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-// Replace with your actual Google Analytics 4 Measurement ID
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || "G-XXXXXXXXXX";
+// Only load Google Analytics when a real measurement ID is configured
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata: Metadata = {
   title: "SkySign | Air Signature Capture",
@@ -64,19 +65,23 @@ export default function RootLayout({
     >
       <html lang="en" suppressHydrationWarning>
         <head>
-          {/* Google Analytics */}
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_MEASUREMENT_ID}');
-            `}
-          </Script>
+          {/* Google Analytics — only when configured */}
+          {GA_MEASUREMENT_ID && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+                strategy="afterInteractive"
+              />
+              <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}');
+                `}
+              </Script>
+            </>
+          )}
           {/* Paddle.js */}
           <Script
             src="https://cdn.paddle.com/paddle/v2/paddle.js"
@@ -88,7 +93,9 @@ export default function RootLayout({
         <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
           <PostHogProvider>
             <ConvexClientProvider>
-              <PaddleProvider>{children}</PaddleProvider>
+              <PaddleProvider>
+                <ToastProvider>{children}</ToastProvider>
+              </PaddleProvider>
             </ConvexClientProvider>
           </PostHogProvider>
         </body>

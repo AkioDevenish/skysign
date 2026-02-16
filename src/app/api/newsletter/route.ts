@@ -1,15 +1,29 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { isValidEmail, createRateLimiter } from '@/lib/apiUtils';
 
 // Newsletter subscription endpoint using Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SkySign <onboarding@resend.dev>';
 
+// Rate limit: 3 newsletter subscriptions per IP per hour
+const rateLimiter = createRateLimiter({ windowMs: 60 * 60 * 1000, maxRequests: 3 });
+
 export async function POST(request: Request) {
     try {
+        // Rate limiting
+        const forwarded = request.headers.get('x-forwarded-for');
+        const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+        if (!rateLimiter.check(ip)) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 }
+            );
+        }
+
         const { email } = await request.json();
 
-        if (!email || !email.includes('@')) {
+        if (!email || !isValidEmail(email)) {
             return NextResponse.json(
                 { error: 'Valid email is required' },
                 { status: 400 }
@@ -28,7 +42,7 @@ export async function POST(request: Request) {
         const { error } = await resend.emails.send({
             from: FROM_EMAIL,
             to: email,
-            subject: 'Welcome to SkySign! ✍️',
+            subject: 'Welcome to SkySign!',
             html: `
 <!DOCTYPE html>
 <html>
@@ -39,7 +53,7 @@ export async function POST(request: Request) {
 <body style="margin: 0; padding: 0; background-color: #f5f5f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <div style="max-width: 560px; margin: 40px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.07);">
     <div style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%); padding: 32px; text-align: center;">
-      <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 700;">✍️ SkySign</h1>
+      <h1 style="margin: 0; color: white; font-size: 24px; font-weight: 700;">SkySign</h1>
     </div>
     <div style="padding: 32px;">
       <h2 style="margin: 0 0 16px; color: #1c1917; font-size: 20px;">Welcome to SkySign!</h2>
