@@ -585,21 +585,21 @@ export default function Home() {
               {pricingTiers.map((plan, idx) => (
                 <div
                   key={plan.name}
-                  className={`relative flex flex-col p-8 rounded-[2rem] transition-all duration-300 ${
+                  className={`relative flex flex-col p-8 rounded-[2.5rem] transition-all duration-300 ${
                     plan.highlighted
-                      ? 'bg-stone-900 text-stone-50 shadow-2xl shadow-stone-900/20 scale-100 lg:scale-105 z-10'
-                      : 'bg-white text-stone-900 border border-stone-200 hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/20 z-0'
+                      ? 'bg-white shadow-[0_32px_64px_-12px_rgba(16,185,129,0.15)] scale-100 lg:scale-105 z-10 ring-1 ring-emerald-500/50'
+                      : 'bg-white border border-stone-200 hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/20 z-0'
                   }`}
                 >
                   {/* Highlight Glow for Pro */}
                   {plan.highlighted && (
-                    <div className="absolute -inset-[1px] rounded-[2.5rem] bg-gradient-to-b from-emerald-500/20 to-transparent opacity-50 pointer-events-none" />
+                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
                   )}
 
-                  {/* Badge position fix */}
+                  {/* Badge */}
                   {plan.highlighted && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                      <span className="px-4 py-1.5 bg-emerald-500 text-white text-[11px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-emerald-500/20 ring-4 ring-stone-50">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[11px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-emerald-500/20">
                         Most Popular
                       </span>
                     </div>
@@ -607,10 +607,10 @@ export default function Home() {
 
                   {/* Plan Content */}
                   <div className="mb-8">
-                    <h3 className={`text-xl font-bold mb-2 ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                    <h3 className="text-xl font-bold mb-2 text-stone-900">
                       {plan.name}
                     </h3>
-                    <p className={`text-sm leading-relaxed ${plan.highlighted ? 'text-stone-400' : 'text-stone-500'}`}>
+                    <p className="text-sm leading-relaxed text-stone-500">
                       {plan.description}
                     </p>
                   </div>
@@ -618,37 +618,39 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-8">
                     <div className="flex items-baseline gap-1">
-                      <span className={`text-5xl font-bold tracking-tight ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      <span className="text-5xl font-bold tracking-tight text-stone-900">
                         {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                       </span>
                       {plan.monthlyPrice !== '$0' && (
-                        <span className={`font-medium ${plan.highlighted ? 'text-stone-500' : 'text-stone-400'}`}>
+                        <span className="font-medium text-stone-400">
                           /{billingCycle === 'yearly' ? 'year' : 'mo'}
                         </span>
                       )}
                     </div>
                     {billingCycle === 'yearly' && plan.monthlyPrice !== '$0' && (
-                      <p className={`text-xs mt-2 font-medium ${plan.highlighted ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                      <p className="text-xs mt-2 font-medium text-emerald-600">
                         Billed yearly (Save 25%)
                       </p>
                     )}
                   </div>
 
                   {/* Features */}
-                  <div className="flex-grow mb-8">
+                  <div className="flex-grow mb-10">
                     <ul className="space-y-4">
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm">
-                          <svg 
-                            className={`w-5 h-5 flex-shrink-0 ${plan.highlighted ? 'text-emerald-400' : 'text-emerald-500'}`} 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className={`${plan.highlighted ? 'text-stone-300' : 'text-stone-600'}`}>
+                          <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-emerald-100' : 'bg-stone-100'}`}>
+                            <svg 
+                              className={`w-3 h-3 ${plan.highlighted ? 'text-emerald-600' : 'text-stone-500'}`} 
+                              viewBox="0 0 24 24" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              strokeWidth="3"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <span className="text-stone-600 font-medium">
                             {feature}
                           </span>
                         </li>
@@ -662,8 +664,8 @@ export default function Home() {
                     disabled={checkoutLoading === plan.name}
                     className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 
                       ${plan.highlighted
-                        ? 'bg-white text-stone-900 hover:bg-stone-100 hover:shadow-lg hover:scale-[1.02]'
-                        : 'bg-stone-900 text-white hover:bg-stone-800 hover:shadow-lg hover:scale-[1.02]'
+                        ? 'bg-stone-900 text-white hover:bg-stone-800 hover:shadow-lg hover:shadow-stone-900/20 hover:-translate-y-0.5'
+                        : 'bg-white text-stone-900 border border-stone-200 hover:border-stone-900 hover:bg-stone-50'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {checkoutLoading === plan.name ? 'Processing...' : plan.cta}
