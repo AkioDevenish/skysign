@@ -67,6 +67,7 @@ export const embedSignature = action({
 
     // 6. Save and Upload
     const pdfBytes = await pdfDoc.save();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
     const storageId = await ctx.storage.store(blob);
 

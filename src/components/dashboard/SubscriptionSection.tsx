@@ -123,7 +123,7 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                             <button
                                 onClick={handleUpgrade}
                                 disabled={isLoading}
-                                className="block w-full py-3 bg-stone-900 text-white text-center rounded-xl font-bold hover:bg-stone-800 transition-colors disabled:opacity-50"
+                                className="block w-full py-3 bg-stone-900 text-white text-center rounded-xl font-bold hover:bg-stone-800 transition-colors disabled:opacity-50 cursor-pointer"
                             >
                                 {isLoading ? 'Processing...' : `Upgrade to Pro (${billingCycle === 'monthly' ? '$12/mo' : '$108/yr'})`}
                             </button>

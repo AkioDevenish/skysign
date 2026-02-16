@@ -97,7 +97,7 @@ export const generate = action({
 
     // 3. Serialize and Upload
     const pdfBytes = await pdfDoc.save();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
     
     // Upload to Convex Storage

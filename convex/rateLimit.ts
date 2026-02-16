@@ -12,7 +12,7 @@ import { MutationCtx } from "./_generated/server";
  */
 export async function checkRateLimit(
     ctx: MutationCtx,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     tableName: "signatures" | "auditTrail" | "apiKeys",
     userId: string,
     limit: number = 10,

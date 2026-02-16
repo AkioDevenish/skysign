@@ -32,7 +32,7 @@ export const create = mutation({
         if (!identity) throw new Error("Not authenticated");
 
         // Normalize signers
-        let signersList = args.signers || [];
+        const signersList = args.signers || [];
         if (signersList.length === 0 && args.recipientEmail) {
             signersList.push({ 
                 email: args.recipientEmail, 
@@ -194,6 +194,7 @@ export const getByToken = query({
             
             // Mock a signer object for legacy
             currentSigner = {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 _id: "legacy" as any,
                 _creationTime: 0,
                 requestId: request._id,
@@ -281,6 +282,7 @@ export const submitSignature = mutation({
             
             // Mock legacy signer for consistent handling
             currentSigner = {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 _id: "legacy" as any,
                 requestId: request._id,
                 email: request.recipientEmail!,
@@ -460,7 +462,7 @@ export const decline = mutation({
         await ctx.scheduler.runAfter(0, api.email.sendDeclinedNotification, {
             senderEmail: request.senderId, // Will need user email lookup in production
             senderName: 'You',
-            recipientName: request.recipientName || request.recipientEmail || 'Unknown',
+            recipientName: request.recipientName || request.recipientEmail || 'Signer',
             documentName: request.documentName,
         });
 

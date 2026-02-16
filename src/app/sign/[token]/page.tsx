@@ -223,7 +223,7 @@ export default function SignerPage() {
                         </svg>
                     </div>
                     <h1 className="text-2xl font-semibold text-stone-900 mb-2">Signature Complete!</h1>
-                    <p className="text-stone-600 mb-6">Thank you for signing "{request.documentName}"</p>
+                    <p className="text-stone-600 mb-6">Thank you for signing &quot;{request.documentName}&quot;</p>
                     <Link 
                         href="/"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-stone-900 text-white rounded-xl hover:bg-stone-800 transition-colors"
@@ -286,11 +286,11 @@ export default function SignerPage() {
                         <div className="flex-1">
                             <h1 className="text-xl font-semibold text-stone-900 mb-1">{request.documentName}</h1>
                             <p className="text-stone-500 text-sm">
-                                You've been asked to sign this document
+                                You&apos;ve been asked to sign this document
                             </p>
                             {request.message && (
                                 <div className="mt-3 p-3 bg-stone-50 rounded-xl text-sm text-stone-600">
-                                    "{request.message}"
+                                    &quot;{request.message}&quot;
                                 </div>
                             )}
                         </div>

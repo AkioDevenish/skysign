@@ -196,7 +196,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {filteredTemplates.length === 0 ? (
                                             <p className="col-span-2 text-center py-12 text-stone-500">
-                                                No templates found for "{searchQuery}"
+                                                No templates found for &quot;{searchQuery}&quot;
                                             </p>
                                         ) : (
                                             filteredTemplates.map((template) => (

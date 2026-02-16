@@ -77,7 +77,7 @@ export const generate = action({
 
     // 3. Save & Upload
     const pdfBytes = await pdfDoc.save();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const blob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
     
     const uploadUrl = await ctx.storage.generateUploadUrl();

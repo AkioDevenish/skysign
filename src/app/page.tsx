@@ -35,7 +35,7 @@ export default function Home() {
   // Load real stats and users on mount
   useEffect(() => {
     const stats = getAuditStats();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setSignatureCount(stats.totalCreated);
     
 
@@ -534,7 +534,7 @@ export default function Home() {
                 <span className={`text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'text-stone-900' : 'text-stone-400'}`}>Monthly</span>
                 <button
                   onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'yearly' : 'monthly')}
-                  className="relative w-14 h-7 bg-stone-200 rounded-full p-1 transition-colors hover:bg-stone-300"
+                  className="relative w-14 h-7 bg-stone-200 rounded-full p-1 transition-colors hover:bg-stone-300 cursor-pointer"
                 >
                   <motion.div
                     animate={{ x: billingCycle === 'monthly' ? 0 : 28 }}
@@ -634,7 +634,7 @@ export default function Home() {
                       ${plan.highlighted
                         ? 'bg-stone-900 text-white hover:bg-stone-800 hover:shadow-lg hover:shadow-stone-900/20 hover:-translate-y-0.5'
                         : 'bg-white text-stone-900 border border-stone-200 hover:border-stone-900 hover:bg-stone-50'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
                   >
                     {checkoutLoading === plan.name ? (
                       <span className="flex items-center justify-center gap-2">
