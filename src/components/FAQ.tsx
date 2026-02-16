@@ -78,7 +78,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: FAQItemProps) => 
 };
 
 export default function FAQ() {
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
         <section id="faq" className="py-32 px-8 lg:px-12 relative z-10 bg-white">
