@@ -49,19 +49,19 @@ export async function POST(request: Request) {
         }
 
         // Create transaction server-side via Paddle API
-        const transactionPayload: Record<string, unknown> = {
+        const transactionPayload = {
             items: [{ price_id: priceId, quantity: 1 }],
+            ...(clerkUserId ? {
+                custom_data: {
+                    clerk_user_id: clerkUserId,
+                    plan_id: planId,
+                },
+            } : {}),
         };
 
-        // Add custom data if we have a Clerk user ID
-        if (clerkUserId) {
-            transactionPayload.custom_data = {
-                clerk_user_id: clerkUserId,
-                plan_id: planId,
-            };
-        }
-
-        console.log('Creating Paddle transaction:', { priceId, planId, cycle });
+        const bodyString = JSON.stringify(transactionPayload);
+        console.log('Paddle request body:', bodyString);
+        console.log('API key present:', !!PADDLE_API_KEY, 'length:', PADDLE_API_KEY.length);
 
         const paddleResponse = await fetch('https://api.paddle.com/transactions', {
             method: 'POST',
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
                 'Authorization': `Bearer ${PADDLE_API_KEY}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(transactionPayload),
+            body: bodyString,
         });
 
         const responseText = await paddleResponse.text();
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         if (!paddleResponse.ok) {
             console.error('Paddle API error:', JSON.stringify(paddleData));
             return NextResponse.json(
-                { error: 'Failed to create transaction', details: paddleData },
+                { error: 'Failed to create transaction', details: paddleData, sentPayload: bodyString, apiKeyLength: PADDLE_API_KEY.length },
                 { status: 500 }
             );
         }
