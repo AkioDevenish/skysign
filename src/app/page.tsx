@@ -585,115 +585,89 @@ export default function Home() {
               {pricingTiers.map((plan, idx) => (
                 <div
                   key={plan.name}
-                  className={`relative group rounded-[2.5rem] p-8 lg:p-10 transition-all duration-500 flex flex-col flex-1 ${plan.highlighted
-                    ? 'bg-white shadow-[0_20px_60px_-15px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/20 scale-[1.02] lg:scale-[1.05] z-20'
-                    : 'bg-white/60 backdrop-blur-xl border border-stone-200/60 hover:border-stone-400 hover:shadow-xl hover:shadow-stone-200/30 z-10'
-                    }`}
+                  className={`relative flex flex-col p-8 rounded-[2rem] transition-all duration-300 ${
+                    plan.highlighted
+                      ? 'bg-stone-900 text-stone-50 shadow-2xl shadow-stone-900/20 scale-100 lg:scale-105 z-10'
+                      : 'bg-white text-stone-900 border border-stone-200 hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/20 z-0'
+                  }`}
                 >
                   {/* Highlight Glow for Pro */}
                   {plan.highlighted && (
                     <div className="absolute -inset-[1px] rounded-[2.5rem] bg-gradient-to-b from-emerald-500/20 to-transparent opacity-50 pointer-events-none" />
                   )}
 
-                  {/* Popular Badge */}
+                  {/* Badge position fix */}
                   {plan.highlighted && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30">
-                      <span className="px-5 py-1.5 bg-stone-900 text-white text-[10px] tracking-widest font-bold rounded-full shadow-lg border border-stone-700 uppercase">
-                        Recommended
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                      <span className="px-4 py-1.5 bg-emerald-500 text-white text-[11px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-emerald-500/20 ring-4 ring-stone-50">
+                        Most Popular
                       </span>
                     </div>
                   )}
 
-                  {/* Plan Header */}
-                  <div className="mb-8 relative z-10">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-2xl font-bold tracking-tight text-stone-900">
-                        {plan.name}
-                      </h3>
-                      {plan.highlighted && !plan.comingSoon && (
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                          <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-base leading-relaxed text-stone-500">
+                  {/* Plan Content */}
+                  <div className="mb-8">
+                    <h3 className={`text-xl font-bold mb-2 ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
+                      {plan.name}
+                    </h3>
+                    <p className={`text-sm leading-relaxed ${plan.highlighted ? 'text-stone-400' : 'text-stone-500'}`}>
                       {plan.description}
                     </p>
                   </div>
 
                   {/* Price */}
-                  <div className="mb-10">
+                  <div className="mb-8">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl lg:text-6xl font-bold tracking-tighter text-stone-900">
+                      <span className={`text-5xl font-bold tracking-tight ${plan.highlighted ? 'text-white' : 'text-stone-900'}`}>
                         {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                       </span>
-                      <span className="text-stone-500 font-medium">
-                        /{plan.period === 'forever' ? 'forever' : billingCycle === 'yearly' && plan.name !== 'Free' ? 'yr' : 'mo'}
-                      </span>
+                      {plan.monthlyPrice !== '$0' && (
+                        <span className={`font-medium ${plan.highlighted ? 'text-stone-500' : 'text-stone-400'}`}>
+                          /{billingCycle === 'yearly' ? 'year' : 'mo'}
+                        </span>
+                      )}
                     </div>
-                    {billingCycle === 'yearly' && plan.name !== 'Free' && (
-                      <p className="text-[10px] text-stone-400 font-medium mt-1 uppercase tracking-wider">
-                        Billed annually
+                    {billingCycle === 'yearly' && plan.monthlyPrice !== '$0' && (
+                      <p className={`text-xs mt-2 font-medium ${plan.highlighted ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                        Billed yearly (Save 25%)
                       </p>
                     )}
                   </div>
 
-                  {/* CTA Button */}
-                  <div className="mt-auto mb-12">
-                    <button
-                      onClick={() => handleCheckout(plan.planId, plan.name)}
-                      disabled={checkoutLoading === plan.name || plan.comingSoon}
-                      className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-300 cursor-pointer group/btn 
-                        ${plan.comingSoon
-                          ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
-                          : plan.highlighted
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg hover:shadow-emerald-500/25'
-                            : 'bg-stone-900 text-white hover:bg-stone-800 shadow-lg shadow-stone-900/10'
-                        }`}
-                    >
-                      {checkoutLoading === plan.name ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                          Processing...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          {plan.cta}
-                          {!plan.comingSoon && (
-                            <svg className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                          )}
-                        </span>
-                      )}
-                    </button>
-                  </div>
-
                   {/* Features */}
-                  <div className="pt-8 border-t border-stone-100">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-6 text-stone-400">
-                      What&apos;s included
-                    </p>
+                  <div className="flex-grow mb-8">
                     <ul className="space-y-4">
                       {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-4 text-sm group/item">
-                          <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-emerald-100 text-emerald-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                          <span className="text-stone-600">
+                        <li key={i} className="flex items-start gap-3 text-sm">
+                          <svg 
+                            className={`w-5 h-5 flex-shrink-0 ${plan.highlighted ? 'text-emerald-400' : 'text-emerald-500'}`} 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className={`${plan.highlighted ? 'text-stone-300' : 'text-stone-600'}`}>
                             {feature}
                           </span>
                         </li>
                       ))}
                     </ul>
                   </div>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => handleCheckout(plan.planId, plan.name)}
+                    disabled={checkoutLoading === plan.name}
+                    className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 
+                      ${plan.highlighted
+                        ? 'bg-white text-stone-900 hover:bg-stone-100 hover:shadow-lg hover:scale-[1.02]'
+                        : 'bg-stone-900 text-white hover:bg-stone-800 hover:shadow-lg hover:scale-[1.02]'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {checkoutLoading === plan.name ? 'Processing...' : plan.cta}
+                  </button>
                 </div>
               ))}
             </div>
