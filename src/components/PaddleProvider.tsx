@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 
 declare global {
@@ -10,6 +10,7 @@ declare global {
             Checkout: {
                 open: (config: Record<string, unknown>) => void;
             };
+            Setup: (config: Record<string, unknown>) => void;
             Environment: {
                 set: (env: string) => void;
             };
@@ -17,8 +18,8 @@ declare global {
     }
 }
 
-// Price IDs from environment
-const PRICE_IDS = {
+// Price IDs — these are public identifiers, not secrets
+const PRICE_IDS: Record<string, Record<string, string>> = {
     pro: {
         monthly: process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || 'pri_01khkgby88ehsa1at50nvxagbm',
         yearly: process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY_PRICE_ID || 'pri_01khkgsy6wmn4z0dbxy212ngq6',
@@ -30,7 +31,7 @@ const PRICE_IDS = {
 };
 
 export function getPriceId(planId: 'pro' | 'proplus', billingCycle: 'monthly' | 'yearly'): string {
-    return PRICE_IDS[planId][billingCycle];
+    return PRICE_IDS[planId]?.[billingCycle] || '';
 }
 
 export function openPaddleCheckout({
@@ -50,26 +51,32 @@ export function openPaddleCheckout({
         return;
     }
 
-    window.Paddle.Checkout.open({
+    const checkoutConfig: Record<string, unknown> = {
         items: [{ priceId, quantity: 1 }],
-        customer: customerEmail ? { email: customerEmail } : undefined,
-        customData: {
-            clerkUserId: clerkUserId || '',
-            planId,
-        },
         settings: {
             displayMode: 'overlay',
             theme: 'light',
             successUrl: `${window.location.origin}/dashboard?subscribed=true`,
         },
-    });
+        customData: {
+            clerkUserId: clerkUserId || '',
+            planId,
+        },
+    };
+
+    if (customerEmail) {
+        checkoutConfig.customer = { email: customerEmail };
+    }
+
+    window.Paddle.Checkout.open(checkoutConfig);
 }
 
 export default function PaddleProvider({ children }: { children: React.ReactNode }) {
     const { user } = useUser();
+    const initialized = useRef(false);
 
     const initPaddle = useCallback(() => {
-        if (!window.Paddle) return;
+        if (!window.Paddle || initialized.current) return;
 
         const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
         if (!clientToken) {
@@ -77,41 +84,25 @@ export default function PaddleProvider({ children }: { children: React.ReactNode
             return;
         }
 
-        const environment = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT;
+        const environment = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production';
 
-        // Only set sandbox environment explicitly; live is the default
-        if (environment === 'sandbox') {
-            window.Paddle.Environment.set('sandbox');
+        try {
+            window.Paddle.Initialize({
+                token: clientToken,
+                environment: environment === 'sandbox' ? 'sandbox' : undefined,
+            });
+            initialized.current = true;
+        } catch (error) {
+            console.error('Failed to initialize Paddle:', error);
         }
-
-        window.Paddle.Initialize({
-            token: clientToken,
-            pwCustomer: user?.primaryEmailAddress?.emailAddress
-                ? { email: user.primaryEmailAddress.emailAddress }
-                : undefined,
-            checkout: {
-                settings: {
-                    displayMode: 'overlay',
-                    theme: 'light',
-                },
-            },
-            eventCallback: (event: { name: string; data?: Record<string, unknown> }) => {
-                if (event.name === 'checkout.completed') {
-                    // Redirect to dashboard after successful checkout
-                    window.location.href = '/dashboard?subscribed=true';
-                }
-            },
-        });
-    }, [user]);
+    }, []);
 
     useEffect(() => {
-        // Check if Paddle is already loaded
         if (window.Paddle) {
             initPaddle();
             return;
         }
 
-        // Wait for Paddle.js to load
         const checkPaddle = setInterval(() => {
             if (window.Paddle) {
                 clearInterval(checkPaddle);
@@ -119,7 +110,6 @@ export default function PaddleProvider({ children }: { children: React.ReactNode
             }
         }, 200);
 
-        // Cleanup
         return () => clearInterval(checkPaddle);
     }, [initPaddle]);
 
