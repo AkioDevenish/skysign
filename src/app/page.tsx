@@ -16,6 +16,7 @@ import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
 import { useToast } from "@/components/ToastProvider";
+import { Cloud, PenTool, Users } from 'lucide-react';
 
 import { getAuditStats } from "../lib/auditTrail";
 
@@ -549,6 +550,7 @@ export default function Home() {
               </div>
             </div>
 
+
             {/* Pricing Cards */}
             <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 items-stretch max-w-6xl mx-auto">
               {pricingTiers.map((plan, idx) => (
@@ -557,75 +559,29 @@ export default function Home() {
                   className="relative flex flex-col p-8 rounded-2xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 w-full md:w-1/3"
                 >
                   {/* Icon */}
-                  <div className="mb-6 text-stone-900 h-12 flex items-center">
+                  <div className="mb-6 h-12 flex items-center">
                     {plan.name === 'Free' && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="48"
-                        height="48"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
-                      </svg>
+                      <div className="p-3 bg-stone-100 rounded-xl text-stone-900">
+                        <Cloud className="w-8 h-8" strokeWidth={1.5} />
+                      </div>
                     )}
                     {plan.name === 'Pro' && (
-                      <div className="relative">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="48"
-                          height="48"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="text-stone-300"
-                        >
-                          <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
-                        </svg>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="absolute bottom-0 right-0 text-stone-900 bg-white rounded-full p-0.5"
-                        >
-                          <path d="m12 19 7-7 3 3-7 7-3-3z" />
-                          <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
-                          <path d="m2 2 7.586 7.586" />
-                          <circle cx="11" cy="11" r="2" />
-                        </svg>
+                      <div className="p-3 bg-stone-900 rounded-xl text-stone-50 shadow-lg shadow-stone-900/20">
+                         <div className="relative flex items-center justify-center w-8 h-8">
+                            <PenTool className="w-6 h-6 absolute top-0 left-0" strokeWidth={1.5} />
+                            <svg className="w-6 h-6 absolute bottom-0 -right-2 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 15c2-1 4-1 6 0 2 1 4 1 6 0" />
+                            </svg>
+                         </div>
                       </div>
                     )}
                     {plan.name === 'Pro Plus' && (
-                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="48"
-                        height="48"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
-                        <circle cx="12" cy="12" r="3" />
-                         <path d="m6 12-2-2" />
-                         <path d="m18 12 2-2" />
-                         <path d="m12 6-2-2" />
-                      </svg>
+                       <div className="p-3 bg-stone-100 rounded-xl text-stone-900">
+                         <div className="relative">
+                            <Cloud className="w-8 h-8" strokeWidth={1.5} />
+                            <Users className="w-4 h-4 absolute -bottom-1 -right-1 fill-stone-100 stroke-stone-900" strokeWidth={2} />
+                         </div>
+                      </div>
                     )}
                   </div>
 
