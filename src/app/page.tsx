@@ -445,6 +445,16 @@ export default function Home() {
       {/* How it works */}
 
 
+
+      {/* Trust Section */}
+      <TrustSection />
+
+
+      {/* E-Signature Laws Section */}
+      <FadeContent>
+        <ESignatureLaws />
+      </FadeContent>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-32 px-8 lg:px-12 relative z-10 overflow-hidden">
         {/* Background elements */}
@@ -605,15 +615,6 @@ export default function Home() {
           </FadeContent>
         </div>
       </section>
-
-      {/* Trust Section */}
-      <TrustSection />
-
-      {/* E-Signature Laws Section */}
-      <FadeContent>
-        <ESignatureLaws />
-      </FadeContent>
-
       {/* FAQ Section */}
       <FadeContent>
         <FAQ />
