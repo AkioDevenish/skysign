@@ -61,6 +61,9 @@ export async function openPaddleCheckout({
         // Open checkout using the server-created transaction ID
         const checkoutConfig: Record<string, unknown> = {
             transactionId: data.transactionId,
+            settings: {
+                successUrl: `${window.location.origin}/success?payment=completed`,
+            }
         };
 
         if (customerEmail) {

@@ -68,9 +68,22 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                         </Link>
                     )}
                     {isPro && (
-                        <button disabled className="block w-full py-3 bg-stone-100 text-stone-400 text-center rounded-xl font-bold cursor-not-allowed">
-                            Plan Active
-                        </button>
+                        <div className="space-y-3">
+                            <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center">
+                                <span className="text-emerald-700 text-sm font-semibold flex items-center justify-center gap-2">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Active
+                                </span>
+                            </div>
+                            <a 
+                                href="mailto:support@skysign.app?subject=Manage Subscription&body=I would like to cancel or update my subscription."
+                                className="block w-full py-3 bg-white border border-stone-200 text-stone-600 text-center rounded-xl font-semibold hover:bg-stone-50 hover:text-stone-900 transition-colors text-sm"
+                            >
+                                Manage Subscription
+                            </a>
+                        </div>
                     )}
                 </div>
             </div>
