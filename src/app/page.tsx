@@ -38,11 +38,12 @@ export default function Home() {
     setSignatureCount(stats.totalCreated);
     
     // Use demo user data
+    // Use demo user data with random face avatars
     setLiveUsers([
-      { id: '1', imageUrl: '', firstName: 'Claire' },
-      { id: '2', imageUrl: '', firstName: 'Carlos' },
-      { id: '3', imageUrl: '', firstName: 'Aisha' },
-      { id: '4', imageUrl: '', firstName: 'Jordan' },
+      { id: '1', imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64', firstName: 'Claire' },
+      { id: '2', imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64', firstName: 'Carlos' },
+      { id: '3', imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64', firstName: 'Aisha' },
+      { id: '4', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64', firstName: 'Jordan' },
     ]);
     setUserCount(128);
   }, []);
@@ -327,8 +328,18 @@ export default function Home() {
                   <p className="text-sm text-stone-400">Trusted by professionals:</p>
                   <div className="flex -space-x-2">
                     {liveUsers.slice(0, 4).map((user) => (
-                      <div key={user.id} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center bg-stone-200 text-xs font-semibold text-stone-600">
-                        {user.firstName?.charAt(0) || 'U'}
+                      <div key={user.id} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center bg-stone-200 overflow-hidden relative group">
+                        {user.imageUrl ? (
+                          <img 
+                            src={user.imageUrl} 
+                            alt={user.firstName || 'User'} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs font-semibold text-stone-600">
+                            {user.firstName?.charAt(0) || 'U'}
+                          </span>
+                        )}
                       </div>
                     ))}
                     {userCount > 4 && (
