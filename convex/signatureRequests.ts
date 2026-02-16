@@ -460,7 +460,7 @@ export const decline = mutation({
         await ctx.scheduler.runAfter(0, api.email.sendDeclinedNotification, {
             senderEmail: request.senderId, // Will need user email lookup in production
             senderName: 'You',
-            recipientName: request.recipientName || request.recipientEmail,
+            recipientName: request.recipientName || request.recipientEmail || 'Unknown',
             documentName: request.documentName,
         });
 

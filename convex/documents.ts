@@ -67,7 +67,7 @@ export const embedSignature = action({
 
     // 6. Save and Upload
     const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
     const storageId = await ctx.storage.store(blob);
 
     // 7. Finalize the signature process
