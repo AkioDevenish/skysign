@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server';
 
-// Price IDs from Paddle Dashboard
+// Price IDs from Paddle Dashboard (hardcoded as fallbacks — not secrets)
 const PRICE_IDS = {
     pro: {
-        monthly: process.env.PADDLE_PRO_PRICE_ID || '',
-        yearly: process.env.PADDLE_PRO_YEARLY_PRICE_ID || '',
+        monthly: process.env.PADDLE_PRO_PRICE_ID || 'pri_01khkgby88ehsa1at50nvxagbm',
+        yearly: process.env.PADDLE_PRO_YEARLY_PRICE_ID || 'pri_01khkgsy6wmn4z0dbxy212ngq6',
     },
     proplus: {
-        monthly: process.env.PADDLE_PROPLUS_PRICE_ID || '',
-        yearly: process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID || '',
+        monthly: process.env.PADDLE_PROPLUS_PRICE_ID || 'pri_01khkh3nnjv3tpmn6a6cft5p7q',
+        yearly: process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID || 'pri_01khkh6rxg63rtk833862p3wdv',
     },
 };
+
+// Paddle API key
+const PADDLE_API_KEY = process.env.PADDLE_API_KEY || '';
 
 export async function POST(request: Request) {
     try {
@@ -25,8 +28,7 @@ export async function POST(request: Request) {
         }
 
         // Check if Paddle is configured
-        const apiKey = process.env.PADDLE_API_KEY;
-        if (!apiKey) {
+        if (!PADDLE_API_KEY) {
             return NextResponse.json(
                 {
                     error: 'Payment system not configured',
@@ -59,13 +61,12 @@ export async function POST(request: Request) {
             };
         }
 
-        console.log('Creating Paddle transaction with API key:', apiKey ? `${apiKey.substring(0, 15)}...` : 'MISSING');
-        console.log('Price ID:', priceId);
+        console.log('Creating Paddle transaction:', { priceId, planId, cycle });
 
         const paddleResponse = await fetch('https://api.paddle.com/transactions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                'Authorization': `Bearer ${PADDLE_API_KEY}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(transactionPayload),
@@ -117,17 +118,17 @@ export async function POST(request: Request) {
 // Handle GET request to check configuration status
 export async function GET() {
     const isConfigured = !!(
-        process.env.PADDLE_API_KEY &&
-        process.env.PADDLE_PRO_PRICE_ID &&
-        process.env.PADDLE_PROPLUS_PRICE_ID
+        PADDLE_API_KEY &&
+        PRICE_IDS.pro.monthly &&
+        PRICE_IDS.proplus.monthly
     );
 
     return NextResponse.json({
         configured: isConfigured,
         environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
         plans: {
-            pro: !!(process.env.PADDLE_PRO_PRICE_ID && process.env.PADDLE_PRO_YEARLY_PRICE_ID),
-            proplus: !!(process.env.PADDLE_PROPLUS_PRICE_ID && process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID),
+            pro: !!(PRICE_IDS.pro.monthly && PRICE_IDS.pro.yearly),
+            proplus: !!(PRICE_IDS.proplus.monthly && PRICE_IDS.proplus.yearly),
         },
     });
 }
