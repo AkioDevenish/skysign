@@ -67,17 +67,19 @@ export default defineSchema({
     // Signature Requests - for sending documents to others for signing
     signatureRequests: defineTable({
         senderId: v.string(),                           // Clerk user ID of sender
-        recipientEmail: v.string(),
+        // Deprecated fields (kept for backward compatibility with single-signer data)
+        recipientEmail: v.optional(v.string()),
         recipientName: v.optional(v.string()),
+        
         documentStorageId: v.id("_storage"),            // Original PDF
         documentName: v.string(),
-        status: v.string(),                             // 'pending' | 'viewed' | 'signed' | 'declined' | 'expired'
+        status: v.string(),                             // 'pending' | 'in_progress' | 'completed' | 'declined' | 'expired'
         message: v.optional(v.string()),                // Optional message to signer
         expiresAt: v.optional(v.string()),              // ISO date string
-        signedAt: v.optional(v.string()),
-        signedStorageId: v.optional(v.id("_storage")),  // Signed PDF
-        signatureStorageId: v.optional(v.id("_storage")), // The signature image used
-        accessToken: v.string(),                        // Unique token for secure signing link
+        signedAt: v.optional(v.string()),               // When ALL signers finished
+        signedStorageId: v.optional(v.id("_storage")),  // Final Signed PDF
+        signatureStorageId: v.optional(v.id("_storage")), // Deprecated: Use requestSigners table
+        accessToken: v.string(),                        // Deprecated: Top-level token or View-only token
         createdAt: v.string(),
         reminderSentAt: v.optional(v.string()),
         auditCertificateStorageId: v.optional(v.id("_storage")), // PDF Certificate of Completion
@@ -85,4 +87,17 @@ export default defineSchema({
       .index("by_token", ["accessToken"])
       .index("by_status", ["status"])
       .index("by_recipient", ["recipientEmail"]),
+
+    requestSigners: defineTable({
+        requestId: v.id("signatureRequests"),
+        email: v.string(),
+        name: v.optional(v.string()),
+        order: v.number(),              // 1 (first), 2 (second), etc.
+        status: v.string(),             // 'pending', 'sent', 'viewed', 'signed', 'declined'
+        accessToken: v.string(),        // Unique token for this signer
+        signedAt: v.optional(v.string()),
+        signatureStorageId: v.optional(v.id("_storage")),
+    }).index("by_request", ["requestId"])
+      .index("by_token", ["accessToken"])
+      .index("by_email", ["email"]),
 });

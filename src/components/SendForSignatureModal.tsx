@@ -19,8 +19,7 @@ export default function SendForSignatureModal({
     documentStorageId,
     documentName,
 }: SendForSignatureModalProps) {
-    const [recipientEmail, setRecipientEmail] = useState('');
-    const [recipientName, setRecipientName] = useState('');
+    const [signers, setSigners] = useState([{ email: '', name: '' }]);
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -30,15 +29,37 @@ export default function SendForSignatureModal({
 
     const createRequest = useMutation(api.signatureRequests.create);
 
+    const addSigner = () => {
+        setSigners([...signers, { email: '', name: '' }]);
+    };
+
+    const removeSigner = (index: number) => {
+        const newSigners = [...signers];
+        newSigners.splice(index, 1);
+        setSigners(newSigners);
+    };
+
+    const updateSigner = (index: number, field: 'email' | 'name', value: string) => {
+        const newSigners = [...signers];
+        newSigners[index][field] = value;
+        setSigners(newSigners);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validation
+        if (signers.some(s => !s.email)) {
+             setError("All signers must have an email address");
+             return;
+        }
+
         setIsSubmitting(true);
         setError(null);
 
         try {
             const result = await createRequest({
-                recipientEmail,
-                recipientName: recipientName || undefined,
+                signers,
                 documentStorageId,
                 documentName,
                 message: message || undefined,
@@ -61,8 +82,7 @@ export default function SendForSignatureModal({
     };
 
     const handleClose = () => {
-        setRecipientEmail('');
-        setRecipientName('');
+        setSigners([{ email: '', name: '' }]);
         setMessage('');
         setSuccess(false);
         setSigningLink('');
@@ -85,10 +105,10 @@ export default function SendForSignatureModal({
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.95, opacity: 0 }}
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+                        className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-stone-900 to-stone-800 px-6 py-4 text-white">
+                        <div className="bg-gradient-to-r from-stone-900 to-stone-800 px-6 py-4 text-white sticky top-0 z-10 shrink-0">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold flex items-center gap-2">
                                     {success ? (
@@ -113,44 +133,72 @@ export default function SendForSignatureModal({
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     {/* Document Info */}
                                     <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-xl">
-                                        <div className="w-10 h-10 bg-stone-200 rounded-lg flex items-center justify-center">
+                                        <div className="w-10 h-10 bg-stone-200 rounded-lg flex items-center justify-center shrink-0">
                                             <svg className="w-5 h-5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
                                         </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-stone-900">{documentName}</p>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-medium text-stone-900 truncate">{documentName}</p>
                                             <p className="text-xs text-stone-500">Document to be signed</p>
                                         </div>
                                     </div>
 
-                                    {/* Recipient Email */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-1">
-                                            Recipient Email *
-                                        </label>
-                                        <input
-                                            type="email"
-                                            required
-                                            value={recipientEmail}
-                                            onChange={(e) => setRecipientEmail(e.target.value)}
-                                            placeholder="john@example.com"
-                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/20"
-                                        />
-                                    </div>
+                                    {/* Signers List */}
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-medium text-stone-700">Signers</label>
+                                            <button 
+                                                type="button" 
+                                                onClick={addSigner}
+                                                className="text-xs font-semibold text-stone-600 hover:text-stone-900 flex items-center gap-1 bg-stone-100 px-2 py-1 rounded-lg"
+                                            >
+                                                + Add Signer
+                                            </button>
+                                        </div>
+                                        
+                                        {signers.map((signer, index) => (
+                                            <div key={index} className="space-y-2 p-3 border border-stone-200 rounded-xl relative group">
+                                                {index > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeSigner(index)}
+                                                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                                                        title="Remove signer"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                )}
+                                                
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-5 h-5 rounded-full bg-stone-100 text-stone-500 text-xs flex items-center justify-center font-bold">
+                                                        {index + 1}
+                                                    </span>
+                                                    <span className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
+                                                        {index === 0 ? 'First Signer' : `Then Signer ${index + 1}`}
+                                                    </span>
+                                                </div>
 
-                                    {/* Recipient Name */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-stone-700 mb-1">
-                                            Recipient Name
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={recipientName}
-                                            onChange={(e) => setRecipientName(e.target.value)}
-                                            placeholder="John Doe (optional)"
-                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/20"
-                                        />
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <input
+                                                        type="email"
+                                                        required
+                                                        value={signer.email}
+                                                        onChange={(e) => updateSigner(index, 'email', e.target.value)}
+                                                        placeholder="Email address *"
+                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900/10 placeholder:text-stone-400"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={signer.name}
+                                                        onChange={(e) => updateSigner(index, 'name', e.target.value)}
+                                                        placeholder="Name (Optional)"
+                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900/10 placeholder:text-stone-400"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
 
                                     {/* Message */}
@@ -161,9 +209,9 @@ export default function SendForSignatureModal({
                                         <textarea
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
-                                            placeholder="Please sign this document... (optional)"
+                                            placeholder="Please sign this document..."
                                             rows={3}
-                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/20 resize-none"
+                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/20 resize-none text-sm"
                                         />
                                     </div>
 
@@ -176,7 +224,7 @@ export default function SendForSignatureModal({
                                     {/* Submit */}
                                     <button
                                         type="submit"
-                                        disabled={isSubmitting || !recipientEmail}
+                                        disabled={isSubmitting}
                                         className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? (
@@ -189,7 +237,7 @@ export default function SendForSignatureModal({
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                                 </svg>
-                                                Send Request
+                                                Send Request ({signers.length})
                                             </>
                                         )}
                                     </button>
@@ -203,7 +251,7 @@ export default function SendForSignatureModal({
                                     </div>
                                     <h3 className="text-lg font-semibold text-stone-900 mb-2">Request Created!</h3>
                                     <p className="text-stone-600 text-sm mb-4">
-                                        Share this link with {recipientName || recipientEmail}
+                                        The first signer ({signers[0].name || signers[0].email}) has been notified.
                                     </p>
 
                                     {/* Signing Link */}
@@ -222,11 +270,10 @@ export default function SendForSignatureModal({
                                                 {copied ? 'Copied!' : 'Copy'}
                                             </button>
                                         </div>
+                                        <p className="text-[10px] text-stone-400 mt-1 text-left">
+                                            This link is for the <strong>first signer only</strong>.
+                                        </p>
                                     </div>
-
-                                    <p className="text-xs text-stone-500 mb-4">
-                                        Link expires in 30 days
-                                    </p>
 
                                     <button
                                         onClick={handleClose}
