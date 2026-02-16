@@ -150,7 +150,7 @@ export default function Home() {
       name: "Pro",
       planId: "pro",
       monthlyPrice: "$12",
-      yearlyPrice: "$9",
+      yearlyPrice: "$108",
       period: "per month",
       description: "For professionals who sign daily",
       features: [
@@ -169,7 +169,7 @@ export default function Home() {
       name: "Pro Plus",
       planId: "proplus",
       monthlyPrice: "$39.99",
-      yearlyPrice: "$29.99",
+      yearlyPrice: "$359",
       period: "per month",
       description: "For teams and organizations",
       features: [
@@ -624,7 +624,7 @@ export default function Home() {
                         {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                       </span>
                       <span className="text-stone-500 font-medium">
-                        /{plan.period === 'forever' ? 'forever' : 'mo'}
+                        /{plan.period === 'forever' ? 'forever' : billingCycle === 'yearly' && plan.name !== 'Free' ? 'yr' : 'mo'}
                       </span>
                     </div>
                     {billingCycle === 'yearly' && plan.name !== 'Free' && (
