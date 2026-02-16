@@ -2,13 +2,19 @@ import { NextResponse } from 'next/server';
 
 // Price IDs from Paddle Dashboard
 const PRICE_IDS = {
-    pro: process.env.PADDLE_PRO_PRICE_ID || '',
-    proplus: process.env.PADDLE_PROPLUS_PRICE_ID || '',
+    pro: {
+        monthly: process.env.PADDLE_PRO_PRICE_ID || '',
+        yearly: process.env.PADDLE_PRO_YEARLY_PRICE_ID || '',
+    },
+    proplus: {
+        monthly: process.env.PADDLE_PROPLUS_PRICE_ID || '',
+        yearly: process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID || '',
+    },
 };
 
 export async function POST(request: Request) {
     try {
-        const { planId, email, clerkUserId } = await request.json();
+        const { planId, email, clerkUserId, billingCycle = 'monthly' } = await request.json();
 
         // Validate plan
         if (!planId || !['pro', 'proplus'].includes(planId)) {
@@ -19,7 +25,7 @@ export async function POST(request: Request) {
         }
 
         // Check if Paddle is configured
-        if (!process.env.NEXT_PUBLIC_PADDLE_VENDOR_ID) {
+        if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
             return NextResponse.json(
                 {
                     error: 'Payment system not configured',
@@ -29,7 +35,8 @@ export async function POST(request: Request) {
             );
         }
 
-        const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS];
+        const cycle = billingCycle === 'yearly' ? 'yearly' : 'monthly';
+        const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS]?.[cycle];
 
         if (!priceId) {
             return NextResponse.json(
@@ -39,12 +46,12 @@ export async function POST(request: Request) {
         }
 
         // Return Paddle checkout configuration for client-side overlay
-        // Paddle uses client-side checkout, so we return the config needed
         return NextResponse.json({
             priceId,
             planId,
-            vendorId: process.env.NEXT_PUBLIC_PADDLE_VENDOR_ID,
-            environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'sandbox',
+            billingCycle: cycle,
+            clientToken: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+            environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
             customerEmail: email,
             customData: {
                 clerkUserId,
@@ -63,17 +70,18 @@ export async function POST(request: Request) {
 // Handle GET request to check configuration status
 export async function GET() {
     const isConfigured = !!(
-        process.env.NEXT_PUBLIC_PADDLE_VENDOR_ID &&
+        process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
         process.env.PADDLE_PRO_PRICE_ID &&
         process.env.PADDLE_PROPLUS_PRICE_ID
     );
 
     return NextResponse.json({
         configured: isConfigured,
-        environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'sandbox',
+        environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
         plans: {
-            pro: !!process.env.PADDLE_PRO_PRICE_ID,
-            proplus: !!process.env.PADDLE_PROPLUS_PRICE_ID,
+            pro: !!(process.env.PADDLE_PRO_PRICE_ID && process.env.PADDLE_PRO_YEARLY_PRICE_ID),
+            proplus: !!(process.env.PADDLE_PROPLUS_PRICE_ID && process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID),
         },
     });
 }
+

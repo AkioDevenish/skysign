@@ -107,7 +107,7 @@ describe('POST /api/checkout', () => {
 
     it('returns 503 when Paddle is not configured', async () => {
         // Ensure Paddle env var is NOT set
-        vi.stubEnv('NEXT_PUBLIC_PADDLE_VENDOR_ID', '');
+        vi.stubEnv('NEXT_PUBLIC_PADDLE_CLIENT_TOKEN', '');
         
         const { POST } = await import('@/app/api/checkout/route');
         const req = new Request('http://localhost/api/checkout', {

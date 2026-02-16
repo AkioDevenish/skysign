@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
+import { openPaddleCheckout, getPriceId } from '@/components/PaddleProvider';
 import BlurText from "@/components/reactbits/BlurText";
 import DecryptedText from "@/components/reactbits/DecryptedText";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
@@ -22,6 +23,7 @@ import { getAuditStats } from "../lib/auditTrail";
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useUser();
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [_signatureCount, setSignatureCount] = useState(0);
@@ -95,12 +97,34 @@ export default function Home() {
 
   const handleCheckout = async (planId: string, planName: string) => {
     if (planName === 'Free') {
-      // Free plan - just go to create
       router.push('/create');
       return;
     }
 
-    alert('Payment integration coming soon! Stay tuned for Pro plan access.');
+    if (!user) {
+      router.push('/sign-up');
+      return;
+    }
+
+    setCheckoutLoading(planName);
+    try {
+      const priceId = getPriceId(
+        planId as 'pro' | 'proplus',
+        billingCycle
+      );
+
+      openPaddleCheckout({
+        priceId,
+        customerEmail: user.primaryEmailAddress?.emailAddress,
+        clerkUserId: user.id,
+        planId,
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to open checkout. Please try again.');
+    } finally {
+      setCheckoutLoading(null);
+    }
   };
 
   const pricingTiers = [
@@ -130,6 +154,7 @@ export default function Home() {
       period: "per month",
       description: "For professionals who sign daily",
       features: [
+        "7-day free trial",
         "Unlimited signatures",
         "Advanced gesture controls",
         "HD PNG, SVG & PDF export",
@@ -137,18 +162,19 @@ export default function Home() {
         "Comprehensive Audit Logs",
         "Priority Email Support",
       ],
-      cta: "Coming Soon",
+      cta: "Start Free Trial",
       highlighted: true,
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       name: "Pro Plus",
       planId: "proplus",
-      monthlyPrice: "$29",
-      yearlyPrice: "$22",
+      monthlyPrice: "$39.99",
+      yearlyPrice: "$29.99",
       period: "per month",
       description: "For teams and organizations",
       features: [
+        "7-day free trial",
         "Everything in Pro",
         "Up to 10 team members",
         "Team management dashboard",
@@ -156,9 +182,9 @@ export default function Home() {
         "Custom Branding",
         "Dedicated Success Manager",
       ],
-      cta: "Coming Soon",
+      cta: "Start Free Trial",
       highlighted: false,
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 

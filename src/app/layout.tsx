@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
+import PaddleProvider from "@/components/PaddleProvider";
 import ConvexClientProvider from "./ConvexClientProvider";
 import "./globals.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
@@ -76,12 +77,19 @@ export default function RootLayout({
               gtag('config', '${GA_MEASUREMENT_ID}');
             `}
           </Script>
+          {/* Paddle.js */}
+          <Script
+            src="https://cdn.paddle.com/paddle/v2/paddle.js"
+            strategy="afterInteractive"
+          />
         </head>
 
 
         <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
           <PostHogProvider>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ConvexClientProvider>
+              <PaddleProvider>{children}</PaddleProvider>
+            </ConvexClientProvider>
           </PostHogProvider>
         </body>
       </html>
