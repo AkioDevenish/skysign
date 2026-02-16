@@ -1,5 +1,6 @@
 import { Id } from "../../../convex/_generated/dataModel";
 import Link from 'next/link';
+import UpgradeButton from '../UpgradeButton';
 
 interface TeamMember {
     _id: Id<"teamMembers">;
@@ -54,12 +55,11 @@ export default function TeamSection({
                     <p className="text-sm text-stone-500 mb-4 max-w-xs mx-auto">
                         Upgrade to Pro Plus to manage your team.
                     </p>
-                    <Link
-                        href="/#pricing"
+                    <UpgradeButton 
+                        planId="proplus"
+                        label="Upgrade Now"
                         className="inline-flex items-center gap-2 px-6 py-2 bg-stone-900 text-white text-sm font-bold rounded-xl"
-                    >
-                        Upgrade Now
-                    </Link>
+                    />
                 </div>
             ) : (
                 <div className="divide-y divide-stone-100">

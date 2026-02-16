@@ -1,6 +1,7 @@
 import { Id } from "../../../convex/_generated/dataModel";
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import UpgradeButton from '../UpgradeButton';
 
 interface ApiKey {
     _id: Id<"apiKeys">;
@@ -65,9 +66,11 @@ export default function ApiKeysSection({
                     <p className="text-stone-500 max-w-md mx-auto mb-8">
                         Upgrade to Pro Plus to access our REST API and integrate Sky Sign signatures directly into your own applications.
                     </p>
-                    <Link href="/#pricing" className="inline-block px-8 py-3 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800">
-                        Upgrade to Pro Plus
-                    </Link>
+                    <UpgradeButton 
+                        planId="proplus"
+                        label="Upgrade to Pro Plus"
+                        className="inline-block px-8 py-3 bg-stone-900 text-white font-bold rounded-xl hover:bg-stone-800"
+                    />
                 </div>
             ) : (
                 <div className="space-y-8">

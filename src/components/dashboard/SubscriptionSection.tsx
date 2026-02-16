@@ -1,4 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
+import { openPaddleCheckout } from '../PaddleProvider';
 
 interface SubscriptionSectionProps {
     plan: string;
@@ -8,6 +13,28 @@ interface SubscriptionSectionProps {
 }
 
 export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }: SubscriptionSectionProps) {
+    const { user } = useUser();
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleUpgrade = async () => {
+        if (!user) return;
+        setIsLoading(true);
+        try {
+            await openPaddleCheckout({
+                customerEmail: user.primaryEmailAddress?.emailAddress,
+                clerkUserId: user.id,
+                planId: 'pro',
+                billingCycle,
+            });
+        } catch (error) {
+            console.error('Checkout failed:', error);
+            alert('Failed to start checkout. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="bg-white rounded-3xl border border-stone-200 p-8">
             <div className="flex items-center justify-between mb-8">
@@ -29,7 +56,7 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                             <div className="h-full bg-stone-900" style={{ width: `${Math.min(100, (sigCount / (isPro ? sigCount + 10 : 5)) * 100)}%` }} />
                         </div>
                         <p className="text-xs text-stone-400">
-                            {isPro ? 'You have unlimited signatures.' : `${5 - sigCount} signatures remaining on Free plan.`}
+                            {isPro ? 'You have unlimited signatures.' : `${Math.max(0, 5 - sigCount)} signatures remaining on Free plan.`}
                         </p>
                     </div>
 
@@ -63,9 +90,39 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                     </ul>
 
                     {!isPro && (
-                        <Link href="/#pricing" className="block w-full py-3 bg-stone-900 text-white text-center rounded-xl font-bold hover:bg-stone-800 transition-colors">
-                            Upgrade to Pro
-                        </Link>
+                        <div className="space-y-4">
+                             {/* Billing Cycle Toggle */}
+                             <div className="flex items-center justify-center p-1 bg-stone-100 rounded-xl">
+                                <button
+                                    onClick={() => setBillingCycle('monthly')}
+                                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                        billingCycle === 'monthly' 
+                                            ? 'bg-white text-stone-900 shadow-sm' 
+                                            : 'text-stone-500 hover:text-stone-900'
+                                    }`}
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    onClick={() => setBillingCycle('yearly')}
+                                    className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                                        billingCycle === 'yearly' 
+                                            ? 'bg-white text-stone-900 shadow-sm' 
+                                            : 'text-stone-500 hover:text-stone-900'
+                                    }`}
+                                >
+                                    Yearly (-25%)
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={handleUpgrade}
+                                disabled={isLoading}
+                                className="block w-full py-3 bg-stone-900 text-white text-center rounded-xl font-bold hover:bg-stone-800 transition-colors disabled:opacity-50"
+                            >
+                                {isLoading ? 'Processing...' : `Upgrade to Pro (${billingCycle === 'monthly' ? '$12/mo' : '$108/yr'})`}
+                            </button>
+                        </div>
                     )}
                     {isPro && (
                         <div className="space-y-3">
