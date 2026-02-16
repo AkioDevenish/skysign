@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server';
 
-// Price IDs from Paddle Dashboard (hardcoded as fallbacks — not secrets)
+// Price IDs from Paddle Dashboard (hardcoded strings to avoid env var corruption/quotes)
 const PRICE_IDS = {
     pro: {
-        monthly: process.env.PADDLE_PRO_PRICE_ID || 'pri_01khkgby88ehsa1at50nvxagbm',
-        yearly: process.env.PADDLE_PRO_YEARLY_PRICE_ID || 'pri_01khkgsy6wmn4z0dbxy212ngq6',
+        monthly: 'pri_01khkgby88ehsa1at50nvxagbm',
+        yearly: 'pri_01khkgsy6wmn4z0dbxy212ngq6',
     },
     proplus: {
-        monthly: process.env.PADDLE_PROPLUS_PRICE_ID || 'pri_01khkh3nnjv3tpmn6a6cft5p7q',
-        yearly: process.env.PADDLE_PROPLUS_YEARLY_PRICE_ID || 'pri_01khkh6rxg63rtk833862p3wdv',
+        monthly: 'pri_01khkh3nnjv3tpmn6a6cft5p7q',
+        yearly: 'pri_01khkh6rxg63rtk833862p3wdv',
     },
 };
 
-// Paddle API key
-const PADDLE_API_KEY = process.env.PADDLE_API_KEY || '';
+// Paddle API key (must be set in env)
+const PADDLE_API_KEY = (process.env.PADDLE_API_KEY || '').trim();
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
     try {
@@ -39,7 +41,8 @@ export async function POST(request: Request) {
         }
 
         const cycle = billingCycle === 'yearly' ? 'yearly' : 'monthly';
-        const priceId = PRICE_IDS[planId as keyof typeof PRICE_IDS]?.[cycle];
+        // Force trim just in case, though hardcoded values are clean
+        const priceId = (PRICE_IDS[planId as keyof typeof PRICE_IDS]?.[cycle] || '').trim();
 
         if (!priceId) {
             return NextResponse.json(
@@ -50,7 +53,10 @@ export async function POST(request: Request) {
 
         // Create transaction server-side via Paddle API
         const transactionPayload = {
-            items: [{ price_id: priceId, quantity: 1 }],
+            items: [{ 
+                price_id: priceId, 
+                quantity: 1 
+            }],
             ...(clerkUserId ? {
                 custom_data: {
                     clerk_user_id: clerkUserId,
@@ -61,13 +67,13 @@ export async function POST(request: Request) {
 
         const bodyString = JSON.stringify(transactionPayload);
         console.log('Paddle request body:', bodyString);
-        console.log('API key present:', !!PADDLE_API_KEY, 'length:', PADDLE_API_KEY.length);
 
         const paddleResponse = await fetch('https://api.paddle.com/transactions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${PADDLE_API_KEY}`,
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
             },
             body: bodyString,
         });
@@ -86,8 +92,16 @@ export async function POST(request: Request) {
 
         if (!paddleResponse.ok) {
             console.error('Paddle API error:', JSON.stringify(paddleData));
+            // Return detailed debug info so we can see exactly what was sent
             return NextResponse.json(
-                { error: 'Failed to create transaction', details: paddleData, sentPayload: bodyString, apiKeyLength: PADDLE_API_KEY.length },
+                { 
+                    error: 'Failed to create transaction', 
+                    details: paddleData, 
+                    sentPayload: bodyString,
+                    usedPriceId: priceId,
+                    priceIdLength: priceId.length,
+                    apiKeyPrefix: PADDLE_API_KEY.substring(0, 8) + '...'
+                },
                 { status: 500 }
             );
         }
@@ -117,18 +131,14 @@ export async function POST(request: Request) {
 
 // Handle GET request to check configuration status
 export async function GET() {
-    const isConfigured = !!(
-        PADDLE_API_KEY &&
-        PRICE_IDS.pro.monthly &&
-        PRICE_IDS.proplus.monthly
-    );
+    const isConfigured = !!PADDLE_API_KEY;
 
     return NextResponse.json({
         configured: isConfigured,
         environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
         plans: {
-            pro: !!(PRICE_IDS.pro.monthly && PRICE_IDS.pro.yearly),
-            proplus: !!(PRICE_IDS.proplus.monthly && PRICE_IDS.proplus.yearly),
+            pro: true, // Hardcoded now
+            proplus: true, // Hardcoded now
         },
     });
 }

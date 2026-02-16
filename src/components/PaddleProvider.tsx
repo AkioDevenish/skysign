@@ -16,22 +16,6 @@ declare global {
     }
 }
 
-// Price IDs — used for display logic only on client
-const PRICE_IDS: Record<string, Record<string, string>> = {
-    pro: {
-        monthly: process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || 'pri_01khkgby88ehsa1at50nvxagbm',
-        yearly: process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY_PRICE_ID || 'pri_01khkgsy6wmn4z0dbxy212ngq6',
-    },
-    proplus: {
-        monthly: process.env.NEXT_PUBLIC_PADDLE_PROPLUS_PRICE_ID || 'pri_01khkh3nnjv3tpmn6a6cft5p7q',
-        yearly: process.env.NEXT_PUBLIC_PADDLE_PROPLUS_YEARLY_PRICE_ID || 'pri_01khkh6rxg63rtk833862p3wdv',
-    },
-};
-
-export function getPriceId(planId: 'pro' | 'proplus', billingCycle: 'monthly' | 'yearly'): string {
-    return PRICE_IDS[planId]?.[billingCycle] || '';
-}
-
 export async function openPaddleCheckout({
     customerEmail,
     clerkUserId,
@@ -67,7 +51,10 @@ export async function openPaddleCheckout({
 
         if (!response.ok) {
             console.error('Checkout API error:', data);
-            alert(data.error || 'Failed to start checkout. Please try again.');
+            
+            // Helpful message for the console/alert
+            const errorMsg = data.error || 'Failed to start checkout.';
+            alert(`${errorMsg} Please check console for details.`);
             return;
         }
 
@@ -95,6 +82,7 @@ export default function PaddleProvider({ children }: { children: React.ReactNode
         const initPaddle = () => {
             if (!window.Paddle || initialized.current) return;
 
+            // Use client token from environment
             const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
             if (!clientToken) {
                 console.warn('Paddle client token not configured');
