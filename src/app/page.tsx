@@ -557,28 +557,75 @@ export default function Home() {
                   className="relative flex flex-col p-8 rounded-2xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 w-full md:w-1/3"
                 >
                   {/* Icon */}
-                  <div className="mb-6 text-stone-900">
+                  <div className="mb-6 text-stone-900 h-12 flex items-center">
                     {plan.name === 'Free' && (
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                         <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1) scale(0.9)"/>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
                       </svg>
                     )}
                     {plan.name === 'Pro' && (
-                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                         <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1) scale(0.9)"/>
-                         <path d="M14 16L16 18L21 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                         <path d="M13 21l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+                      <div className="relative">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="48"
+                          height="48"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-stone-300"
+                        >
+                          <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
+                        </svg>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="absolute bottom-0 right-0 text-stone-900 bg-white rounded-full p-0.5"
+                        >
+                          <path d="m12 19 7-7 3 3-7 7-3-3z" />
+                          <path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                          <path d="m2 2 7.586 7.586" />
+                          <circle cx="11" cy="11" r="2" />
+                        </svg>
+                      </div>
                     )}
                     {plan.name === 'Pro Plus' && (
-                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(-4 -2) scale(0.7)"/>
-                          <path d="M7 14L12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="12" cy="9" r="2" stroke="currentColor" strokeWidth="1.5"/>
-                          <circle cx="7" cy="14" r="2" stroke="currentColor" strokeWidth="1.5"/>
-                          <circle cx="17" cy="14" r="2" stroke="currentColor" strokeWidth="1.5"/> 
-                          <path d="M17 14L12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                       </svg>
+                       <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3 .4-3.4 3.3-6 6.8-6 1-.3 2 .2 2.7 1h.2c.6-4.6 4.9-7.9 9.5-7.3 3.8.5 6.8 3.5 7.3 7.3h.2c1 .6 1.8 1.5 2.2 2.5" />
+                        <circle cx="12" cy="12" r="3" />
+                         <path d="m6 12-2-2" />
+                         <path d="m18 12 2-2" />
+                         <path d="m12 6-2-2" />
+                      </svg>
                     )}
                   </div>
 
