@@ -7,10 +7,7 @@ declare global {
         Paddle?: {
             Initialize: (config: { token: string }) => void;
             Checkout: {
-                open: (config: {
-                    items: Array<{ priceId: string; quantity: number }>;
-                    customer?: { email: string };
-                }) => void;
+                open: (config: Record<string, unknown>) => void;
             };
             Environment: {
                 set: (env: string) => void;
@@ -19,7 +16,7 @@ declare global {
     }
 }
 
-// Price IDs — these are public identifiers, not secrets
+// Price IDs — used for display logic only on client
 const PRICE_IDS: Record<string, Record<string, string>> = {
     pro: {
         monthly: process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID || 'pri_01khkgby88ehsa1at50nvxagbm',
@@ -35,14 +32,17 @@ export function getPriceId(planId: 'pro' | 'proplus', billingCycle: 'monthly' | 
     return PRICE_IDS[planId]?.[billingCycle] || '';
 }
 
-export function openPaddleCheckout({
-    priceId,
+export async function openPaddleCheckout({
     customerEmail,
+    clerkUserId,
+    planId,
+    billingCycle = 'monthly',
 }: {
-    priceId: string;
+    priceId?: string;
     customerEmail?: string;
     clerkUserId?: string;
-    planId?: string;
+    planId: string;
+    billingCycle?: 'monthly' | 'yearly';
 }) {
     if (!window.Paddle) {
         console.error('Paddle.js not loaded');
@@ -50,20 +50,42 @@ export function openPaddleCheckout({
         return;
     }
 
-    // Keep checkout config minimal to avoid 400 errors
-    const config: {
-        items: Array<{ priceId: string; quantity: number }>;
-        customer?: { email: string };
-    } = {
-        items: [{ priceId, quantity: 1 }],
-    };
+    try {
+        // Create transaction server-side first
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                planId,
+                email: customerEmail,
+                clerkUserId,
+                billingCycle,
+            }),
+        });
 
-    if (customerEmail) {
-        config.customer = { email: customerEmail };
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Checkout API error:', data);
+            alert(data.error || 'Failed to start checkout. Please try again.');
+            return;
+        }
+
+        // Open checkout using the server-created transaction ID
+        const checkoutConfig: Record<string, unknown> = {
+            transactionId: data.transactionId,
+        };
+
+        if (customerEmail) {
+            checkoutConfig.customer = { email: customerEmail };
+        }
+
+        console.log('Opening Paddle checkout with transactionId:', data.transactionId);
+        window.Paddle.Checkout.open(checkoutConfig);
+    } catch (error) {
+        console.error('Checkout error:', error);
+        alert('Failed to start checkout. Please try again.');
     }
-
-    console.log('Opening Paddle checkout with config:', config);
-    window.Paddle.Checkout.open(config);
 }
 
 export default function PaddleProvider({ children }: { children: React.ReactNode }) {
@@ -82,7 +104,6 @@ export default function PaddleProvider({ children }: { children: React.ReactNode
             const environment = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production';
 
             try {
-                // For sandbox, set environment before Initialize
                 if (environment === 'sandbox') {
                     window.Paddle.Environment.set('sandbox');
                 }

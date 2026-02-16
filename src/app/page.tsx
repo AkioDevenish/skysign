@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
-import { openPaddleCheckout, getPriceId } from '@/components/PaddleProvider';
+import { openPaddleCheckout } from '@/components/PaddleProvider';
 import BlurText from "@/components/reactbits/BlurText";
 import DecryptedText from "@/components/reactbits/DecryptedText";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
@@ -108,16 +108,11 @@ export default function Home() {
 
     setCheckoutLoading(planName);
     try {
-      const priceId = getPriceId(
-        planId as 'pro' | 'proplus',
-        billingCycle
-      );
-
-      openPaddleCheckout({
-        priceId,
+      await openPaddleCheckout({
         customerEmail: user.primaryEmailAddress?.emailAddress,
         clerkUserId: user.id,
         planId,
+        billingCycle,
       });
     } catch (error) {
       console.error('Checkout error:', error);

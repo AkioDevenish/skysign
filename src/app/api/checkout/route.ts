@@ -25,7 +25,8 @@ export async function POST(request: Request) {
         }
 
         // Check if Paddle is configured
-        if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+        const apiKey = process.env.PADDLE_API_KEY;
+        if (!apiKey) {
             return NextResponse.json(
                 {
                     error: 'Payment system not configured',
@@ -45,23 +46,56 @@ export async function POST(request: Request) {
             );
         }
 
-        // Return Paddle checkout configuration for client-side overlay
-        return NextResponse.json({
-            priceId,
-            planId,
-            billingCycle: cycle,
-            clientToken: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-            environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
-            customerEmail: email,
-            customData: {
-                clerkUserId,
-                planId,
+        // Create transaction server-side via Paddle API
+        const transactionPayload: Record<string, unknown> = {
+            items: [{ price_id: priceId, quantity: 1 }],
+        };
+
+        // Add custom data if we have a Clerk user ID
+        if (clerkUserId) {
+            transactionPayload.custom_data = {
+                clerk_user_id: clerkUserId,
+                plan_id: planId,
+            };
+        }
+
+        const paddleResponse = await fetch('https://api.paddle.com/transactions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
             },
+            body: JSON.stringify(transactionPayload),
+        });
+
+        const paddleData = await paddleResponse.json();
+
+        if (!paddleResponse.ok) {
+            console.error('Paddle API error:', paddleData);
+            return NextResponse.json(
+                { error: 'Failed to create transaction', details: paddleData },
+                { status: 500 }
+            );
+        }
+
+        const transactionId = paddleData.data?.id;
+
+        if (!transactionId) {
+            console.error('No transaction ID returned:', paddleData);
+            return NextResponse.json(
+                { error: 'Failed to get transaction ID' },
+                { status: 500 }
+            );
+        }
+
+        return NextResponse.json({
+            transactionId,
+            customerEmail: email,
         });
     } catch (error) {
         console.error('Checkout error:', error);
         return NextResponse.json(
-            { error: 'Failed to create checkout configuration' },
+            { error: 'Failed to create checkout' },
             { status: 500 }
         );
     }
@@ -70,7 +104,7 @@ export async function POST(request: Request) {
 // Handle GET request to check configuration status
 export async function GET() {
     const isConfigured = !!(
-        process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
+        process.env.PADDLE_API_KEY &&
         process.env.PADDLE_PRO_PRICE_ID &&
         process.env.PADDLE_PROPLUS_PRICE_ID
     );
@@ -84,4 +118,3 @@ export async function GET() {
         },
     });
 }
-
