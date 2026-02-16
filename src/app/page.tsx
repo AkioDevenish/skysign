@@ -596,20 +596,18 @@ export default function Home() {
                     <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
                   )}
 
-                  {/* Badge */}
-                  {plan.highlighted && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[11px] font-bold tracking-widest uppercase rounded-full shadow-lg shadow-emerald-500/20">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-
                   {/* Plan Content */}
                   <div className="mb-8">
-                    <h3 className="text-xl font-bold mb-2 text-stone-900">
-                      {plan.name}
-                    </h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-bold text-stone-900">
+                        {plan.name}
+                      </h3>
+                      {plan.highlighted && (
+                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold tracking-wider uppercase rounded-full">
+                          Most Popular
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm leading-relaxed text-stone-500">
                       {plan.description}
                     </p>
