@@ -15,8 +15,8 @@ interface PaddleWebhookEvent {
         status: string;
         customer_id: string;
         custom_data?: {
-            clerkUserId?: string;
-            planId?: string;
+            clerk_user_id?: string;
+            plan_id?: string;
         };
         items?: Array<{
             price: {
@@ -80,6 +80,7 @@ async function updateUserPlan(
         await client.users.updateUserMetadata(clerkUserId, {
             publicMetadata: metadata,
         });
+        console.log(`[Webhook] Updated Clerk metadata for ${clerkUserId} to plan: ${metadata.plan}`);
     } catch (err) {
         console.error(`[Webhook] Failed to update Clerk metadata for ${clerkUserId}:`, err);
         throw err; // Re-throw so the webhook returns 500 and Paddle retries
@@ -107,8 +108,8 @@ export async function POST(request: NextRequest) {
             case 'subscription.created':
             case 'subscription.activated': {
                 const { custom_data, status } = event.data;
-                const clerkUserId = custom_data?.clerkUserId;
-                const planId = custom_data?.planId;
+                const clerkUserId = custom_data?.clerk_user_id;
+                const planId = custom_data?.plan_id;
 
                 if (clerkUserId && planId) {
                     await updateUserPlan(clerkUserId, {
@@ -116,6 +117,8 @@ export async function POST(request: NextRequest) {
                         subscriptionId: event.data.id,
                         subscriptionStatus: status,
                     });
+                } else {
+                    console.warn('[Webhook] Missing user ID or plan ID in custom_data', custom_data);
                 }
 
                 break;
@@ -123,12 +126,12 @@ export async function POST(request: NextRequest) {
 
             case 'subscription.updated': {
                 const { status, custom_data } = event.data;
-                const clerkUserId = custom_data?.clerkUserId;
-                const planId = custom_data?.planId;
+                const clerkUserId = custom_data?.clerk_user_id;
+                const planId = custom_data?.plan_id;
 
                 if (clerkUserId) {
                     await updateUserPlan(clerkUserId, {
-                        plan: planId || 'pro',
+                        plan: planId || 'pro', // Default to pro if missing, but should be there
                         subscriptionId: event.data.id,
                         subscriptionStatus: status,
                     });
@@ -140,7 +143,7 @@ export async function POST(request: NextRequest) {
             case 'subscription.canceled':
             case 'subscription.past_due': {
                 const { custom_data, status } = event.data;
-                const clerkUserId = custom_data?.clerkUserId;
+                const clerkUserId = custom_data?.clerk_user_id;
 
                 if (clerkUserId) {
                     await updateUserPlan(clerkUserId, {
@@ -154,12 +157,15 @@ export async function POST(request: NextRequest) {
             }
 
             case 'transaction.completed': {
+                // Subscription events usually handle provisioning, but for one-time payments 
+                // or initial transaction we might want to ensure provisioning if subscription event is delayed.
+                // However, Paddle v2 sends subscription.created which is better.
                 break;
             }
 
             case 'transaction.payment_failed': {
                 // Log the failed payment for monitoring
-                const clerkUserId = event.data.custom_data?.clerkUserId;
+                const clerkUserId = event.data.custom_data?.clerk_user_id;
                 if (clerkUserId) {
                     console.error(
                         `[Webhook] Payment failed for user ${clerkUserId}, subscription ${event.data.id}`
