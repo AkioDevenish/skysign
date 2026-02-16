@@ -559,29 +559,30 @@ export default function Home() {
                   className="relative flex flex-col p-8 rounded-2xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 w-full md:w-1/3"
                 >
                   {/* Icon */}
-                  <div className="mb-6 h-12 flex items-center">
+                  <div className="mb-6 h-12 flex items-center text-stone-900">
                     {plan.name === 'Free' && (
-                      <div className="p-3 bg-stone-100 rounded-xl text-stone-900">
-                        <Cloud className="w-8 h-8" strokeWidth={1.5} />
-                      </div>
+                       <div className="relative flex items-center justify-center w-8 h-8">
+                          <PenTool className="w-8 h-8" strokeWidth={1.5} />
+                       </div>
                     )}
                     {plan.name === 'Pro' && (
-                      <div className="p-3 bg-stone-900 rounded-xl text-stone-50 shadow-lg shadow-stone-900/20">
-                         <div className="relative flex items-center justify-center w-8 h-8">
-                            <PenTool className="w-6 h-6 absolute top-0 left-0" strokeWidth={1.5} />
-                            <svg className="w-6 h-6 absolute bottom-0 -right-2 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M3 15c2-1 4-1 6 0 2 1 4 1 6 0" />
-                            </svg>
-                         </div>
-                      </div>
+                       <div className="relative flex items-center justify-center w-8 h-8">
+                          <PenTool className="w-8 h-8 absolute -top-1 -left-1" strokeWidth={1.5} />
+                          <svg className="w-6 h-6 absolute bottom-0 -right-2 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 15c2-1 4-1 6 0 2 1 4 1 6 0" />
+                          </svg>
+                       </div>
                     )}
                     {plan.name === 'Pro Plus' && (
-                       <div className="p-3 bg-stone-100 rounded-xl text-stone-900">
-                         <div className="relative">
-                            <Cloud className="w-8 h-8" strokeWidth={1.5} />
-                            <Users className="w-4 h-4 absolute -bottom-1 -right-1 fill-stone-100 stroke-stone-900" strokeWidth={2} />
-                         </div>
-                      </div>
+                       <div className="relative flex items-center justify-center w-8 h-8">
+                          <PenTool className="w-8 h-8 absolute -top-1 -left-1" strokeWidth={1.5} />
+                          <svg className="w-6 h-6 absolute bottom-1 -right-2 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 15c2-1 4-1 6 0 2 1 4 1 6 0" />
+                          </svg>
+                          <svg className="w-6 h-6 absolute -bottom-1 -right-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 15c2-1 4-1 6 0 2 1 4 1 6 0" />
+                          </svg>
+                       </div>
                     )}
                   </div>
 
