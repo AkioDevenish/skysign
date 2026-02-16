@@ -154,7 +154,6 @@ export default function Home() {
       period: "per month",
       description: "For professionals who sign daily",
       features: [
-        "7-day free trial",
         "Unlimited signatures",
         "Advanced gesture controls",
         "HD PNG, SVG & PDF export",
@@ -162,7 +161,7 @@ export default function Home() {
         "Comprehensive Audit Logs",
         "Priority Email Support",
       ],
-      cta: "Start Free Trial",
+      cta: "Get Started",
       highlighted: true,
       comingSoon: false,
     },
@@ -174,7 +173,6 @@ export default function Home() {
       period: "per month",
       description: "For teams and organizations",
       features: [
-        "7-day free trial",
         "Everything in Pro",
         "Up to 10 team members",
         "Team management dashboard",
@@ -182,7 +180,7 @@ export default function Home() {
         "Custom Branding",
         "Dedicated Success Manager",
       ],
-      cta: "Start Free Trial",
+      cta: "Get Started",
       highlighted: false,
       comingSoon: false,
     },
