@@ -213,15 +213,17 @@ export const getByToken = query({
             return { ...request, status: "expired", documentUrl: null };
         }
 
-        const docUrl = await ctx.storage.getUrl(request.documentStorageId);
+        // Return valid document URL (prefer signed version for sequential signing)
+        const storageId = request.signedStorageId || request.documentStorageId;
+        const docUrl = await ctx.storage.getUrl(storageId);
         
         // Return request with OVERRIDDEN recipient details for the current signer
         return { 
             ...request, 
             documentUrl: docUrl,
-            // Override with current signer's info so UI shows correct "Welcome, [Name]"
-            recipientName: currentSigner?.name || request.recipientName,
-            recipientEmail: currentSigner?.email || request.recipientEmail,
+            // Override with current signer's info
+            recipientName: currentSigner?.name,
+            recipientEmail: currentSigner?.email,
             // Add extra context if needed
             signerOrder: currentSigner?.order,
             signerStatus: currentSigner?.status,
