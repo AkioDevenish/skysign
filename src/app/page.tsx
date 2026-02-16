@@ -561,26 +561,29 @@ export default function Home() {
                   {/* Icon */}
                   <div className="mb-6 h-12 flex items-center text-stone-900">
                     {plan.name === 'Free' && (
-                       <div className="relative flex items-center justify-center w-10 h-10">
-                          <PenTool className="w-6 h-6" strokeWidth={1.5} />
+                       <div className="relative flex items-center justify-center w-12 h-12">
+                          <PenTool className="w-8 h-8" strokeWidth={1.5} />
                        </div>
                     )}
                     {plan.name === 'Pro' && (
-                       <div className="relative w-10 h-10">
-                          <PenTool className="w-5 h-5 absolute top-1 left-1 text-stone-900" strokeWidth={1.5} />
-                          <svg className="w-6 h-6 absolute bottom-1 right-1 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 12c2-1 4-1 6 0 2 1 4 1 6 0" />
+                       <div className="relative w-12 h-12">
+                          <PenTool className="w-6 h-6 absolute top-0 left-1 text-stone-900" strokeWidth={1.5} />
+                          <svg className="w-8 h-8 absolute bottom-0 right-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                            {/* Low scribble path */}
+                            <path d="M4 18c2-1 4-1 6 0 2 1 4 1 6 0" />
                           </svg>
                        </div>
                     )}
                     {plan.name === 'Pro Plus' && (
-                       <div className="relative w-10 h-10">
-                          <PenTool className="w-5 h-5 absolute top-1 left-1 text-stone-900" strokeWidth={1.5} />
-                          <svg className="w-6 h-6 absolute bottom-3 right-1 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 14c2-1 4-1 6 0 2 1 4 1 6 0" />
+                       <div className="relative w-12 h-12">
+                          <PenTool className="w-6 h-6 absolute top-0 left-1 text-stone-900" strokeWidth={1.5} />
+                          {/* Top Scribble */}
+                          <svg className="w-8 h-8 absolute bottom-2 right-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 18c2-1 4-1 6 0 2 1 4 1 6 0" />
                           </svg>
-                          <svg className="w-6 h-6 absolute bottom-0 right-1 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 14c2-1 4-1 6 0 2 1 4 1 6 0" />
+                          {/* Bottom Scribble */}
+                          <svg className="w-8 h-8 absolute -bottom-1 right-0 text-stone-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 18c2-1 4-1 6 0 2 1 4 1 6 0" />
                           </svg>
                        </div>
                     )}
