@@ -13,7 +13,7 @@ export default function Navbar() {
                     <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
                 </Link>
                 <div className="hidden md:flex items-center gap-10">
-                    <Link href="/#features" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">Features</Link>
+                    <Link href="/how-it-works" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">How it Works</Link>
                     <Link href="/#pricing" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">Pricing</Link>
                     <Link href="/#faq" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">FAQ</Link>
                     <SignedOut>
