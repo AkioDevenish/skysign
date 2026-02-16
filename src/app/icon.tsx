@@ -40,7 +40,7 @@ export default function Icon() {
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            transform="translate(-1, -1) scale(1.1)"
+            transform="translate(-3, -3) scale(1.3)"
           />
         </svg>
       </div>
