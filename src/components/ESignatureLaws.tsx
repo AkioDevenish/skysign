@@ -90,11 +90,11 @@ export default function ESignatureLaws() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-20"
                 >
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full mb-6 border border-emerald-100">
-                        <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full mb-6 border border-blue-100">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        <span className="text-sm font-medium text-emerald-700">Legally Compliant</span>
+                        <span className="text-sm font-medium text-blue-700">Legally Compliant</span>
                     </span>
                     <h2 className="text-4xl md:text-5xl font-bold text-stone-900 tracking-tight mb-6">
                         E-Signature Laws & Compliance
@@ -142,10 +142,10 @@ export default function ESignatureLaws() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="bg-emerald-50/50 rounded-3xl p-8 border border-emerald-100"
+                        className="bg-blue-50/50 rounded-3xl p-8 border border-blue-100"
                     >
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
+                            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                                 <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
@@ -155,7 +155,7 @@ export default function ESignatureLaws() {
                         <ul className="space-y-3">
                             {validUses.map((use, index) => (
                                 <li key={index} className="flex items-center gap-3 text-stone-600">
-                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
                                     {use}
                                 </li>
                             ))}

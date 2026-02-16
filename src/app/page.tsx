@@ -75,8 +75,8 @@ export default function Home() {
       initials: 'EC',
       name: 'Emily Chen',
       title: 'Head of Operations',
-      color: 'from-emerald-100 to-emerald-200',
-      textColor: 'text-emerald-700',
+      color: 'from-indigo-100 to-indigo-200',
+      textColor: 'text-indigo-700',
       signaturePath: 'M22 48 Q 45 18, 72 42 T 118 36 C 145 32, 168 52, 195 40 S 230 45, 258 38 C 268 35, 275 42, 278 40',
       time: 'Signed 8 mins ago',
     },
@@ -269,7 +269,7 @@ export default function Home() {
               {/* Left side - Main content */}
               <div className="lg:max-w-xl">
                 <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-stone-100 rounded-full mb-8 border border-stone-200">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                   <span className="text-sm text-stone-600 font-mono tracking-wide">
                     <DecryptedText
                       text="AR-powered signatures"
@@ -360,7 +360,7 @@ export default function Home() {
                             <p className="text-xs text-stone-500">{card.title}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-emerald-600">
+                        <div className="flex items-center gap-1.5 text-blue-600">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                           </svg>
@@ -427,12 +427,12 @@ export default function Home() {
                 </div>
 
                 {/* Legal compliance badge */}
-                <div className="absolute -bottom-6 right-8 bg-emerald-50 rounded-xl px-4 py-2 shadow-md border border-emerald-100">
+                <div className="absolute -bottom-6 right-8 bg-blue-50 rounded-xl px-4 py-2 shadow-md border border-blue-100">
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span className="text-xs font-semibold text-emerald-700">ESIGN & eIDAS</span>
+                    <span className="text-xs font-semibold text-blue-700">ESIGN & eIDAS</span>
                   </div>
                 </div>
               </div>
@@ -459,14 +459,14 @@ export default function Home() {
       <section id="pricing" className="py-32 px-8 lg:px-12 relative z-10 overflow-hidden">
         {/* Background elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-100/30 rounded-full blur-[120px] -z-10" />
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-50/40 rounded-full blur-[100px] -z-10" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-50/40 rounded-full blur-[100px] -z-10" />
 
         <div className="max-w-7xl mx-auto">
           <FadeContent>
             {/* Header */}
             <div className="text-center mb-20">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-stone-100 text-stone-600 rounded-full text-sm font-medium mb-6 border border-stone-200/60">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                 Flexible Plans
               </span>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight mb-6">
@@ -492,7 +492,7 @@ export default function Home() {
                 </button>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-medium transition-colors ${billingCycle === 'yearly' ? 'text-stone-900' : 'text-stone-400'}`}>Yearly</span>
-                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Save up to 25%</span>
+                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Save up to 25%</span>
                 </div>
               </div>
             </div>

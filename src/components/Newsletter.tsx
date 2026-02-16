@@ -67,8 +67,8 @@ export default function Newsletter() {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="bg-stone-800/50 border border-stone-700 rounded-2xl p-8"
                             >
-                                <div className="flex items-center gap-4 text-emerald-400">
-                                    <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                                <div className="flex items-center gap-4 text-blue-400">
+                                    <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>

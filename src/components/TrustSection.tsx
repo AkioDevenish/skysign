@@ -107,7 +107,7 @@ export default function TrustSection() {
                             key={badge.label}
                             className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/5 border border-white/10"
                         >
-                            <span className="text-emerald-400">{badge.icon}</span>
+                            <span className="text-blue-400">{badge.icon}</span>
                             <span className="text-sm font-medium text-stone-300">{badge.label}</span>
                         </div>
                     ))}
