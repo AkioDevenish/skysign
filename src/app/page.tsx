@@ -599,18 +599,16 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-20 text-center">
-              <p className="text-stone-400 text-sm">
-                Secure payment processing by
-                <span className="mx-2 inline-flex items-center gap-1.5 px-2 py-0.5 bg-stone-100 rounded-md font-semibold text-stone-700">
-                  {/* Paddle Brand Icon */}
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <rect width="24" height="24" rx="6" fill="#18181B" />
-                    <path d="M12 6L13.4 10.6L18 12L13.4 13.4L12 18L10.6 13.4L6 12L10.6 10.6L12 6Z" fill="#FACC15" />
-                  </svg>
-                  Paddle
-                </span>
-              </p>
+            <div className="mt-20 flex items-center justify-center gap-2 text-stone-400 text-sm">
+              <span>Secure payment processing by</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-stone-100 rounded-md font-semibold text-stone-700">
+                {/* Paddle Brand Icon */}
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                  <rect width="24" height="24" rx="6" fill="#18181B" />
+                  <path d="M12 6L13.4 10.6L18 12L13.4 13.4L12 18L10.6 13.4L6 12L10.6 10.6L12 6Z" fill="#FACC15" />
+                </svg>
+                Paddle
+              </span>
             </div>
           </FadeContent>
         </div>
