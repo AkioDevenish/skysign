@@ -1,7 +1,7 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { PLAN_LIMITS } from "./config";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 
 // Generate a secure random token for signing links
 function generateAccessToken(): string {
@@ -13,7 +13,6 @@ function generateAccessToken(): string {
     return token;
 }
 
-// Create a new signature request
 // Create a new signature request
 export const create = mutation({
     args: {
@@ -248,163 +247,182 @@ export const markViewed = mutation({
 });
 
 // Submit signature (signer completes signing)
-// Submit signature (signer completes signing)
+// Submit signature (signer provides signature image)
 export const submitSignature = mutation({
     args: {
         accessToken: v.string(),
-        signedStorageId: v.id("_storage"),
-        signatureStorageId: v.optional(v.id("_storage")), // Individual signature image
-        signerName: v.optional(v.string()),
+        signedStorageId: v.id("_storage"), // Currently this is the signature PNG from frontend
+        signatureStorageId: v.optional(v.id("_storage")), // Also the PNG
+        signerName: v.optional(v.string()), // Optional typed name
     },
     handler: async (ctx, args) => {
-        // 1. Try finding in requestSigners (Multi-party)
+        // 1. Identify Signer
         const signer = await ctx.db
             .query("requestSigners")
             .withIndex("by_token", (q) => q.eq("accessToken", args.accessToken))
             .first();
 
+        // Check Legacy / Request directly if no signer record found
         let request;
-        const now = new Date().toISOString();
+        let currentSigner = signer;
 
         if (signer) {
             request = await ctx.db.get(signer.requestId);
             if (!request) throw new Error("Request not found");
-            
             if (signer.status === 'signed') throw new Error("Already signed");
-            
-            // Mark THIS signer as signed
-            await ctx.db.patch(signer._id, {
-                status: 'signed',
-                signedAt: now,
-                signatureStorageId: args.signatureStorageId,
-            });
-
-            // Update the main document with the latest PDF version (incrementally signed)
-            await ctx.db.patch(request._id, {
-                signedStorageId: args.signedStorageId,
-            });
-
-            // Check if there are next signers
-            const allSigners = await ctx.db
-                .query("requestSigners")
-                .withIndex("by_request", (q) => q.eq("requestId", signer.requestId))
-                .collect();
-            
-            // Sort by order
-            allSigners.sort((a, b) => a.order - b.order);
-
-            const pendingSigners = allSigners.filter(s => s.status !== 'signed');
-
-            if (pendingSigners.length === 0) {
-                // ALL SIGNED
-                await ctx.db.patch(request._id, {
-                    status: "signed",
-                    signedAt: now,
-                    // signedStorageId already updated above
-                });
-
-                // Generate Certificate (listing all signers ideally, or just the summary)
-                // For now, listing the LAST signer + recipient in args logic attached to 'request'
-                // Ideally certificates.ts should be smarter, but let's stick to existing interface
-                // We'll pass "Multiple Signers" as name if multiple?
-                // Or certificates.ts just uses what we pass. 
-                // Let's pass the current signer as "SignerName" for the log entry, 
-                // but certificate might need more info.
-                
-                await ctx.scheduler.runAfter(0, api.certificates.generate, {
-                    requestId: request._id,
-                    documentName: request.documentName,
-                    signerName: args.signerName || signer.name || 'Signer',
-                    signerEmail: signer.email,
-                    signedAt: now,
-                    userAgent: "Signer/Web",
-                });
-                
-                // Notify Sender
-                await ctx.scheduler.runAfter(0, api.email.sendSignedNotification, {
-                    senderEmail: request.senderId,
-                    senderName: 'You',
-                    recipientName: "All Signers",
-                    documentName: request.documentName,
-                    signedAt: now,
-                });
-            } else {
-                // Not finished. Find NEXT signer.
-                const nextSigner = pendingSigners[0]; // First pending one (since we sorted)
-                
-                // Check if nextSigner is strictly the NEXT in order (e.g. order 2 after order 1)
-                // We sorted, so yes.
-                
-                // Update next signer status
-                await ctx.db.patch(nextSigner._id, { status: 'sent' });
-                
-                // Send email to NEXT signer
-                await ctx.scheduler.runAfter(0, api.email.sendSignatureRequest, {
-                    recipientEmail: nextSigner.email,
-                    recipientName: nextSigner.name,
-                    senderName: 'Signer (via SkySign)', // Or original sender? "Invitation to sign"
-                    documentName: request.documentName,
-                    message: request.message,
-                    signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/sign/${nextSigner.accessToken}`,
-                });
-            }
-
         } else {
             // Legacy / Single Signer fallback
             request = await ctx.db
                 .query("signatureRequests")
                 .withIndex("by_token", (q) => q.eq("accessToken", args.accessToken))
                 .first();
-
-            if (!request) throw new Error("Request not found");
-            if (request.status === "signed") throw new Error("Already signed");
-            if (request.status === "declined") throw new Error("Request was declined");
             
-            // Check expiration
-            if (request.expiresAt && new Date(request.expiresAt) < new Date()) {
-                throw new Error("Request has expired");
-            }
+            if (!request) throw new Error("Request not found");
+            
+            // Mock legacy signer for consistent handling
+            currentSigner = {
+                _id: "legacy" as any,
+                requestId: request._id,
+                email: request.recipientEmail!,
+                name: request.recipientName,
+                order: 1,
+                accessToken: args.accessToken,
+                status: request.status,
+                _creationTime: 0,
+            };
+        }
 
+        if (request.status === "signed") throw new Error("Already signed");
+        if (request.status === "declined") throw new Error("Request was declined");
+        if (request.expiresAt && new Date(request.expiresAt) < new Date()) {
+            throw new Error("Request has expired");
+        }
+
+        const now = new Date().toISOString();
+
+        // 2. Mark Signer as "signed" to prevent double submission
+        if (signer) {
+            await ctx.db.patch(signer._id, {
+                status: 'signed',
+                signedAt: now,
+                signatureStorageId: args.signatureStorageId, // Save the PNG reference
+            });
+        }
+        // For legacy, we update the main request later in finalizeSignature?
+        // Actually, let's update status now to block double-clicks.
+        if (!signer) {
+             await ctx.db.patch(request._id, {
+                status: 'in_progress', // Temporary status? Or keep pending until finalize?
+                // Legacy didn't have detailed status. We'll rely on finalizeSignature for final update.
+             });
+        }
+
+        // 3. Trigger Async PDF Embedding
+        // We pass the Current PDF (or signedStorageId if exists) + Signature Image
+        // If sequential, use the latest signedStorageId.
+        const currentPdfId = request.signedStorageId || request.documentStorageId;
+
+        await ctx.scheduler.runAfter(0, api.documents.embedSignature, {
+            requestId: request._id,
+            documentStorageId: currentPdfId,
+            signatureStorageId: args.signatureStorageId || args.signedStorageId, // Frontend passes PNG as signedStorageId currently? Use carefully.
+            signerName: args.signerName || currentSigner?.name || 'Signer',
+            signerEmail: currentSigner?.email || '',
+        });
+
+        return { success: true, message: "Signature received, processing document..." };
+    },
+});
+
+// Finalize Signature (Internal - called after PDF generation)
+export const finalizeSignature = internalMutation({
+    args: {
+        requestId: v.id("signatureRequests"),
+        signedStorageId: v.id("_storage"), // The NEW PDF with signature
+    },
+    handler: async (ctx, args) => {
+        const request = await ctx.db.get(args.requestId);
+        if (!request) throw new Error("Request not found");
+
+        const now = new Date().toISOString();
+
+        // 1. Update Request with New PDF
+        await ctx.db.patch(request._id, {
+            signedStorageId: args.signedStorageId,
+            status: "in_progress", // Ensure it's active
+        });
+
+        // 2. Check for Next Signer (Multi-party logic)
+        const allSigners = await ctx.db
+            .query("requestSigners")
+            .withIndex("by_request", (q) => q.eq("requestId", request._id))
+            .collect();
+        
+        // Sort
+        allSigners.sort((a, b) => a.order - b.order);
+
+        const pendingSigners = allSigners.filter(s => s.status !== 'signed');
+        
+        if (pendingSigners.length === 0) {
+            // ALL SIGNED (or Legacy Single Signer completed)
             await ctx.db.patch(request._id, {
                 status: "signed",
                 signedAt: now,
-                signedStorageId: args.signedStorageId,
-                signatureStorageId: args.signatureStorageId,
             });
 
-            // Log audit
+            // Audit Log
             await ctx.db.insert("auditTrail", {
                 userId: request.senderId,
                 action: "signature_completed",
                 signatureName: request.documentName,
                 timestamp: now,
-                userAgent: "Signer/Web",
+                userAgent: "Server/Convex",
                 metadata: {
-                    recipientEmail: request.recipientEmail,
-                    signerName: args.signerName || request.recipientName,
+                    requestId: request._id,
+                    status: "Completed",
                 },
             });
 
-            // Cert & Notify
+            // Generate Certificate
             await ctx.scheduler.runAfter(0, api.certificates.generate, {
                 requestId: request._id,
                 documentName: request.documentName,
-                signerName: args.signerName || request.recipientName || 'Signer',
-                signerEmail: request.recipientEmail!,
+                signerName: 'Multiple Signers', // Summary
+                signerEmail: '',
                 signedAt: now,
-                userAgent: "Signer/Web",
+                userAgent: "Server/Convex",
             });
             
-             await ctx.scheduler.runAfter(0, api.email.sendSignedNotification, {
+            // Notify Sender
+            await ctx.scheduler.runAfter(0, api.email.sendSignedNotification, {
                 senderEmail: request.senderId,
                 senderName: 'You',
-                recipientName: args.signerName || request.recipientName || request.recipientEmail,
+                recipientName: "All Signers",
                 documentName: request.documentName,
                 signedAt: now,
             });
-        }
 
-        return { success: true };
+        } else {
+            // NEXT SIGNER
+            // The previous signer (who just signed) is effectively done.
+            // We need to notify the FIRST pending signer.
+            const nextSigner = pendingSigners[0];
+            
+            // Check if we already sent to them? (Might be retry)
+            // If status is 'pending', send email.
+            if (nextSigner.status === 'pending') {
+                await ctx.db.patch(nextSigner._id, { status: 'sent' });
+                
+                await ctx.scheduler.runAfter(0, api.email.sendSignatureRequest, {
+                    recipientEmail: nextSigner.email,
+                    recipientName: nextSigner.name,
+                    senderName: 'Signer (via SkySign)',
+                    documentName: request.documentName,
+                    message: request.message,
+                    signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/sign/${nextSigner.accessToken}`,
+                });
+            }
+        }
     },
 });
 
