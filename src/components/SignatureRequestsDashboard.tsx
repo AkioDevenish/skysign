@@ -242,6 +242,20 @@ export default function SignatureRequestsDashboard() {
                                                 Download
                                             </a>
                                         )}
+                                        {request.auditCertificateUrl && (
+                                            <a
+                                                href={request.auditCertificateUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-3.5 py-2 bg-white border border-stone-200 hover:bg-stone-50 text-stone-600 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 shadow-sm hover:shadow-md"
+                                                title="Download Certificate of Completion"
+                                            >
+                                                <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Certificate
+                                            </a>
+                                        )}
                                         <button
                                             onClick={() => handleDelete(request._id)}
                                             className="p-2 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"

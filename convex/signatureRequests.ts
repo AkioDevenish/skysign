@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { PLAN_LIMITS } from "./config";
 import { api } from "./_generated/api";
@@ -94,7 +94,10 @@ export const getMySent = query({
             const signedUrl = req.signedStorageId 
                 ? await ctx.storage.getUrl(req.signedStorageId)
                 : null;
-            return { ...req, documentUrl: docUrl, signedDocumentUrl: signedUrl };
+            const auditUrl = req.auditCertificateStorageId
+                ? await ctx.storage.getUrl(req.auditCertificateStorageId)
+                : null;
+            return { ...req, documentUrl: docUrl, signedDocumentUrl: signedUrl, auditCertificateUrl: auditUrl };
         }));
     },
 });
@@ -190,6 +193,16 @@ export const submitSignature = mutation({
             signedAt: now,
         });
 
+        // 5. Generate Certificate of Completion
+        await ctx.scheduler.runAfter(0, api.certificates.generate, {
+            requestId: request._id,
+            documentName: request.documentName,
+            signerName: args.signerName || request.recipientName || 'Signer',
+            signerEmail: request.recipientEmail,
+            signedAt: now,
+            userAgent: "Signer/Web",
+        });
+
         return { success: true };
     },
 });
@@ -270,5 +283,18 @@ export const remove = mutation({
         }
 
         await ctx.db.delete(args.id);
+    },
+});
+
+// Internal mutation to save the generated certificate storage ID
+export const saveCertificate = internalMutation({
+    args: {
+        requestId: v.id("signatureRequests"),
+        storageId: v.id("_storage"),
+    },
+    handler: async (ctx, args) => {
+        await ctx.db.patch(args.requestId, {
+            auditCertificateStorageId: args.storageId,
+        });
     },
 });

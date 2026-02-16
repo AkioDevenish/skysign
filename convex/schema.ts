@@ -80,6 +80,7 @@ export default defineSchema({
         accessToken: v.string(),                        // Unique token for secure signing link
         createdAt: v.string(),
         reminderSentAt: v.optional(v.string()),
+        auditCertificateStorageId: v.optional(v.id("_storage")), // PDF Certificate of Completion
     }).index("by_sender", ["senderId"])
       .index("by_token", ["accessToken"])
       .index("by_status", ["status"])
