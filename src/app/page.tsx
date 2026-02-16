@@ -141,8 +141,8 @@ export default function Home() {
     {
       name: "Pro",
       planId: "pro",
-      monthlyPrice: "$12",
-      yearlyPrice: "$108",
+      monthlyPrice: "$17",
+      yearlyPrice: "$170",
       period: "per month",
       description: "For professionals who sign daily",
       features: [
@@ -160,8 +160,8 @@ export default function Home() {
     {
       name: "Pro Plus",
       planId: "proplus",
-      monthlyPrice: "$39.99",
-      yearlyPrice: "$359",
+      monthlyPrice: "$39",
+      yearlyPrice: "$390",
       period: "per month",
       description: "For teams and organizations",
       features: [
@@ -215,7 +215,7 @@ export default function Home() {
                 title="Create Signature"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
               </Link>
               <UserButton
@@ -513,7 +513,7 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-100/30 rounded-full blur-[120px] -z-10" />
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-50/40 rounded-full blur-[100px] -z-10" />
 
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <FadeContent>
             {/* Header */}
             <div className="text-center mb-20">
@@ -550,35 +550,44 @@ export default function Home() {
             </div>
 
             {/* Pricing Cards */}
-            {/* Pricing Cards */}
-            <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 items-stretch">
+            <div className="flex flex-col md:flex-row justify-center gap-6 lg:gap-8 items-stretch max-w-6xl mx-auto">
               {pricingTiers.map((plan, idx) => (
                 <div
                   key={plan.name}
-                  className={`relative flex flex-col p-8 rounded-[2.5rem] transition-all duration-300 ${
-                    plan.highlighted
-                      ? 'bg-white shadow-[0_32px_64px_-12px_rgba(16,185,129,0.15)] scale-100 lg:scale-105 z-10 ring-1 ring-emerald-500/50'
-                      : 'bg-white border border-stone-200 hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/20 z-0'
-                  }`}
+                  className="relative flex flex-col p-8 rounded-2xl bg-white border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 w-full md:w-1/3"
                 >
-                  {/* Highlight Glow for Pro */}
-                  {plan.highlighted && (
-                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-                  )}
+                  {/* Icon */}
+                  <div className="mb-6 text-stone-900">
+                    {plan.name === 'Free' && (
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1) scale(0.9)"/>
+                      </svg>
+                    )}
+                    {plan.name === 'Pro' && (
+                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(1 1) scale(0.9)"/>
+                         <path d="M14 16L16 18L21 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                         <path d="M13 21l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                    {plan.name === 'Pro Plus' && (
+                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.132 20.177 10.244 17.812 10.016C17.5681 10.019 17.3241 10.0199 17.0811 10.0189C16.891 6.5786 14.075 3.83464 10.638 3.83464C6.71101 3.83464 3.51817 6.94553 3.34444 10.8711C3.25052 10.8655 3.1561 10.8624 3.06118 10.8614C1.37048 10.8614 0 12.2319 0 13.9226C0 15.6133 1.37048 16.9839 3.06118 16.9839H17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" transform="translate(-4 -2) scale(0.7)"/>
+                          <path d="M7 14L12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="12" cy="9" r="2" stroke="currentColor" strokeWidth="1.5"/>
+                          <circle cx="7" cy="14" r="2" stroke="currentColor" strokeWidth="1.5"/>
+                          <circle cx="17" cy="14" r="2" stroke="currentColor" strokeWidth="1.5"/> 
+                          <path d="M17 14L12 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                       </svg>
+                    )}
+                  </div>
 
-                  {/* Plan Content */}
-                  <div className="mb-8">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-stone-900">
-                        {plan.name}
-                      </h3>
-                      {plan.highlighted && (
-                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold tracking-wider uppercase rounded-full">
-                          Most Popular
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm leading-relaxed text-stone-500">
+                  {/* Plan Name & Desc */}
+                  <div className="mb-4">
+                    <h3 className="text-3xl font-serif font-medium text-stone-900 mb-2">
+                      {plan.name}
+                    </h3>
+                    <p className="text-sm text-stone-500">
                       {plan.description}
                     </p>
                   </div>
@@ -586,68 +595,52 @@ export default function Home() {
                   {/* Price */}
                   <div className="mb-8">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-bold tracking-tight text-stone-900">
-                        {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
+                      <span className="text-xl font-bold text-stone-900">
+                         {billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
                       </span>
-                      {plan.monthlyPrice !== '$0' && (
-                        <span className="font-medium text-stone-400">
-                          /{billingCycle === 'yearly' ? 'year' : 'mo'}
-                        </span>
-                      )}
                     </div>
-                    {billingCycle === 'yearly' && plan.monthlyPrice !== '$0' && (
-                      <p className="text-xs mt-2 font-medium text-emerald-600">
-                        Billed yearly (Save 25%)
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Features */}
-                  <div className="flex-grow mb-10">
-                    <ul className="space-y-4">
-                      {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm">
-                          <div className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.highlighted ? 'bg-emerald-100' : 'bg-stone-100'}`}>
-                            <svg 
-                              className={`w-3 h-3 ${plan.highlighted ? 'text-emerald-600' : 'text-stone-500'}`} 
-                              viewBox="0 0 24 24" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="3"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                          <span className="text-stone-600 font-medium">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                     <p className="text-xs text-stone-400 mt-1">
+                        {
+                            plan.name === 'Free' ? 'Free for everyone' :
+                            billingCycle === 'yearly' ? 'Per month, billed annually' : 'Per month, billed monthly'
+                        }
+                     </p>
                   </div>
 
                   {/* CTA Button */}
                   <button
                     onClick={() => handleCheckout(plan.planId, plan.name)}
-                    disabled={checkoutLoading === plan.name}
-                    className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 
+                    disabled={!!checkoutLoading}
+                    className={`w-full py-2.5 rounded-lg font-bold text-sm tracking-wide transition-all duration-200 mb-8 cursor-pointer
                       ${plan.highlighted
-                        ? 'bg-stone-900 text-white hover:bg-stone-800 hover:shadow-lg hover:shadow-stone-900/20 hover:-translate-y-0.5'
-                        : 'bg-white text-stone-900 border border-stone-200 hover:border-stone-900 hover:bg-stone-50'
-                      } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
+                        ? 'bg-stone-900 text-white hover:bg-stone-800'
+                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {checkoutLoading === plan.name ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Processing...
-                      </span>
-                    ) : (
-                      plan.cta
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Processing...
+                        </span>
+                      ) : (
+                        plan.cta
                     )}
                   </button>
+
+                  {/* Features */}
+                  <ul className="space-y-4 flex-1">
+                    {plan.features.map((feature, fIdx) => (
+                      <li key={fIdx} className="flex items-start gap-3 text-sm text-stone-600">
+                        <svg className="w-5 h-5 text-stone-900 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="leading-snug">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
