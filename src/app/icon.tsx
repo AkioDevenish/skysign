@@ -36,7 +36,7 @@ export default function Icon() {
           {/* Stylized 'S' Signature - Stone 900 */}
           <path
             d="M9 17c0-3 2.5-3 3.5-2 2 2 4 4 4 4l2-2"
-            stroke="#1c1917"
+            stroke="#0284c7"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
