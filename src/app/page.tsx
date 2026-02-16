@@ -14,6 +14,7 @@ import FAQ from "@/components/FAQ";
 import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
+import WorkflowSection from "@/components/WorkflowSection";
 import Footer from "@/components/Footer";
 
 import { getAuditStats } from "../lib/auditTrail";
@@ -536,6 +537,9 @@ export default function Home() {
           </FadeContent>
         </div>
       </section>
+
+      {/* Document Workflow Section */}
+      <WorkflowSection />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-32 px-8 lg:px-12 relative z-10 overflow-hidden">
