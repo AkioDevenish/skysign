@@ -59,6 +59,9 @@ export async function POST(request: Request) {
             };
         }
 
+        console.log('Creating Paddle transaction with API key:', apiKey ? `${apiKey.substring(0, 15)}...` : 'MISSING');
+        console.log('Price ID:', priceId);
+
         const paddleResponse = await fetch('https://api.paddle.com/transactions', {
             method: 'POST',
             headers: {
@@ -68,10 +71,20 @@ export async function POST(request: Request) {
             body: JSON.stringify(transactionPayload),
         });
 
-        const paddleData = await paddleResponse.json();
+        const responseText = await paddleResponse.text();
+        let paddleData;
+        try {
+            paddleData = JSON.parse(responseText);
+        } catch {
+            console.error('Paddle API returned non-JSON:', responseText);
+            return NextResponse.json(
+                { error: 'Failed to create transaction', details: responseText },
+                { status: 500 }
+            );
+        }
 
         if (!paddleResponse.ok) {
-            console.error('Paddle API error:', paddleData);
+            console.error('Paddle API error:', JSON.stringify(paddleData));
             return NextResponse.json(
                 { error: 'Failed to create transaction', details: paddleData },
                 { status: 500 }
@@ -81,7 +94,7 @@ export async function POST(request: Request) {
         const transactionId = paddleData.data?.id;
 
         if (!transactionId) {
-            console.error('No transaction ID returned:', paddleData);
+            console.error('No transaction ID returned:', JSON.stringify(paddleData));
             return NextResponse.json(
                 { error: 'Failed to get transaction ID' },
                 { status: 500 }
