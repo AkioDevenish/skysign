@@ -333,7 +333,7 @@ export default function SignatureCapture({
                     onClick={handleSave}
                     disabled={!hasContent}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${hasContent
-                        ? 'bg-stone-900 text-white hover:bg-stone-800 shadow-md'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 shadow-lg shadow-blue-500/20'
                         : 'bg-stone-200 text-stone-400 cursor-not-allowed'
                         }`}
                 >

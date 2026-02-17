@@ -108,7 +108,7 @@ export default function SendForSignatureModal({
                         className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col"
                     >
                         {/* Header */}
-                        <div className="bg-gradient-to-r from-stone-900 to-stone-800 px-6 py-4 text-white sticky top-0 z-10 shrink-0">
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 text-white sticky top-0 z-10 shrink-0">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold flex items-center gap-2">
                                     {success ? (
@@ -187,14 +187,14 @@ export default function SendForSignatureModal({
                                                         value={signer.email}
                                                         onChange={(e) => updateSigner(index, 'email', e.target.value)}
                                                         placeholder="Email address *"
-                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900/10 placeholder:text-stone-400"
+                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-stone-400 transition-all"
                                                     />
                                                     <input
                                                         type="text"
                                                         value={signer.name}
                                                         onChange={(e) => updateSigner(index, 'name', e.target.value)}
                                                         placeholder="Name (Optional)"
-                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-900/10 placeholder:text-stone-400"
+                                                        className="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-stone-400 transition-all"
                                                     />
                                                 </div>
                                             </div>
@@ -211,7 +211,7 @@ export default function SendForSignatureModal({
                                             onChange={(e) => setMessage(e.target.value)}
                                             placeholder="Please sign this document..."
                                             rows={3}
-                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900/20 resize-none text-sm"
+                                            className="w-full px-4 py-2.5 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none text-sm transition-all"
                                         />
                                     </div>
 
@@ -225,7 +225,7 @@ export default function SendForSignatureModal({
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full py-3 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -244,8 +244,8 @@ export default function SendForSignatureModal({
                                 </form>
                             ) : (
                                 <div className="text-center">
-                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg className="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
@@ -265,7 +265,7 @@ export default function SendForSignatureModal({
                                             />
                                             <button
                                                 onClick={copyLink}
-                                                className="px-3 py-1.5 bg-stone-900 text-white text-sm rounded-lg hover:bg-stone-800 transition-colors"
+                                                className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-600/20"
                                             >
                                                 {copied ? 'Copied!' : 'Copy'}
                                             </button>

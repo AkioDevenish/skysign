@@ -15,6 +15,7 @@ import Newsletter from "@/components/Newsletter";
 import ESignatureLaws from "@/components/ESignatureLaws";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { useToast } from "@/components/ToastProvider";
 import { Cloud, PenTool, Users } from 'lucide-react';
 
@@ -142,8 +143,8 @@ export default function Home() {
     {
       name: "Pro",
       planId: "pro",
-      monthlyPrice: "$17",
-      yearlyPrice: "$170",
+      monthlyPrice: "$12",
+      yearlyPrice: "$9",
       period: "per month",
       description: "For professionals who sign daily",
       features: [
@@ -162,7 +163,7 @@ export default function Home() {
       name: "Pro Plus",
       planId: "proplus",
       monthlyPrice: "$39",
-      yearlyPrice: "$390",
+      yearlyPrice: "$32",
       period: "per month",
       description: "For teams and organizations",
       features: [
@@ -192,49 +193,7 @@ export default function Home() {
       />
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-stone-50/90 backdrop-blur-md z-50 border-b border-stone-200/60">
-        <div className="max-w-6xl mx-auto px-8 lg:px-12 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
-          </div>
-          <div className="hidden md:flex items-center gap-10">
-            <Link href="/how-it-works" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">How it Works</Link>
-            <a href="#pricing" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">Pricing</a>
-            <a href="#faq" className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">FAQ</a>
-            <SignedOut>
-              <Link
-                href="/sign-up"
-                className="px-6 py-2.5 bg-stone-900 text-stone-50 rounded-full text-sm font-medium hover:bg-stone-800 transition-all hover:shadow-lg hover:shadow-stone-900/10"
-              >
-                Get Started
-              </Link>
-            </SignedOut>
-            <SignedIn>
-              <Link
-                href="/create"
-                className="w-10 h-10 bg-stone-900 text-stone-50 rounded-full flex items-center justify-center hover:bg-stone-800 transition-all hover:shadow-lg hover:shadow-stone-900/10"
-                title="Create Signature"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </Link>
-              <UserButton
-                userProfileMode="navigation"
-                userProfileUrl="/dashboard"
-                appearance={{
-                  elements: {
-                    avatarBox: {
-                      width: '36px',
-                      height: '36px',
-                    },
-                  },
-                }}
-              />
-            </SignedIn>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-40 pb-32 px-8 lg:px-12 relative z-10 overflow-hidden">
@@ -291,13 +250,15 @@ export default function Home() {
                     direction="top"
                     className="text-5xl md:text-6xl lg:text-7xl font-bold text-stone-900 tracking-tight leading-[1.1]"
                   />
-                  <BlurText
-                    text="Capture in seconds."
-                    delay={150}
-                    animateBy="words"
-                    direction="bottom"
-                    className="text-5xl md:text-6xl lg:text-7xl font-bold text-stone-400 tracking-tight leading-[1.1] mt-2"
-                  />
+                  <motion.p
+                    initial={{ filter: 'blur(10px)', opacity: 0, y: 50 }}
+                    whileInView={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.15 }}
+                    className="text-5xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-stone-900 via-blue-800 to-stone-900 tracking-tight leading-[1.1] mt-2"
+                  >
+                    Capture in seconds.
+                  </motion.p>
                 </div>
 
                 <p className="text-lg md:text-xl text-stone-500 max-w-lg mb-10 leading-relaxed">

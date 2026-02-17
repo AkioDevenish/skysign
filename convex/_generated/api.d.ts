@@ -9,6 +9,7 @@
  */
 
 import type * as actions from "../actions.js";
+import type * as ai from "../ai.js";
 import type * as apiKeys from "../apiKeys.js";
 import type * as audit from "../audit.js";
 import type * as auditQueries from "../auditQueries.js";
@@ -25,6 +26,7 @@ import type * as settings from "../settings.js";
 import type * as signatureRequests from "../signatureRequests.js";
 import type * as signatures from "../signatures.js";
 import type * as team from "../team.js";
+import type * as templates from "../templates.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +36,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
+  ai: typeof ai;
   apiKeys: typeof apiKeys;
   audit: typeof audit;
   auditQueries: typeof auditQueries;
@@ -50,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   signatureRequests: typeof signatureRequests;
   signatures: typeof signatures;
   team: typeof team;
+  templates: typeof templates;
 }>;
 
 /**

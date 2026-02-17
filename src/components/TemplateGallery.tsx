@@ -53,7 +53,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                 <button
                     onClick={() => setFilter('all')}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${filter === 'all'
-                        ? 'bg-stone-900 text-white'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                         }`}
                 >
@@ -64,7 +64,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                         key={key}
                         onClick={() => setFilter(key)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${filter === key
-                            ? 'bg-stone-900 text-white'
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                             : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                             }`}
                     >
@@ -87,7 +87,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                             transition={{ delay: idx * 0.05 }}
                             onClick={() => handleSelect(template)}
                             className={`relative p-4 rounded-2xl border text-left transition-all ${isSelected
-                                ? 'border-stone-900 bg-stone-50 shadow-md'
+                                ? 'border-blue-500 bg-blue-50/50 shadow-md ring-1 ring-blue-500'
                                 : isLocked
                                     ? 'border-stone-200 bg-stone-50 opacity-75 hover:opacity-90 cursor-pointer'
                                     : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-sm'
@@ -125,7 +125,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                                     transition={{ duration: 0.4 }}
                                     className="absolute inset-0 rounded-2xl flex items-center justify-center bg-white/60 backdrop-blur-[1px]"
                                 >
-                                    <div className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white rounded-full text-sm font-medium">
+                                    <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full text-sm font-medium shadow-lg shadow-blue-500/20">
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                         </svg>
@@ -136,7 +136,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
 
                             {/* Selected Indicator */}
                             {isSelected && (
-                                <div className="absolute -top-1 -right-1 w-6 h-6 bg-stone-900 rounded-full flex items-center justify-center">
+                                <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
@@ -161,7 +161,7 @@ export default function TemplateGallery({ onSelect, plan = 'free' }: TemplateGal
                             <p className="text-sm font-medium text-stone-900">Unlock all templates</p>
                             <p className="text-xs text-stone-500">Get 4 more premium styles with Pro</p>
                         </div>
-                        <Link href="/#pricing" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-full hover:bg-stone-800 transition-colors">
+                        <Link href="/#pricing" className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm font-medium rounded-full hover:from-blue-700 hover:to-blue-600 transition-colors shadow-lg shadow-blue-500/20">
                             View Plans
                         </Link>
                     </div>

@@ -81,15 +81,15 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                     <h3 className="font-semibold text-stone-900 mb-4">Current Plan Details</h3>
                     <ul className="space-y-3 mb-6">
                         <li className="flex items-center gap-3 text-sm text-stone-600">
-                            <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                             {isPro ? 'Unlimited signatures' : '5 signatures per month'}
                         </li>
                         <li className="flex items-center gap-3 text-sm text-stone-600">
-                            <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                             {isPro ? 'Advanced Export (SVG, PDF)' : 'Standard PNG Export'}
                         </li>
                         <li className="flex items-center gap-3 text-sm text-stone-600">
-                            <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                             {isPro ? 'Cloud Backup & Sync' : 'Local Browser Storage'}
                         </li>
                     </ul>
@@ -131,8 +131,8 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                     )}
                     {isPro && (
                         <div className="space-y-3">
-                            <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center">
-                                <span className="text-emerald-700 text-sm font-semibold flex items-center justify-center gap-2">
+                            <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-center">
+                                <span className="text-indigo-700 text-sm font-semibold flex items-center justify-center gap-2">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>

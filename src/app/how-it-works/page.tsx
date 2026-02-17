@@ -5,15 +5,36 @@ import Link from 'next/link';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FadeContent from "@/components/reactbits/FadeContent";
-import { Hand, MousePointer2, ThumbsUp, X, Camera, Zap, ScanFace, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Hand, ThumbsUp, Camera, Zap, ScanFace, CheckCircle2, ArrowRight, X } from 'lucide-react';
 
 export default function HowItWorks() {
+  // Custom Grab/Fist icon since it's not exported in the available lucide version
+  const ClosedFistIcon = ({ className, strokeWidth = 1.5 }: { className?: string, strokeWidth?: number }) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M14 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M10 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M22 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M22 11v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L6 14" />
+    </svg>
+  );
+
+  const IndexFingerIcon = ({ className, strokeWidth = 1.5 }: { className?: string, strokeWidth?: number }) => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M14 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M10 11V3a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
+      <path d="M22 11V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+      <path d="M22 11v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L6 14" />
+    </svg>
+  );
+
   const steps = [
     {
       id: "01",
       title: "Point to Draw",
       description: "Extend your index finger to start drawing. specific landmark tracking follows your fingertip with precision.",
-      icon: MousePointer2,
+      icon: IndexFingerIcon,
       gesture: "Index Finger Up",
       color: "bg-blue-500",
       tip: "Keep your movement smooth for the best curves."
@@ -22,7 +43,7 @@ export default function HowItWorks() {
       id: "02",
       title: "Pause or Stop",
       description: "Need to lift the 'pen'? simply make a fist. The tracking stops, allowing you to reposition your hand without drawing a line.",
-      icon: Hand,
+      icon: ClosedFistIcon,
       gesture: "Closed Fist",
       color: "bg-amber-500",
       tip: "Perfect for crossing t's or dotting i's."
@@ -33,14 +54,14 @@ export default function HowItWorks() {
       description: "Happy with your signature? Flash a thumbs-up to instantly save it. It will be converted to a high-quality vector path.",
       icon: ThumbsUp,
       gesture: "Thumbs Up",
-      color: "bg-emerald-500",
+      color: "bg-blue-600",
       tip: "Hold the gesture for about 1 second."
     },
     {
       id: "04",
       title: "Clear & Retry",
       description: "Want to start over? Show an open palm to clear the canvas instantly. No buttons to click, just natural movement.",
-      icon: X,
+      icon: Hand,
       gesture: "Open Palm",
       color: "bg-red-500",
       tip: "The fastest way to iterate until perfection."
@@ -169,7 +190,7 @@ export default function HowItWorks() {
                   <div className="flex-1 relative">
                     {/* Step Number Badge */}
                     <div className="absolute -top-12 left-0 md:static md:mb-6">
-                       <span className="text-6xl font-bold text-stone-100 font-serif leading-none select-none">
+                       <span className="text-6xl font-bold text-stone-300 font-serif leading-none select-none">
                          {step.id}
                        </span>
                     </div>

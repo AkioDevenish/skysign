@@ -1,14 +1,18 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatedAiIcon } from './AnimatedAiIcon';
 import { 
     contractTemplates, 
-    categories, 
-    ContractTemplate, 
+    ContractTemplate,
     TemplateField,
-    getTemplateById 
+    getTemplateById,
+    categories
 } from '@/lib/contractTemplates';
+import { useQuery, useMutation, useAction } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
 import React from 'react';
 
@@ -31,26 +35,69 @@ const getTemplateIconSvg = (icon: string, size: string = 'w-6 h-6'): React.React
 
 interface ContractTemplatePickerProps {
     onSelect: (template: ContractTemplate, filledContent: string) => void;
-    onClose: () => void;
+    onClose?: () => void;
     isPro?: boolean;
+    embedded?: boolean;
+    initialCategory?: string | null;
 }
 
 interface FieldValues {
     [key: string]: string;
 }
 
-export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: ContractTemplatePickerProps) {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embedded = false, initialCategory }: ContractTemplatePickerProps) {
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null);
     const [selectedTemplate, setSelectedTemplate] = useState<ContractTemplate | null>(null);
     const [fieldValues, setFieldValues] = useState<FieldValues>({});
-    const [step, setStep] = useState<'categories' | 'templates' | 'fields' | 'preview'>('categories');
+    const [step, setStep] = useState<'categories' | 'templates' | 'view-template' | 'edit-template' | 'fields' | 'preview'>(initialCategory ? 'templates' : 'categories');
     const [searchQuery, setSearchQuery] = useState('');
+    
+    // Convex integrations
+    const customTemplatesRaw = useQuery(api.templates.list);
+    const createTemplate = useMutation(api.templates.create);
+    const updateTemplate = useMutation(api.templates.update);
+    const deleteTemplate = useMutation(api.templates.deleteTemplate);
+    
+    // AI Generation
+    const generateContract = useAction(api.ai.generateContract);
+    const [showAiModal, setShowAiModal] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    // Initial category navigation effect
+    useEffect(() => {
+        if (initialCategory) {
+            setSelectedCategory(initialCategory);
+            setStep('templates');
+        } else {
+            setSelectedCategory(null);
+            setStep('categories');
+        }
+    }, [initialCategory]);
+
+    // Merge static and custom templates
+    const allTemplates = useMemo(() => {
+        const custom: ContractTemplate[] = (customTemplatesRaw || []).map(t => ({
+            id: t._id,
+            name: t.name,
+            category: t.category as any, // Cast to match union type
+            description: t.description || '',
+            icon: '📝',
+            isPro: false,
+            fields: t.fields,
+            content: t.content
+        }));
+        return [...custom, ...contractTemplates];
+    }, [customTemplatesRaw]);
 
     // Filter templates based on search
     const filteredTemplates = useMemo(() => {
-        let templates = contractTemplates;
+        let templates = allTemplates;
         
-        if (selectedCategory) {
+        if (selectedCategory === 'my-templates') {
+            const staticIds = new Set(contractTemplates.map(t => t.id));
+            templates = templates.filter(t => !staticIds.has(t.id));
+        } else if (selectedCategory) {
             templates = templates.filter(t => t.category === selectedCategory);
         }
         
@@ -63,7 +110,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
         }
         
         return templates;
-    }, [selectedCategory, searchQuery]);
+    }, [selectedCategory, searchQuery, allTemplates]);
 
     // Fill template content with values
     const generateFilledContent = () => {
@@ -100,7 +147,142 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
         const initialValues: FieldValues = {};
         template.fields.forEach(f => { initialValues[f.id] = ''; });
         setFieldValues(initialValues);
-        setStep('fields');
+        setStep('view-template');
+    };
+
+    // Create new custom template
+    const handleCreateNew = () => {
+        const newTemplate: ContractTemplate = {
+            id: `custom-${Date.now()}`,
+            name: 'Untitled Contract',
+            category: 'contract' as any, // default
+            description: 'Custom contract template',
+            icon: '📝',
+            isPro: false,
+            fields: [],
+            content: ''
+        };
+        setSelectedTemplate(newTemplate);
+        setStep('edit-template');
+    };
+
+    const handleGenerateWithAi = async () => {
+        if (!aiPrompt.trim()) return;
+        setIsGenerating(true);
+        try {
+            const content = await generateContract({ prompt: aiPrompt });
+            
+            const newTemplate: ContractTemplate = {
+                id: `custom-${Date.now()}`,
+                name: 'AI Generated Contract',
+                category: 'contract' as any,
+                description: `Generated from: "${aiPrompt}"`,
+                icon: '✨',
+                isPro: false,
+                fields: [],
+                content: content
+            };
+            
+            setSelectedTemplate(newTemplate);
+            setStep('edit-template');
+            setShowAiModal(false);
+            setAiPrompt('');
+        } catch (error: any) {
+            console.error("AI Generation failed:", error);
+            alert("Failed to generate contract: " + error.message);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handleSaveEdit = async (newContent: string) => {
+        if (!selectedTemplate) return;
+
+        // Parse fields from content regex {{variable}}
+        const regex = /{{([^}]+)}}/g;
+        const matches = [...newContent.matchAll(regex)];
+        const newFields: TemplateField[] = [];
+        const seen = new Set();
+
+        matches.forEach(match => {
+            const id = match[1].trim();
+            if (!seen.has(id)) {
+                seen.add(id);
+                // Check if field already existed to preserve type/label if possible, else default
+                const existing = selectedTemplate.fields.find(f => f.id === id);
+                newFields.push({
+                    id,
+                    label: existing?.label || id.charAt(0).toUpperCase() + id.slice(1).replace(/([A-Z])/g, ' $1').trim(), // camelCase to Title Case
+                    type: existing?.type || 'text',
+                    required: true,
+                    placeholder: existing?.placeholder || `Enter ${id}...`
+                });
+            }
+        });
+
+        const updatedTemplate = {
+            ...selectedTemplate,
+            content: newContent,
+            fields: newFields
+        };
+
+        // Persist to DB
+        try {
+            if (selectedTemplate.id.startsWith('custom-')) {
+                // Create new
+                const newId = await createTemplate({
+                    name: selectedTemplate.name, // The user might want to edit name too, but for now use existing
+                    description: selectedTemplate.description,
+                    category: selectedTemplate.category,
+                    content: newContent,
+                    fields: newFields,
+                });
+                updatedTemplate.id = newId;
+            } else {
+                // Update existing if it is a custom template (check if ID is valid Convex ID, rough check)
+                // Static templates cannot be updated in DB, they are file based.
+                // We should probably check if it's in customTemplates list.
+                const isCustom = customTemplatesRaw?.some(t => t._id === selectedTemplate.id);
+                if (isCustom) {
+                    await updateTemplate({
+                        id: selectedTemplate.id as Id<"customTemplates">,
+                        content: newContent,
+                        fields: newFields,
+                    });
+                } else {
+                    // It's a static template being edited -> treat as new copy?
+                    // For now, let's just create a copy if they edit a static one?
+                    // Or maybe we blocked editing static ones? 
+                    // current UI allows editing anything. 
+                    // If editing static, we should probably Fork it.
+                    const newId = await createTemplate({
+                        name: `${selectedTemplate.name} (Copy)`,
+                        description: selectedTemplate.description,
+                        category: selectedTemplate.category,
+                        content: newContent,
+                        fields: newFields,
+                    });
+                    updatedTemplate.id = newId;
+                    updatedTemplate.name = `${selectedTemplate.name} (Copy)`;
+                }
+            }
+
+            setSelectedTemplate(updatedTemplate);
+            setStep('view-template');
+        } catch (error) {
+            console.error("Failed to save template:", error);
+            // Optionally show toast
+        }
+    };
+
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!selectedTemplate) return;
+        if (confirm('Are you sure you want to delete this template?')) {
+             await deleteTemplate({ id: selectedTemplate.id as Id<"customTemplates"> });
+             setSelectedTemplate(null);
+             setStep('templates');
+        }
     };
 
     // Handle final selection
@@ -110,31 +292,51 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
         }
     };
 
+
+    const Container = embedded ? 'div' : motion.div;
+    const Wrapper = embedded ? React.Fragment : motion.div;
+    
+    // Wrapper props
+    const wrapperProps = embedded ? {} : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        className: "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4",
+        onClick: onClose
+    };
+
+    // Container props
+    const containerProps = embedded ? {
+        className: "w-full flex flex-col h-full bg-stone-50"
+    } : {
+        initial: { scale: 0.95, opacity: 0 },
+        animate: { scale: 1, opacity: 1 },
+        className: "bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col",
+        onClick: (e: React.MouseEvent) => e.stopPropagation()
+    };
+
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={onClose}
-        >
-            <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-            >
+        <Wrapper {...wrapperProps}>
+            <Container {...containerProps}>
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-stone-200 flex-shrink-0">
+                <div className={`flex items-center justify-between p-5 ${embedded ? '' : 'border-b border-stone-200'} flex-shrink-0`}>
                     <div className="flex items-center gap-3">
-                        {step !== 'categories' && (
+                        {step !== 'categories' && !(initialCategory && step === 'templates') && (
                             <button
                                 onClick={() => {
                                     if (step === 'templates') setStep('categories');
-                                    else if (step === 'fields') setStep('templates');
+                                    else if (step === 'view-template') setStep('templates');
+                                    else if (step === 'edit-template') {
+                                        if (selectedTemplate?.id.startsWith('custom-')) {
+                                            setStep('categories');
+                                        } else {
+                                            setStep('view-template');
+                                        }
+                                    }
+                                    else if (step === 'fields') setStep('view-template');
                                     else if (step === 'preview') setStep('fields');
                                 }}
-                                className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                                className="p-2 hover:bg-stone-200 rounded-lg transition-colors"
                             >
                                 <svg className="w-5 h-5 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -144,26 +346,32 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
                         <div>
                             <h3 className="text-lg font-bold text-stone-900">
                                 {step === 'categories' && 'Contract Templates'}
-                                {step === 'templates' && categories.find(c => c.id === selectedCategory)?.name}
-                                {step === 'fields' && selectedTemplate?.name}
-                                {step === 'preview' && 'Preview Document'}
+                                {step === 'templates' && (selectedCategory === 'my-templates' ? 'My Templates' : categories.find(c => c.id === selectedCategory)?.name)}
+                                {step === 'view-template' && selectedTemplate?.name}
+                                {step === 'edit-template' && (selectedTemplate?.id.startsWith('custom-') ? 'Create New Template' : 'Edit Template')}
+                                {step === 'fields' && 'Fill Details'}
+                                {step === 'preview' && 'Final Review'}
                             </h3>
                             <p className="text-sm text-stone-500">
                                 {step === 'categories' && 'Choose a category to get started'}
-                                {step === 'templates' && 'Select a template'}
-                                {step === 'fields' && 'Fill in the details'}
+                                {step === 'templates' && (selectedCategory === 'my-templates' ? 'Templates you created' : 'Select a template')}
+                                {step === 'view-template' && 'Read through the template'}
+                                {step === 'edit-template' && 'Customize the document content'}
+                                {step === 'fields' && 'Fill in the placeholders'}
                                 {step === 'preview' && 'Review before creating'}
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
-                    >
-                        <svg className="w-5 h-5 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    {!embedded && onClose && (
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+                        >
+                            <svg className="w-5 h-5 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -212,6 +420,20 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
                                 ) : (
                                     /* Category Grid */
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {/* Create New Card */}
+                                        <button
+                                            onClick={handleCreateNew}
+                                            className="p-6 bg-white border-2 border-dashed border-stone-300 hover:border-stone-400 hover:bg-stone-50 rounded-2xl text-left transition-all group flex flex-col items-center justify-center text-center h-full min-h-[160px]"
+                                        >
+                                            <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center mb-3 group-hover:bg-stone-200 transition-colors">
+                                                <svg className="w-6 h-6 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </div>
+                                            <h4 className="font-bold text-stone-900">Create Custom</h4>
+                                            <p className="text-sm text-stone-500 mt-1">Start from scratch</p>
+                                        </button>
+
                                         {categories.map((category) => {
                                             const count = contractTemplates.filter(t => t.category === category.id).length;
                                             return (
@@ -258,6 +480,100 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
                                         onClick={() => handleTemplateSelect(template)}
                                     />
                                 ))}
+                            </motion.div>
+                        )}
+                        
+                        {/* View Template (Read-only Preview) */}
+                        {step === 'view-template' && selectedTemplate && (
+                            <motion.div
+                                key="view-template"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="h-full flex flex-col"
+                            >
+                                <div 
+                                    className="flex-1 border border-stone-200 rounded-xl p-8 bg-white overflow-y-auto shadow-inner mb-6 prose prose-stone max-w-none"
+                                >
+                                    {/* We render the raw content but perhaps highlight placeholders */}
+                                    <div dangerouslySetInnerHTML={{ 
+                                        __html: selectedTemplate.content.replace(/{{([^}]+)}}/g, '<span class="bg-yellow-100 text-yellow-800 px-1 rounded border border-yellow-200 font-mono text-sm">{{$1}}</span>')
+                                    }} />
+                                </div>
+
+                                <div className="flex justify-between gap-3 pb-2 pt-4 border-t border-stone-100">
+                                    <button
+                                        onClick={() => setStep('edit-template')}
+                                        className="px-4 py-3 text-stone-600 hover:bg-stone-100 rounded-xl font-medium transition-colors flex items-center gap-2"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Edit Template
+                                    </button>
+
+                                    {/* Delete Button for Custom Templates */}
+                                    {customTemplatesRaw?.some(t => t._id === selectedTemplate.id) && (
+                                        <button
+                                            onClick={handleDelete}
+                                            className="px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    )}
+
+                                     <button
+                                        onClick={() => setStep('fields')}
+                                        className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg shadow-stone-900/10"
+                                    >
+                                        Start Filling
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Edit Template View */}
+                        {step === 'edit-template' && selectedTemplate && (
+                            <motion.div
+                                key="edit-template"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                className="h-full flex flex-col"
+                            >
+                                <div className="flex-1 flex flex-col min-h-0">
+                                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                                        Edit Document Content
+                                    </label>
+                                    <div className="flex-1 min-h-0">
+                                        <RichTextEditor
+                                            initialContent={selectedTemplate.content}
+                                            onChange={(newHtml) => {
+                                                selectedTemplate.content = newHtml; // sync with ref
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-4 flex-shrink-0">
+                                     <button
+                                        onClick={() => {
+                                            // The content is already synced to selectedTemplate.content via the onChange prop mutation
+                                            // But for safety, we should pass it explicitly if we could. 
+                                            // Since we mutated the object reference above, we can just pass it.
+                                            handleSaveEdit(selectedTemplate.content);
+                                        }}
+                                        className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+                                    >
+                                        Save & Preview
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
 
@@ -324,8 +640,122 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false }: Con
                         )}
                     </AnimatePresence>
                 </div>
-            </motion.div>
-        </motion.div>
+            </Container>
+
+            {/* AI Floating Action Button - Premium Design */}
+            {(step === 'categories' || step === 'templates') && (
+                <button
+                    onClick={() => setShowAiModal(true)}
+                    className="fixed bottom-8 right-8 group z-40 outline-none cursor-pointer"
+                    title="Generate with AI"
+                >
+                    {/* Glowing background effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full blur opacity-25 group-hover:opacity-75 transition-opacity duration-500" />
+                    
+                    {/* Main button */}
+                    <div className="relative w-14 h-14 bg-stone-900 rounded-full flex items-center justify-center text-white border border-stone-700 shadow-2xl group-hover:scale-105 transition-transform duration-300 active:scale-95">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
+
+                    {/* Tooltip Label */}
+                    <span className="absolute right-full top-1/2 -translate-y-1/2 mr-4 px-3 py-1.5 bg-stone-900 text-white text-sm font-medium rounded-lg opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 whitespace-nowrap border border-stone-800 pointer-events-none shadow-xl">
+                        Generate with AI
+                    </span>
+                </button>
+            )}
+
+            {/* AI Generation Modal - Clean Light Theme */}
+            <AnimatePresence>
+                {showAiModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-stone-900/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowAiModal(false)}
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                            className="bg-white rounded-2xl w-full max-w-xl shadow-2xl shadow-stone-900/20 overflow-hidden ring-1 ring-black/5"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 md:p-8">
+                                {/* Header */}
+                                <div className="flex items-start gap-4 mb-6">
+                                    <div className="pt-1">
+                                        <AnimatedAiIcon className="w-8 h-8 text-stone-900" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-stone-900">Generate with AI</h3>
+                                        <p className="text-stone-500 mt-1">Describe the contract requirements and our AI will draft a solid starting point for you.</p>
+                                    </div>
+                                </div>
+
+                                {/* Input Area */}
+                                <div className="space-y-3">
+                                    <textarea
+                                        value={aiPrompt}
+                                        onChange={e => setAiPrompt(e.target.value)}
+                                        placeholder="e.g. Freelance agreement for a Senior Designer, $8k/month, IP rights transfer..."
+                                        className="w-full h-32 bg-stone-50 border border-stone-200 rounded-xl p-4 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-stone-900 transition-all resize-none text-base leading-relaxed"
+                                        autoFocus
+                                    />
+                                    
+                                    {/* Quick Suggestions */}
+                                    <div className="flex flex-wrap gap-2">
+                                        {['NDA', 'Freelance Contract', 'Lease Agreement'].map(suggestion => (
+                                            <button 
+                                                key={suggestion}
+                                                onClick={() => setAiPrompt(prompt => prompt ? prompt + ' ' + suggestion : suggestion)}
+                                                className="px-3 py-1.5 bg-white border border-stone-200 hover:border-stone-400 hover:bg-stone-50 rounded-lg text-xs font-medium text-stone-600 transition-colors cursor-pointer"
+                                            >
+                                                + {suggestion}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="bg-stone-50 p-4 px-6 md:px-8 flex justify-between items-center border-t border-stone-100">
+                                <button
+                                    onClick={() => setShowAiModal(false)}
+                                    className="px-4 py-2 text-stone-600 hover:text-stone-900 font-medium transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleGenerateWithAi}
+                                    disabled={!aiPrompt.trim() || isGenerating}
+                                    className="px-6 py-2.5 bg-stone-900 hover:bg-stone-800 disabled:opacity-50 disabled:hover:bg-stone-900 text-white rounded-xl font-semibold shadow-lg shadow-stone-900/20 transition-all flex items-center gap-2 transform active:scale-95 cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                            Generating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Generate Draft</span>
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </Wrapper>
     );
 }
 
@@ -355,7 +785,7 @@ function TemplateCard({
                 <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center">{getTemplateIconSvg(template.icon, 'w-5 h-5')}</div>
                 {template.isPro && (
                     <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                        isPro ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                        isPro ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
                     }`}>
                         {isPro ? '✓ PRO' : (<><svg className="w-3 h-3 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg> PRO</>)}
                     </span>
@@ -370,6 +800,158 @@ function TemplateCard({
             <p className="text-xs text-stone-400 mt-3">
                 {template.fields.length} field{template.fields.length !== 1 ? 's' : ''} to fill
             </p>
+        </button>
+    );
+}
+
+// Basic Rich Text Editor Component
+function RichTextEditor({ 
+    initialContent, 
+    onChange 
+}: { 
+    initialContent: string; 
+    onChange: (html: string) => void; 
+}) {
+    const editorRef = React.useRef<HTMLDivElement>(null);
+    const [activeFormats, setActiveFormats] = useState<Record<string, any>>({});
+
+    const checkFormats = React.useCallback(() => {
+        if (typeof document === 'undefined') return;
+        try {
+            setActiveFormats({
+                bold: document.queryCommandState('bold'),
+                italic: document.queryCommandState('italic'),
+                underline: document.queryCommandState('underline'),
+                justifyLeft: document.queryCommandState('justifyLeft'),
+                justifyCenter: document.queryCommandState('justifyCenter'),
+                justifyRight: document.queryCommandState('justifyRight'),
+                insertUnorderedList: document.queryCommandState('insertUnorderedList'),
+                insertOrderedList: document.queryCommandState('insertOrderedList'),
+                block: document.queryCommandValue('formatBlock').toLowerCase(),
+            });
+        } catch (e) {
+            // Ignore errors
+        }
+    }, []);
+
+    // Sync content changes
+    const handleInput = React.useCallback(() => {
+        if (editorRef.current) {
+            const newHtml = editorRef.current.innerHTML;
+            onChange(newHtml); 
+        }
+    }, [onChange]);
+
+    const execCmd = (command: string, value: string | undefined = undefined) => {
+        document.execCommand(command, false, value);
+        handleInput(); // sync immediately
+        checkFormats(); // Check formats after command
+        editorRef.current?.focus();
+    };
+
+    const insertField = () => {
+        const name = prompt("Enter field name (e.g., clientName):");
+        if (name) {
+            // Remove spaces and special chars for the variable name
+            const cleanName = name.replace(/[^a-zA-Z0-9]/g, '');
+            // Insert the placeholder
+            const placeholder = `{{${cleanName}}}`;
+            document.execCommand('insertText', false, placeholder);
+            handleInput();
+        }
+    };
+
+    return (
+        <div className="border border-stone-200 rounded-xl overflow-hidden flex flex-col bg-white h-full">
+            {/* Toolbar */}
+            <div className="flex items-center gap-1 p-2 border-b border-stone-200 bg-stone-50 overflow-x-auto">
+                <ToolButton icon={<span className="font-serif font-bold text-base">B</span>} label="Bold" command="bold" onClick={() => execCmd('bold')} bold isActive={activeFormats.bold} />
+                <ToolButton icon={<span className="font-serif italic font-bold text-base">I</span>} label="Italic" command="italic" onClick={() => execCmd('italic')} italic isActive={activeFormats.italic} />
+                <ToolButton icon={<span className="font-serif underline font-bold text-base">U</span>} label="Underline" command="underline" onClick={() => execCmd('underline')} underline isActive={activeFormats.underline} />
+                <div className="w-px h-4 bg-stone-300 mx-1" />
+                <ToolButton icon="Align L" label="Align Left" command="justifyLeft" onClick={() => execCmd('justifyLeft')} isActive={activeFormats.justifyLeft} />
+                <ToolButton icon="Align C" label="Align Center" command="justifyCenter" onClick={() => execCmd('justifyCenter')} isActive={activeFormats.justifyCenter} />
+                <ToolButton icon="Align R" label="Align Right" command="justifyRight" onClick={() => execCmd('justifyRight')} isActive={activeFormats.justifyRight} />
+                <div className="w-px h-4 bg-stone-300 mx-1" />
+                <ToolButton icon={<span className="font-serif text-base">H1</span>} label="Heading 1" command="formatBlock" onClick={() => execCmd('formatBlock', '<h1>')} isActive={activeFormats.block === 'h1'} />
+                <ToolButton icon={<span className="font-serif text-base">H2</span>} label="Heading 2" command="formatBlock" onClick={() => execCmd('formatBlock', '<h2>')} isActive={activeFormats.block === 'h2'} />
+                <ToolButton icon={<span className="font-serif text-base">P</span>} label="Paragraph" command="formatBlock" onClick={() => execCmd('formatBlock', '<p>')} isActive={activeFormats.block === 'p' || activeFormats.block === 'div' || !activeFormats.block} />
+                <div className="w-px h-4 bg-stone-300 mx-1" />
+                <ToolButton icon="•" label="Bullet List" command="insertUnorderedList" onClick={() => execCmd('insertUnorderedList')} isActive={activeFormats.insertUnorderedList} />
+                <ToolButton icon="1." label="Numbered List" command="insertOrderedList" onClick={() => execCmd('insertOrderedList')} isActive={activeFormats.insertOrderedList} />
+                <div className="w-px h-4 bg-stone-300 mx-1" />
+                <button
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        insertField();
+                    }}
+                    className="px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded text-sm font-medium transition-colors flex items-center gap-1 flex-shrink-0"
+                    title="Insert a variable field"
+                >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    Field
+                </button>
+            </div>
+
+            {/* Editor Area */}
+            <EditorArea 
+                editorRef={editorRef}
+                initialContent={initialContent}
+                onInput={handleInput}
+                checkFormats={checkFormats}
+            />
+        </div>
+    );
+}
+
+const EditorArea = React.memo(({ 
+    editorRef, 
+    initialContent, 
+    onInput, 
+    checkFormats 
+}: { 
+    editorRef: React.RefObject<HTMLDivElement | null>, 
+    initialContent: string, 
+    onInput: () => void, 
+    checkFormats: () => void 
+}) => {
+    return (
+        <div
+            ref={editorRef}
+            className="flex-1 p-6 overflow-y-auto focus:outline-none prose prose-stone max-w-none"
+            contentEditable
+            suppressContentEditableWarning
+            onInput={onInput}
+            onKeyUp={checkFormats}
+            onMouseUp={checkFormats}
+            dangerouslySetInnerHTML={{ __html: initialContent }}
+            style={{ minHeight: '300px' }}
+        />
+    );
+});
+
+function ToolButton({ icon, label, onClick, bold, italic, underline, isActive }: any) {
+    return (
+        <button
+            onMouseDown={(e) => {
+                e.preventDefault(); // Prevent losing focus from editor
+                onClick();
+            }}
+            title={label}
+            className={`
+                p-1.5 min-w-[32px] rounded transition-colors font-medium text-sm flex items-center justify-center flex-shrink-0
+                ${bold ? 'font-bold' : ''} 
+                ${italic ? 'italic' : ''}
+                ${underline ? 'underline' : ''}
+                ${isActive ? 'bg-stone-300 text-stone-900 shadow-inner' : 'hover:bg-stone-200 text-stone-700'}
+            `}
+        >
+            {icon === 'Align L' ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h16" /></svg> :
+             icon === 'Align C' ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M4 18h16" /></svg> :
+             icon === 'Align R' ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M4 18h16" /></svg> :
+             icon === 'Undo' ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg> :
+             icon === 'Redo' ? <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" /></svg> :
+             icon}
         </button>
     );
 }

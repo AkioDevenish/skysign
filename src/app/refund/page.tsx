@@ -2,28 +2,17 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
 
 export default function RefundPage() {
     const lastUpdated = 'January 24, 2026';
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100">
-            {/* Header */}
-            <header className="sticky top-0 bg-white/80 backdrop-blur-xl z-40 border-b border-stone-200/60">
-                <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-3">
-                        <Logo size="sm" />
-                        <span className="text-lg font-semibold text-stone-900">SkySign</span>
-                    </Link>
-                    <Link href="/create" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-stone-800 transition-all">
-                        Get Started
-                    </Link>
-                </div>
-            </header>
+            <Navbar />
 
-            <main className="max-w-4xl mx-auto px-6 py-16">
+            <main className="max-w-4xl mx-auto px-6 pt-32 pb-16">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -43,16 +32,16 @@ export default function RefundPage() {
                         <section className="mb-10">
                             <h2 className="text-2xl font-bold text-stone-900 mb-4">1. Money-Back Guarantee</h2>
 
-                            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 mb-6">
+                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-semibold text-emerald-900 mb-2">14-Day Money-Back Guarantee</h3>
-                                        <p className="text-emerald-700">
+                                        <h3 className="text-lg font-semibold text-blue-900 mb-2">14-Day Money-Back Guarantee</h3>
+                                        <p className="text-blue-700">
                                             If you&apos;re not satisfied with SkySign within the first 14 days of your initial subscription, we&apos;ll provide a full refund—no questions asked.
                                         </p>
                                     </div>

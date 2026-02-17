@@ -165,7 +165,7 @@ export default function SignaturePreview({
                                         key={color.value}
                                         onClick={() => setSelectedColor(color.value)}
                                         className={`w-10 h-10 rounded-full border-2 transition-all duration-200 cursor-pointer ${selectedColor === color.value
-                                            ? 'border-stone-900 scale-110 shadow-lg'
+                                            ? 'border-white ring-2 ring-blue-500 scale-110 shadow-lg'
                                             : 'border-stone-200 hover:border-stone-300 hover:scale-105'
                                             }`}
                                         style={{ backgroundColor: color.value }}
@@ -186,7 +186,7 @@ export default function SignaturePreview({
                                         key={style}
                                         onClick={() => setSelectedStyle(style)}
                                         className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 cursor-pointer ${selectedStyle === style
-                                            ? 'bg-stone-900 border-stone-900 text-white shadow-lg shadow-stone-900/10'
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20'
                                             : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:border-stone-300'
                                             }`}
                                     >
@@ -212,7 +212,7 @@ export default function SignaturePreview({
                             {onSendForSignature && (
                                 <button
                                     onClick={onSendForSignature}
-                                    className="px-6 py-3 rounded-full border-2 border-stone-900 text-stone-900 font-bold hover:bg-stone-100 transition-all flex items-center gap-2 cursor-pointer"
+                                    className="px-6 py-3 rounded-full border-2 border-blue-600 text-blue-600 font-bold hover:bg-blue-50 transition-all flex items-center gap-2 cursor-pointer"
                                 >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -222,7 +222,7 @@ export default function SignaturePreview({
                             )}
                             <button
                                 onClick={() => handleDownload('png')}
-                                className="px-8 py-3 rounded-full bg-stone-900 text-white font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 flex items-center gap-2 hover:-translate-y-0.5 cursor-pointer"
+                                className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-500/20 flex items-center gap-2 hover:-translate-y-0.5 cursor-pointer"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

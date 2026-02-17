@@ -1,10 +1,10 @@
 // Contract Templates Library
-// Pre-built legal document templates for common use cases
+// Professional legal document templates for various industries (Triple-A Standard)
 
 export interface ContractTemplate {
     id: string;
     name: string;
-    category: 'nda' | 'contract' | 'waiver' | 'agreement' | 'consent';
+    category: 'real-estate' | 'tech' | 'finance' | 'legal' | 'hr';
     description: string;
     icon: string;
     isPro: boolean;
@@ -15,442 +15,568 @@ export interface ContractTemplate {
 export interface TemplateField {
     id: string;
     label: string;
-    type: 'text' | 'date' | 'email' | 'textarea' | 'select';
+    type: 'text' | 'date' | 'email' | 'textarea' | 'select' | 'currency';
     placeholder?: string;
     required: boolean;
     options?: string[]; // For select type
 }
 
-// Template content uses {{fieldId}} placeholders that get replaced with user input
+export const categories = [
+    { id: 'real-estate', name: 'Real Estate', icon: '🏠', description: 'Leases & Purchase Agreements' },
+    { id: 'tech', name: 'Technology', icon: '💻', description: 'SaaS, IP & Development' },
+    { id: 'finance', name: 'Finance', icon: '💰', description: 'Loans & Investments' },
+    { id: 'legal', name: 'Legal & Corporate', icon: '⚖️', description: 'NDAs & Resolutions' },
+    { id: 'hr', name: 'Human Resources', icon: '👥', description: 'Employment & Contractors' },
+];
 
 export const contractTemplates: ContractTemplate[] = [
-    // ========== NDA Templates ==========
+    // ========== Real Estate ==========
     {
-        id: 'nda-mutual',
-        name: 'Mutual NDA',
-        category: 'nda',
-        description: 'A mutual non-disclosure agreement where both parties agree to protect confidential information.',
-        icon: '🤝',
+        id: 'residential-lease',
+        name: 'Residential Lease Agreement',
+        category: 'real-estate',
+        description: 'A comprehensive lease agreement for residential property rentals.',
+        icon: '🏠',
         isPro: false,
         fields: [
-            { id: 'party1Name', label: 'First Party Name', type: 'text', placeholder: 'Your name or company', required: true },
-            { id: 'party1Address', label: 'First Party Address', type: 'text', placeholder: 'Address', required: true },
-            { id: 'party2Name', label: 'Second Party Name', type: 'text', placeholder: 'Other party name', required: true },
-            { id: 'party2Address', label: 'Second Party Address', type: 'text', placeholder: 'Address', required: true },
-            { id: 'effectiveDate', label: 'Effective Date', type: 'date', required: true },
-            { id: 'purpose', label: 'Purpose of Disclosure', type: 'textarea', placeholder: 'Describe the purpose...', required: true },
-            { id: 'duration', label: 'Agreement Duration', type: 'select', options: ['1 year', '2 years', '3 years', '5 years', 'Indefinite'], required: true },
+            { id: 'landlordName', label: 'Landlord Name', type: 'text', required: true },
+            { id: 'tenantName', label: 'Tenant Name', type: 'text', required: true },
+            { id: 'propertyAddress', label: 'Property Address', type: 'text', required: true },
+            { id: 'leaseTerm', label: 'Lease Term (Months)', type: 'select', options: ['6 Months', '12 Months', '24 Months'], required: true },
+            { id: 'startDate', label: 'Lease Start Date', type: 'date', required: true },
+            { id: 'rentAmount', label: 'Monthly Rent ($)', type: 'currency', required: true },
+            { id: 'securityDeposit', label: 'Security Deposit ($)', type: 'currency', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">MUTUAL NON-DISCLOSURE AGREEMENT</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">Residential Lease Agreement</h1>
     
-    <p>This Mutual Non-Disclosure Agreement ("Agreement") is entered into as of <strong>{{effectiveDate}}</strong> by and between:</p>
+    <p>This Residential Lease Agreement (the "Agreement") is made and entered into on this <strong>{{startDate}}</strong> (the "Effective Date") by and between:</p>
     
-    <p><strong>Party A:</strong> {{party1Name}}<br>
-    Address: {{party1Address}}</p>
+    <p><strong>LANDLORD:</strong> {{landlordName}} ("Landlord")<br>
+    <strong>TENANT:</strong> {{tenantName}} ("Tenant")</p>
     
-    <p><strong>Party B:</strong> {{party2Name}}<br>
-    Address: {{party2Address}}</p>
+    <p>The Landlord and Tenant are collectively referred to in this Agreement as the "Parties."</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">1. PURPOSE</h2>
-    <p>The parties wish to explore a business opportunity of mutual interest and in connection with this opportunity, each party may disclose to the other certain confidential technical and business information for the following purpose:</p>
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{purpose}}</p>
+    <h3 style="text-transform: uppercase; font-size: 12pt; margin-top: 18px;">1. PROPERTY</h3>
+    <p>Landlord hereby leases to Tenant and Tenant accepts in its present condition the house or apartment located at:</p>
+    <p style="background: #f0f0f0; padding: 8px; border: 1px solid #ccc;">{{propertyAddress}}</p>
+    <p>(the "Premises").</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">2. DEFINITION OF CONFIDENTIAL INFORMATION</h2>
-    <p>"Confidential Information" means any data or information that is proprietary to the disclosing party and not generally known to the public, whether in tangible or intangible form, including but not limited to: trade secrets, technical data, business strategies, customer information, and financial information.</p>
+    <h3 style="text-transform: uppercase; font-size: 12pt; margin-top: 18px;">2. TERM</h3>
+    <p>The term of this Lease shall be for <strong>{{leaseTerm}}</strong> beginning on <strong>{{startDate}}</strong> and ending on the date derived specifically from the start date and duration.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">3. OBLIGATIONS</h2>
-    <p>Each party agrees to:</p>
-    <ul>
-        <li>Hold and maintain the Confidential Information in strict confidence</li>
-        <li>Not disclose or publish the Confidential Information to any third party</li>
-        <li>Use the Confidential Information solely for the Purpose stated above</li>
-        <li>Protect the Confidential Information with at least the same degree of care used to protect its own confidential information</li>
-    </ul>
+    <h3 style="text-transform: uppercase; font-size: 12pt; margin-top: 18px;">3. RENT AND PAYMENTS</h3>
+    <p><strong>Monthly Rent:</strong> Tenant agrees to pay Landlord rent in the amount of <strong>\${{rentAmount}}</strong> per month, payable in advance on the first day of each calendar month.</p>
+    <p><strong>Security Deposit:</strong> Upon signing this Agreement, Tenant shall pay Landlord a security deposit of <strong>\${{securityDeposit}}</strong> to be held for the duration of the term as security for the performance of Tenant's obligations.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">4. TERM</h2>
-    <p>This Agreement shall remain in effect for <strong>{{duration}}</strong> from the Effective Date, unless terminated earlier by either party with 30 days written notice.</p>
+    <h3 style="text-transform: uppercase; font-size: 12pt; margin-top: 18px;">4. USE OF PREMISES</h3>
+    <p>The Premises shall be used and occupied by Tenant and Tenant's immediate family exclusively as a private single-family residence. No part of the Premises shall be used at any time during the term of this Lease by Tenant for the purpose of carrying on any business, profession, or trade of any kind.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">5. RETURN OF MATERIALS</h2>
-    <p>Upon termination of this Agreement or upon request, each party shall promptly return or destroy all Confidential Information received from the other party.</p>
+    <h3 style="text-transform: uppercase; font-size: 12pt; margin-top: 18px;">5. GOVERNING LAW</h3>
+    <p>This Agreement shall be governed, construed, and enforced in accordance with the laws of the jurisdiction in which the Property is located.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">6. MISCELLANEOUS</h2>
-    <p>This Agreement constitutes the entire agreement between the parties concerning the subject matter hereof. This Agreement may not be amended except by a writing signed by both parties.</p>
-    
-    <div style="margin-top: 60px;">
-        <div style="display: flex; justify-content: space-between;">
-            <div style="width: 45%;">
-                <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>{{party1Name}}</strong></p>
-                <p>Signature: _____________________</p>
-                <p>Date: _____________________</p>
-            </div>
-            <div style="width: 45%;">
-                <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>{{party2Name}}</strong></p>
-                <p>Signature: _____________________</p>
-                <p>Date: _____________________</p>
-            </div>
-        </div>
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>LANDLORD</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>TENANT</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 `
     },
-
     {
-        id: 'nda-unilateral',
-        name: 'One-Way NDA',
-        category: 'nda',
-        description: 'A one-way NDA where only one party discloses confidential information.',
-        icon: '🔒',
-        isPro: false,
+        id: 'commercial-lease',
+        name: 'Commercial Lease Agreement',
+        category: 'real-estate',
+        description: 'Lease agreement for commercial property office or retail space.',
+        icon: '🏢',
+        isPro: true,
         fields: [
-            { id: 'disclosingParty', label: 'Disclosing Party', type: 'text', placeholder: 'Party sharing information', required: true },
-            { id: 'receivingParty', label: 'Receiving Party', type: 'text', placeholder: 'Party receiving information', required: true },
-            { id: 'effectiveDate', label: 'Effective Date', type: 'date', required: true },
-            { id: 'confidentialMatter', label: 'Subject Matter', type: 'textarea', placeholder: 'Describe what information is confidential...', required: true },
+            { id: 'landlordName', label: 'Landlord Name', type: 'text', required: true },
+            { id: 'tenantName', label: 'Tenant Name', type: 'text', required: true },
+            { id: 'propertyAddress', label: 'Property Address', type: 'text', required: true },
+            { id: 'leaseTerm', label: 'Lease Term (Years)', type: 'select', options: ['1 Year', '3 Years', '5 Years', '10 Years'], required: true },
+            { id: 'startDate', label: 'Lease Start Date', type: 'date', required: true },
+            { id: 'rentAmount', label: 'Monthly Rent ($)', type: 'currency', required: true },
+            { id: 'depositAmount', label: 'Security Deposit ($)', type: 'currency', required: true },
+            { id: 'useOfPremises', label: 'Permitted Use', type: 'text', placeholder: 'e.g., General Office Use', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">UNILATERAL NON-DISCLOSURE AGREEMENT</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">COMMERCIAL LEASE AGREEMENT</h1>
     
-    <p>This Non-Disclosure Agreement is effective as of <strong>{{effectiveDate}}</strong>.</p>
+    <p>This Commercial Lease Agreement (the "Lease") is made and effective as of <strong>{{startDate}}</strong>, by and between <strong>{{landlordName}}</strong> ("Landlord") and <strong>{{tenantName}}</strong> ("Tenant").</p>
     
-    <p><strong>Disclosing Party:</strong> {{disclosingParty}}</p>
-    <p><strong>Receiving Party:</strong> {{receivingParty}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. PREMISES</h3>
+    <p>Landlord hereby leases to Tenant and Tenant accepts the premises located at <strong>{{propertyAddress}}</strong> (the "Premises").</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">RECITALS</h2>
-    <p>The Disclosing Party possesses certain confidential and proprietary information relating to:</p>
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{confidentialMatter}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. TERM</h3>
+    <p>The term of this Lease shall be for a period of <strong>{{leaseTerm}}</strong> commencing on {{startDate}}.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">AGREEMENT</h2>
-    <p>The Receiving Party agrees that:</p>
-    <ol>
-        <li>All information disclosed shall be held in strict confidence</li>
-        <li>The information shall only be used for legitimate business purposes</li>
-        <li>No copies shall be made without written consent</li>
-        <li>This obligation continues for 3 years after disclosure</li>
-    </ol>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. RENT</h3>
+    <p>Tenant shall pay to Landlord as Base Rent the sum of <strong>\${{rentAmount}}</strong> per month, due on the first day of each calendar month.</p>
     
-    <div style="margin-top: 60px;">
-        <p><strong>RECEIVING PARTY:</strong></p>
-        <p>Signature: _____________________</p>
-        <p>Name: {{receivingParty}}</p>
-        <p>Date: _____________________</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. SECURITY DEPOSIT</h3>
+    <p>Tenant shall deposit with Landlord the sum of <strong>\${{depositAmount}}</strong> as security for the performance of Tenant's obligations here under.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">5. USE</h3>
+    <p>The Premises shall be used for the following purpose only: <strong>{{useOfPremises}}</strong>.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">6. INSURANCE</h3>
+    <p>Tenant shall keep the Premises insured against loss or damage by fire and other casualties.</p>
+    
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>LANDLORD</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>TENANT</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>`
+    },
+
+    // ========== Technology ==========
+    {
+        id: 'saas-agreement',
+        name: 'SaaS Agreement (B2B)',
+        category: 'tech',
+        description: 'Standard B2B Software-as-a-Service agreement tailored for enterprise sales.',
+        icon: '💻',
+        isPro: true,
+        fields: [
+            { id: 'providerName', label: 'Service Provider Name', type: 'text', required: true },
+            { id: 'customerName', label: 'Customer Name', type: 'text', required: true },
+            { id: 'effectiveDate', label: 'Effective Date', type: 'date', required: true },
+            { id: 'softwareName', label: 'Software/Platform Name', type: 'text', required: true },
+            { id: 'subscriptionFee', label: 'Annual Subscription Fee ($)', type: 'currency', required: true },
+            { id: 'uptimeSLA', label: 'Uptime SLA (%)', type: 'text', placeholder: '99.9%', required: true },
+        ],
+        content: `
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 12px;">Software as a Service (SaaS) Agreement</h1>
+    
+    <p style="margin-bottom: 24px;">This SaaS Agreement (the "Agreement") is entered into as of <strong>{{effectiveDate}}</strong> (the "Effective Date") by and between <strong>{{providerName}}</strong> ("Provider") and <strong>{{customerName}}</strong> ("Customer").</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. DEFINITIONS</h3>
+    <p>"Service" means the <strong>{{softwareName}}</strong> platform provided by Provider.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. ACCESS AND USE</h3>
+    <p>Subject to payment of all applicable fees, Provider grants Customer a limited, non-exclusive, non-transferable right to access and use the Service for its internal business purposes during the Subscription Term.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. SERVICE LEVELS</h3>
+    <p>Provider shall use commercially reasonable efforts to make the Service available 24 hours a day, 7 days a week, with a monthly uptime percentage of at least <strong>{{uptimeSLA}}</strong>, excluding scheduled maintenance.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. FEES AND PAYMENT</h3>
+    <p>Customer shall pay Provider the annual subscription fee of <strong>\${{subscriptionFee}}</strong>. All fees are non-refundable and exclusive of applicable taxes.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">5. CONFIDENTIALITY</h3>
+    <p>Each party shall retain in confidence all information disclosed by the other party pursuant to this Agreement which is either designated as proprietary and/or confidential, or by the nature of the circumstances surrounding disclosure, should reasonably be understood to be confidential.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">6. LIMITATION OF LIABILITY</h3>
+    <p>EXCEPT FOR INDEMNIFICATION OBLIGATIONS OR BREACH OF CONFIDENTIALITY, NEITHER PARTY SHALL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES.</p>
+    
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>{{providerName}}</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>By (Signature)</p>
+                    <p>Name: _________________</p>
+                    <p>Title: _________________</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>{{customerName}}</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>By (Signature)</p>
+                    <p>Name: _________________</p>
+                    <p>Title: _________________</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 `
     },
-
-    // ========== Contract Templates ==========
     {
-        id: 'freelance-contract',
-        name: 'Freelance Service Agreement',
-        category: 'contract',
-        description: 'A comprehensive contract for freelance or consulting services.',
-        icon: '💼',
+        id: 'software-dev-agreement',
+        name: 'Software Development Agreement',
+        category: 'tech',
+        description: 'Contract for custom software development services.',
+        icon: '💻',
         isPro: false,
         fields: [
             { id: 'clientName', label: 'Client Name', type: 'text', required: true },
-            { id: 'clientEmail', label: 'Client Email', type: 'email', required: true },
-            { id: 'freelancerName', label: 'Freelancer/Contractor Name', type: 'text', required: true },
-            { id: 'projectDescription', label: 'Project Description', type: 'textarea', required: true },
-            { id: 'startDate', label: 'Start Date', type: 'date', required: true },
-            { id: 'endDate', label: 'End Date', type: 'date', required: true },
-            { id: 'totalFee', label: 'Total Fee ($)', type: 'text', placeholder: '5,000', required: true },
-            { id: 'paymentTerms', label: 'Payment Terms', type: 'select', options: ['50% upfront, 50% on completion', 'Monthly payments', 'On completion', 'Net 30'], required: true },
+            { id: 'developerName', label: 'Developer Name', type: 'text', required: true },
+            { id: 'projectDesc', label: 'Project Description', type: 'textarea', required: true },
+            { id: 'totalCost', label: 'Total Project Cost ($)', type: 'currency', required: true },
+            { id: 'deadline', label: 'Delivery Deadline', type: 'date', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">FREELANCE SERVICE AGREEMENT</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">SOFTWARE DEVELOPMENT AGREEMENT</h1>
     
-    <p>This Service Agreement ("Agreement") is made between:</p>
+    <p>This Software Development Agreement (the "Agreement") is entered into between <strong>{{clientName}}</strong> ("Client") and <strong>{{developerName}}</strong> ("Developer").</p>
     
-    <p><strong>Client:</strong> {{clientName}} ({{clientEmail}})</p>
-    <p><strong>Contractor:</strong> {{freelancerName}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. SERVICES</h3>
+    <p>Developer agrees to perform the following services (the "Services"):</p>
+    <p style="background: #f0f0f0; padding: 10px;">{{projectDesc}}</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">1. SERVICES</h2>
-    <p>The Contractor agrees to provide the following services:</p>
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{projectDescription}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. FEES AND PAYMENT</h3>
+    <p>Client agrees to pay Developer a total fee of <strong>\${{totalCost}}</strong> for the Services. Payment shall be made according to the schedule set forth in Exhibit A.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">2. TERM</h2>
-    <p>This Agreement begins on <strong>{{startDate}}</strong> and ends on <strong>{{endDate}}</strong>.</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. DELIVERY</h3>
+    <p>Developer shall deliver the completed Software by <strong>{{deadline}}</strong>.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">3. COMPENSATION</h2>
-    <p>The Client agrees to pay the Contractor <strong>$\{{totalFee}}</strong> for the services.</p>
-    <p>Payment Terms: <strong>{{paymentTerms}}</strong></p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. INTELLECTUAL PROPERTY</h3>
+    <p>Upon full payment, Developer assigns to Client all right, title, and interest in the Software.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">4. INDEPENDENT CONTRACTOR</h2>
-    <p>The Contractor is an independent contractor and not an employee of the Client.</p>
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>CLIENT</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>DEVELOPER</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>`
+    },
+
+    // ========== Finance ==========
+    {
+        id: 'promissory-note',
+        name: 'Secured Promissory Note',
+        category: 'finance',
+        description: 'A formal legal instrument acknowledging a debt and promise to repay.',
+        icon: '💰',
+        isPro: true,
+        fields: [
+            { id: 'borrowerName', label: 'Borrower Name/Entity', type: 'text', required: true },
+            { id: 'lenderName', label: 'Lender Name/Entity', type: 'text', required: true },
+            { id: 'principalAmount', label: 'Principal Amount ($)', type: 'currency', required: true },
+            { id: 'interestRate', label: 'Interest Rate (%)', type: 'text', placeholder: '5.0%', required: true },
+            { id: 'maturityDate', label: 'Maturity Date', type: 'date', required: true },
+            { id: 'collateral', label: 'Collateral Description', type: 'textarea', required: true },
+        ],
+        content: `
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">SECURED PROMISSORY NOTE</h1>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">5. INTELLECTUAL PROPERTY</h2>
-    <p>Upon full payment, all work product created under this Agreement shall be owned by the Client.</p>
+    <div style="text-align: right; margin-bottom: 20px;">
+        <p><strong>Amount:</strong> \${{principalAmount}}<br>
+        <strong>Date:</strong> {{maturityDate}}</p>
+    </div>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">6. CONFIDENTIALITY</h2>
-    <p>Both parties agree to keep confidential any proprietary information received during this engagement.</p>
+    <p>FOR VALUE RECEIVED, the undersigned <strong>{{borrowerName}}</strong> ("Borrower") promises to pay to the order of <strong>{{lenderName}}</strong> ("Lender") the principal sum of <strong>\${{principalAmount}}</strong> with interest on the unpaid principal balance at the rate of <strong>{{interestRate}}</strong> per annum.</p>
     
-    <div style="margin-top: 60px; display: flex; justify-content: space-between;">
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>CLIENT</strong></p>
-            <p>Name: {{clientName}}</p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>CONTRACTOR</strong></p>
-            <p>Name: {{freelancerName}}</p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. PAYMENTS</h3>
+    <p>The entire unpaid principal and accrued interest shall be fully due and payable on <strong>{{maturityDate}}</strong> (the "Maturity Date").</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. SECURITY</h3>
+    <p>This Note is secured by the following collateral (the "Collateral"):</p>
+    <p style="background: #f0f0f0; padding: 10px; border: 1px solid #ddd;">{{collateral}}</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. DEFAULT</h3>
+    <p>In the event of any default, the Lender may declare the entire unpaid principal and accrued interest immediately due and payable.</p>
+    
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. GOVERNING LAW</h3>
+    <p>This Note shall be governed by the laws of the State of Delaware.</p>
+    
+    <div style="margin-top: 60px;">
+        <p><strong>BORROWER:</strong></p>
+        <p style="margin-top: 10px;">{{borrowerName}}</p>
+        <div style="border-bottom: 1px solid #000; width: 300px; margin-top: 40px; margin-bottom: 8px;"></div>
+        <p>Signature</p>
     </div>
 </div>
 `
     },
-
     {
-        id: 'simple-sales-contract',
-        name: 'Simple Sales Contract',
-        category: 'contract',
-        description: 'A basic contract for the sale of goods or products.',
-        icon: '🛒',
+        id: 'simple-loan-agreement',
+        name: 'Simple Loan Agreement',
+        category: 'finance',
+        description: 'Basic loan agreement for personal or small business loans.',
+        icon: '💰',
         isPro: false,
         fields: [
-            { id: 'sellerName', label: 'Seller Name', type: 'text', required: true },
-            { id: 'buyerName', label: 'Buyer Name', type: 'text', required: true },
-            { id: 'itemDescription', label: 'Item Description', type: 'textarea', required: true },
-            { id: 'price', label: 'Price ($)', type: 'text', required: true },
-            { id: 'deliveryDate', label: 'Delivery Date', type: 'date', required: true },
+            { id: 'lender', label: 'Lender Name', type: 'text', required: true },
+            { id: 'borrower', label: 'Borrower Name', type: 'text', required: true },
+            { id: 'amount', label: 'Loan Amount ($)', type: 'currency', required: true },
+            { id: 'interest', label: 'Interest Rate (%)', type: 'text', placeholder: '5%', required: true },
+            { id: 'repaymentDate', label: 'Repayment Date', type: 'date', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">SALES CONTRACT</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">LOAN AGREEMENT</h1>
     
-    <p><strong>Seller:</strong> {{sellerName}}</p>
-    <p><strong>Buyer:</strong> {{buyerName}}</p>
+    <p>This Loan Agreement is made on this day by and between <strong>{{lender}}</strong> ("Lender") and <strong>{{borrower}}</strong> ("Borrower").</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">ITEM(S) FOR SALE</h2>
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{itemDescription}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. LOAN AMOUNT</h3>
+    <p>Lender promises to loan Borrower the principal sum of <strong>\${{amount}}</strong>.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">TERMS</h2>
-    <p><strong>Purchase Price:</strong> $\{{price}}</p>
-    <p><strong>Delivery Date:</strong> {{deliveryDate}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. INTEREST</h3>
+    <p>The loan shall bear interest at a rate of <strong>{{interest}}</strong> per annum.</p>
     
-    <p>The Seller agrees to sell and the Buyer agrees to purchase the above item(s) for the stated price.</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. REPAYMENT</h3>
+    <p>The full balance of the loan and accrued interest shall be due and payable on <strong>{{repaymentDate}}</strong>.</p>
     
-    <div style="margin-top: 60px; display: flex; justify-content: space-between;">
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>SELLER</strong></p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>BUYER</strong></p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>LENDER</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>BORROWER</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                </td>
+            </tr>
+        </table>
     </div>
-</div>
-`
+</div>`
     },
 
-    // ========== Waiver Templates ==========
+    // ========== Legal / Corporate ==========
     {
-        id: 'liability-waiver',
-        name: 'Liability Waiver',
-        category: 'waiver',
-        description: 'A general liability waiver for activities, events, or services.',
-        icon: '⚠️',
+        id: 'mutual-nda-pro',
+        name: 'Mutual NDA (Corporate)',
+        category: 'legal',
+        description: 'Standard corporate mutual non-disclosure agreement for business partnerships.',
+        icon: '⚖️',
         isPro: false,
         fields: [
-            { id: 'organizationName', label: 'Organization/Business Name', type: 'text', required: true },
-            { id: 'activityName', label: 'Activity/Event Name', type: 'text', required: true },
-            { id: 'activityDescription', label: 'Activity Description & Risks', type: 'textarea', required: true },
-            { id: 'participantName', label: 'Participant Name', type: 'text', required: true },
-            { id: 'emergencyContact', label: 'Emergency Contact', type: 'text', required: true },
-            { id: 'emergencyPhone', label: 'Emergency Phone', type: 'text', required: true },
+            { id: 'partyAName', label: 'Company A Name', type: 'text', required: true },
+            { id: 'partyBName', label: 'Company B Name', type: 'text', required: true },
+            { id: 'effectiveDate', label: 'Effective Date', type: 'date', required: true },
+            { id: 'jurisdiction', label: 'Governing Jurisdiction', type: 'text', placeholder: 'State of California', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">LIABILITY WAIVER AND RELEASE</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">MUTUAL NON-DISCLOSURE AGREEMENT</h1>
     
-    <p style="text-align: center; margin-bottom: 30px;"><strong>{{organizationName}}</strong><br>{{activityName}}</p>
+    <p>This Mutual Non-Disclosure Agreement (this "Agreement") is dated <strong>{{effectiveDate}}</strong> between <strong>{{partyAName}}</strong> and <strong>{{partyBName}}</strong> (each a "Party" and collectively the "Parties").</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">ASSUMPTION OF RISK</h2>
-    <p>I, <strong>{{participantName}}</strong>, understand that participation in the following activity involves inherent risks:</p>
-    <p style="background: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;">{{activityDescription}}</p>
+    <p>In connection with a potential business relationship (the "Purpose"), each Party may disclose to the other Party certain confidential technical and business information that the disclosing Party protects as confidential.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">WAIVER AND RELEASE</h2>
-    <p>In consideration of being permitted to participate, I hereby:</p>
-    <ol>
-        <li>Assume all risks associated with this activity</li>
-        <li>Release {{organizationName}} from any liability for injury or damages</li>
-        <li>Agree to indemnify and hold harmless the organization and its staff</li>
-        <li>Consent to emergency medical treatment if necessary</li>
-    </ol>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. CONFIDENTIAL INFORMATION</h3>
+    <p>"Confidential Information" means all information enclosed, whether written, oral, or visual, that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and the circumstances of disclosure.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">EMERGENCY CONTACT</h2>
-    <p><strong>Name:</strong> {{emergencyContact}}</p>
-    <p><strong>Phone:</strong> {{emergencyPhone}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. EXCLUSIONS</h3>
+    <p>Confidential Information excludes information that: (a) is or becomes publicly known other than through a breach of this Agreement; (b) was known to the receiving Party prior to disclosure; or (c) is independently developed by the receiving Party.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">ACKNOWLEDGMENT</h2>
-    <p>I have read this waiver, understand its terms, and sign it voluntarily.</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. OBLIGATIONS</h3>
+    <p>The receiving Party agrees to: (a) hold Confidential Information in strict confidence; (b) not disclose Confidential Information to any third parties; and (c) use Confidential Information only for the Purpose.</p>
     
-    <div style="margin-top: 40px;">
-        <p><strong>PARTICIPANT:</strong></p>
-        <p>Name: {{participantName}}</p>
-        <p>Signature: _____________________</p>
-        <p>Date: _____________________</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. TERM</h3>
+    <p>This Agreement remains in effect for three (3) years from the Effective Date.</p>
+    
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>{{partyAName}}</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>{{partyBName}}</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                    <p>Date: _________________</p>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 `
     },
-
     {
-        id: 'photo-release',
-        name: 'Photo/Video Release',
-        category: 'consent',
-        description: 'Permission to use photos or videos of an individual.',
-        icon: '📸',
-        isPro: false,
+        id: 'website-privacy-policy',
+        name: 'Website Privacy Policy',
+        category: 'legal',
+        description: 'GDPR & CCPA compliant privacy policy for websites and apps.',
+        icon: '⚖️',
+        isPro: true,
         fields: [
-            { id: 'subjectName', label: 'Subject Name', type: 'text', required: true },
-            { id: 'companyName', label: 'Company/Photographer Name', type: 'text', required: true },
-            { id: 'eventDescription', label: 'Event/Occasion', type: 'text', required: true },
-            { id: 'usagePurpose', label: 'Usage Purpose', type: 'select', options: ['Marketing & Advertising', 'Website & Social Media', 'Print Publications', 'All purposes'], required: true },
+            { id: 'websiteName', label: 'Website/App Name', type: 'text', required: true },
+            { id: 'companyName', label: 'Company Name', type: 'text', required: true },
+            { id: 'contactEmail', label: 'Contact Email', type: 'email', required: true },
+            { id: 'effectiveDate', label: 'Effective Date', type: 'date', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">PHOTO/VIDEO RELEASE FORM</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">PRIVACY POLICY</h1>
+    <p style="text-align: center; font-style: italic;">Last updated: {{effectiveDate}}</p>
     
-    <p>I, <strong>{{subjectName}}</strong>, hereby grant permission to <strong>{{companyName}}</strong> to use photographs, video recordings, and/or audio recordings of me taken during:</p>
+    <p><strong>{{companyName}}</strong> ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how your personal information is collected, used, and disclosed by <strong>{{websiteName}}</strong>.</p>
     
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center;"><strong>{{eventDescription}}</strong></p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. INFORMATION WE COLLECT</h3>
+    <p>We may collect personal information such as your name, email address, and other information you voluntarily provide to us.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">GRANT OF RIGHTS</h2>
-    <p>I grant permission for these images to be used for: <strong>{{usagePurpose}}</strong></p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. HOW WE USE YOUR INFORMATION</h3>
+    <p>We use the information we collect to operate, maintain, and improve our services.</p>
     
-    <p>I understand that:</p>
-    <ul>
-        <li>The images may be edited, copied, or distributed</li>
-        <li>I will not receive compensation for this use</li>
-        <li>I waive any right to inspect or approve the finished product</li>
-        <li>This release is permanent and worldwide</li>
-    </ul>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. SHARING OF INFORMATION</h3>
+    <p>We do not share your personal information with third parties except as necessary to provide our services or as required by law.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">AGREEMENT</h2>
-    <p>I have read this release and understand its contents. I am signing voluntarily.</p>
-    
-    <div style="margin-top: 40px;">
-        <p>Name: {{subjectName}}</p>
-        <p>Signature: _____________________</p>
-        <p>Date: _____________________</p>
-    </div>
-</div>
-`
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">4. CONTACT US</h3>
+    <p>If you have any questions about this Privacy Policy, please contact us at <strong>{{contactEmail}}</strong>.</p>
+</div>`
     },
 
+    // ========== HR ==========
     {
-        id: 'employment-offer',
-        name: 'Employment Offer Letter',
-        category: 'agreement',
-        description: 'A formal offer letter for new employees.',
-        icon: '👔',
+        id: 'offer-letter',
+        name: 'Executive Employment Offer',
+        category: 'hr',
+        description: 'Formal employment offer letter for executive-level hires.',
+        icon: '👥',
         isPro: true,
         fields: [
             { id: 'companyName', label: 'Company Name', type: 'text', required: true },
             { id: 'candidateName', label: 'Candidate Name', type: 'text', required: true },
-            { id: 'jobTitle', label: 'Job Title', type: 'text', required: true },
+            { id: 'title', label: 'Job Title', type: 'text', required: true },
+            { id: 'salary', label: 'Annual Base Salary ($)', type: 'currency', required: true },
+            { id: 'equity', label: 'Equity Grant (Shares/Options)', type: 'text', placeholder: '10,000 Options', required: true },
             { id: 'startDate', label: 'Start Date', type: 'date', required: true },
-            { id: 'salary', label: 'Annual Salary ($)', type: 'text', required: true },
-            { id: 'manager', label: 'Reporting Manager', type: 'text', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <div style="text-align: right; margin-bottom: 40px;">
-        <strong>{{companyName}}</strong><br>
-        Date: _______________
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="margin: 0; text-transform: uppercase; font-size: 18pt;">{{companyName}}</h1>
+        <p style="margin: 0; font-size: 10pt; color: #666;">CONFIDENTIAL EMPLOYMENT OFFER</p>
     </div>
+    
+    <p>{{startDate}}</p>
+    
+    <p><strong>PRIVATE & CONFIDENTIAL</strong><br>
+    To: {{candidateName}}</p>
+    
+    <p><strong>Re: Offer of Employment</strong></p>
     
     <p>Dear {{candidateName}},</p>
     
-    <p>We are pleased to offer you the position of <strong>{{jobTitle}}</strong> at {{companyName}}.</p>
+    <p>We are pleased to offer you the position of <strong>{{title}}</strong> at <strong>{{companyName}}</strong> (the "Company"). We feel that your skills and background will be a valuable asset to our team.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">TERMS OF EMPLOYMENT</h2>
-    <ul>
-        <li><strong>Start Date:</strong> {{startDate}}</li>
-        <li><strong>Position:</strong> {{jobTitle}}</li>
-        <li><strong>Salary:</strong> $\{{salary}} per year</li>
-        <li><strong>Reports To:</strong> {{manager}}</li>
-    </ul>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. POSITION AND DUTIES</h3>
+    <p>You will serve in the position of {{title}}, reporting to the Board of Directors or CEO. You agree to devote your full business time, attention, and best efforts to the performance of your duties.</p>
     
-    <p>This offer is contingent upon successful completion of our background check process. Please sign below to accept this offer.</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. COMPENSATION</h3>
+    <p><strong>Base Salary:</strong> The Company will pay you an annual base salary of <strong>\${{salary}}</strong>, payable in accordance with the Company's standard payroll schedule.</p>
+    <p><strong>Equity:</strong> Subject to approval by the Company’s Board of Directors, you will be granted <strong>{{equity}}</strong>, subject to the terms of the Company’s Equity Incentive Plan.</p>
     
-    <p>We look forward to welcoming you to the team!</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. AT-WILL EMPLOYMENT</h3>
+    <p>Your employment with the Company is for no specific period of time. Your employment with the Company will be "at will," meaning that either you or the Company may terminate your employment at any time and for any reason, with or without cause.</p>
     
-    <p>Sincerely,<br>{{companyName}}</p>
+    <p style="margin-top: 40px;">To accept this offer, please sign and date this letter below and return it to us.</p>
     
-    <div style="margin-top: 60px; border-top: 1px solid #000; padding-top: 20px;">
-        <p><strong>ACCEPTANCE</strong></p>
-        <p>I accept this offer of employment.</p>
-        <p>Name: {{candidateName}}</p>
-        <p>Signature: _____________________</p>
-        <p>Date: _____________________</p>
+    <div style="margin-top: 60px;">
+        <p>Sincerely,</p>
+        <p><strong>{{companyName}}</strong></p>
+    </div>
+    
+    <div style="margin-top: 40px; padding: 20px; border: 1px solid #000; background: #fafafa;">
+        <p style="margin-bottom: 30px;"><strong>ACCEPTED AND AGREED:</strong></p>
+        <div style="border-bottom: 1px solid #000; width: 300px; margin-bottom: 8px;"></div>
+        <p>Signature: {{candidateName}}</p>
+        <p>Date: _________________</p>
     </div>
 </div>
 `
     },
-
     {
-        id: 'consulting-agreement',
-        name: 'Consulting Agreement',
-        category: 'contract',
-        description: 'A professional consulting services agreement.',
-        icon: '📊',
-        isPro: true,
+        id: 'independent-contractor',
+        name: 'Independent Contractor Agreement',
+        category: 'hr',
+        description: 'Contract for hiring freelancers or independent contractors.',
+        icon: '👥',
+        isPro: false,
         fields: [
-            { id: 'clientCompany', label: 'Client Company', type: 'text', required: true },
-            { id: 'consultantName', label: 'Consultant Name', type: 'text', required: true },
-            { id: 'scope', label: 'Scope of Services', type: 'textarea', required: true },
-            { id: 'hourlyRate', label: 'Hourly Rate ($)', type: 'text', required: true },
-            { id: 'estimatedHours', label: 'Estimated Hours', type: 'text', required: true },
+            { id: 'company', label: 'Company Name', type: 'text', required: true },
+            { id: 'contractor', label: 'Contractor Name', type: 'text', required: true },
+            { id: 'serviceDesc', label: 'Description of Services', type: 'textarea', required: true },
+            { id: 'compensation', label: 'Compensation Amount ($)', type: 'currency', required: true },
             { id: 'startDate', label: 'Start Date', type: 'date', required: true },
         ],
         content: `
-<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6;">
-    <h1 style="text-align: center; font-size: 24px; margin-bottom: 30px;">CONSULTING AGREEMENT</h1>
+<div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 11pt;">
+    <h1 style="text-align: center; text-transform: uppercase; font-size: 16pt; margin-bottom: 24px;">INDEPENDENT CONTRACTOR AGREEMENT</h1>
     
-    <p>This Consulting Agreement is entered into as of <strong>{{startDate}}</strong>.</p>
+    <p>This Agreement is made on <strong>{{startDate}}</strong> between <strong>{{company}}</strong> ("Company") and <strong>{{contractor}}</strong> ("Contractor").</p>
     
-    <p><strong>Client:</strong> {{clientCompany}}<br>
-    <strong>Consultant:</strong> {{consultantName}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">1. SERVICES</h3>
+    <p>Contractor agrees to perform the following services:</p>
+    <p style="padding: 10px; background: #f9f9f9;">{{serviceDesc}}</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">1. SCOPE OF SERVICES</h2>
-    <p style="background: #f5f5f5; padding: 15px; border-radius: 5px;">{{scope}}</p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">2. COMPENSATION</h3>
+    <p>Company shall pay Contractor the sum of <strong>\${{compensation}}</strong> for the completion of the Services.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">2. COMPENSATION</h2>
-    <p>Rate: <strong>$\{{hourlyRate}}/hour</strong><br>
-    Estimated Hours: <strong>{{estimatedHours}}</strong></p>
+    <h3 style="text-transform: uppercase; font-size: 11pt; margin-top: 18px;">3. INDEPENDENT CONTRACTOR STATUS</h3>
+    <p>Contractor is an independent contractor, not an employee of Company. Contractor is solely responsible for all taxes, withholdings, and other statutory obligations.</p>
     
-    <h2 style="font-size: 16px; margin-top: 30px;">3. RELATIONSHIP</h2>
-    <p>Consultant is an independent contractor and not an employee.</p>
-    
-    <h2 style="font-size: 16px; margin-top: 30px;">4. CONFIDENTIALITY</h2>
-    <p>Consultant agrees to maintain confidentiality of all proprietary information.</p>
-    
-    <div style="margin-top: 60px; display: flex; justify-content: space-between;">
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>CLIENT</strong></p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
-        <div style="width: 45%;">
-            <p style="border-top: 1px solid #000; padding-top: 10px;"><strong>CONSULTANT</strong></p>
-            <p>Signature: _____________________</p>
-            <p>Date: _____________________</p>
-        </div>
+    <div style="margin-top: 60px; border-top: 2px solid #000; padding-top: 20px;">
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>COMPANY</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                </td>
+                <td style="width: 10%;"></td>
+                <td style="width: 45%; vertical-align: top;">
+                    <p style="margin-bottom: 40px;"><strong>CONTRACTOR</strong></p>
+                    <div style="border-bottom: 1px solid #000; width: 100%; margin-bottom: 8px;"></div>
+                    <p>Signature</p>
+                </td>
+            </tr>
+        </table>
     </div>
-</div>
-`
-    },
+</div>`
+    }
 ];
 
 // Helper functions
@@ -465,11 +591,3 @@ export const getProTemplates = () =>
 
 export const getTemplateById = (id: string) => 
     contractTemplates.find(t => t.id === id);
-
-export const categories = [
-    { id: 'nda', name: 'NDAs', icon: '🔒', description: 'Non-Disclosure Agreements' },
-    { id: 'contract', name: 'Contracts', icon: '📝', description: 'Service & Sales Contracts' },
-    { id: 'waiver', name: 'Waivers', icon: '⚠️', description: 'Liability & Release Forms' },
-    { id: 'agreement', name: 'Agreements', icon: '🤝', description: 'Employment & Business' },
-    { id: 'consent', name: 'Consent Forms', icon: '✅', description: 'Permissions & Releases' },
-];

@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
 
 export default function SupportPage() {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -34,24 +34,7 @@ export default function SupportPage() {
 
     return (
         <div className="min-h-screen bg-stone-50 text-stone-900">
-            {/* Navigation */}
-            <nav className="fixed top-0 left-0 right-0 bg-stone-50/90 backdrop-blur-md z-50 border-b border-stone-200/60">
-                <div className="max-w-6xl mx-auto px-8 lg:px-12 py-5 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-3">
-                        <Logo size="md" />
-                        <span className="text-xl font-semibold tracking-tight text-stone-900">SkySign</span>
-                    </Link>
-                    <Link
-                        href="/"
-                        className="text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium"
-                    >
-                        <span className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
-                            Back to Home
-                        </span>
-                    </Link>
-                </div>
-            </nav>
+            <Navbar />
 
             {/* Content */}
             <main className="pt-32 pb-20 px-8 lg:px-12">

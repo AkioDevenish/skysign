@@ -22,11 +22,11 @@ export default function Modal({ isOpen, onClose, title, message, type = 'error' 
             button: 'bg-red-600 hover:bg-red-700'
         },
         success: {
-            bg: 'bg-emerald-50',
-            text: 'text-emerald-900',
-            iconBg: 'bg-emerald-100',
-            iconText: 'text-emerald-600',
-            button: 'bg-emerald-600 hover:bg-emerald-700'
+            bg: 'bg-indigo-50',
+            text: 'text-indigo-900',
+            iconBg: 'bg-indigo-100',
+            iconText: 'text-indigo-600',
+            button: 'bg-indigo-600 hover:bg-indigo-700'
         },
         info: {
             bg: 'bg-stone-50',

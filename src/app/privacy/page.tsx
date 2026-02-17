@@ -2,28 +2,17 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
 
 export default function PrivacyPage() {
     const lastUpdated = 'January 23, 2026';
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-100">
-            {/* Header */}
-            <header className="sticky top-0 bg-white/80 backdrop-blur-xl z-40 border-b border-stone-200/60">
-                <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-3">
-                        <Logo size="sm" />
-                        <span className="text-lg font-semibold text-stone-900">SkySign</span>
-                    </Link>
-                    <Link href="/create" className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-stone-800 transition-all">
-                        Get Started
-                    </Link>
-                </div>
-            </header>
+            <Navbar />
 
-            <main className="max-w-4xl mx-auto px-6 py-16">
+            <main className="max-w-4xl mx-auto px-6 pt-32 pb-16">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

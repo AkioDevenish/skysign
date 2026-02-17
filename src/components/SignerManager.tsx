@@ -145,7 +145,7 @@ export default function SignerManager({
                                         value={name}
                                         onChange={e => setName(e.target.value)}
                                         onKeyPress={handleKeyPress}
-                                        className="w-full px-4 py-2.5 text-sm bg-white border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
+                                        className="w-full px-4 py-2.5 text-sm bg-white border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                                     />
                                     <input
                                         type="email"
@@ -153,13 +153,13 @@ export default function SignerManager({
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
                                         onKeyPress={handleKeyPress}
-                                        className="w-full px-4 py-2.5 text-sm bg-white border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors"
+                                        className="w-full px-4 py-2.5 text-sm bg-white border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                                     />
                                 </div>
                                 <button
                                     onClick={addSigner}
                                     disabled={!name.trim() || !email.trim()}
-                                    className="w-full py-2.5 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-stone-900/10 hover:shadow-lg"
+                                    className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full text-sm font-medium hover:from-blue-700 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
                                 >
                                     <span className="flex items-center justify-center gap-2">
                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

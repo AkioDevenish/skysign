@@ -146,7 +146,7 @@ export default function DocumentLayer({
                             onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
                             min={1}
                             max={numPages}
-                            className="w-10 text-center text-sm font-medium text-stone-900 border border-stone-200 rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-stone-900"
+                            className="w-10 text-center text-sm font-medium text-stone-900 border border-stone-200 rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <span className="text-stone-400 text-sm">/</span>
                         <span className="text-sm font-medium text-stone-600">{numPages}</span>

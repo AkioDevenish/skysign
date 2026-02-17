@@ -92,7 +92,7 @@ export default function ApiKeysSection({
                                         <tr key={k._id} className="hover:bg-stone-50/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                    <div className="w-2 h-2 rounded-full bg-indigo-500" />
                                                     <span className="text-sm font-medium text-stone-900">{k.name}</span>
                                                 </div>
                                             </td>
@@ -162,13 +162,13 @@ export default function ApiKeysSection({
 
                                 {showKey ? (
                                     <div className="space-y-6">
-                                        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
-                                            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
+                                            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
                                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             </div>
-                                            <p className="text-emerald-800 font-medium">Key created successfully!</p>
+                                            <p className="text-indigo-800 font-medium">Key created successfully!</p>
                                         </div>
 
                                         <div>

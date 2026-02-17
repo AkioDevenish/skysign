@@ -105,7 +105,7 @@ export default function SharingDialog({ pdfBlob, documentName, onClose, signatur
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Set a password to protect document"
-                                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-stone-900"
+                                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>
@@ -122,13 +122,13 @@ export default function SharingDialog({ pdfBlob, documentName, onClose, signatur
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="recipient@example.com"
-                                className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-stone-900 text-stone-900"
+                                className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-stone-900"
                                 required
                             />
                             <button
                                 type="submit"
                                 disabled={status === 'sending' || !pdfBlob}
-                                className="px-4 py-2 bg-stone-900 text-white rounded-xl font-medium hover:bg-stone-800 transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-600 transition-colors disabled:opacity-50 shadow-md shadow-blue-500/20"
                             >
                                 {status === 'sending' ? 'Sending...' : 'Send'}
                             </button>
@@ -146,7 +146,7 @@ export default function SharingDialog({ pdfBlob, documentName, onClose, signatur
                             href={auditUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-2 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-medium hover:bg-emerald-100 transition-colors"
+                            className="w-full py-2 flex items-center justify-center gap-2 bg-blue-50 text-blue-700 rounded-xl border border-blue-100 font-medium hover:bg-blue-100 transition-colors"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

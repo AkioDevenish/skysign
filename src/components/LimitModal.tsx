@@ -48,7 +48,7 @@ export default function LimitModal({ isOpen, onClose, plan }: LimitModalProps) {
                     <div className="w-full space-y-3">
                         <Link
                             href="/#pricing"
-                            className="block w-full py-3.5 bg-stone-900 text-white rounded-xl font-semibold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/10 hover:shadow-xl hover:shadow-stone-900/20 active:scale-[0.98]"
+                            className="block w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-600 transition-all shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 active:scale-[0.98]"
                         >
                             Upgrade to Pro
                         </Link>

@@ -100,4 +100,16 @@ export default defineSchema({
     }).index("by_request", ["requestId"])
       .index("by_token", ["accessToken"])
       .index("by_email", ["email"]),
+
+    customTemplates: defineTable({
+        userId: v.string(),
+        name: v.string(),
+        description: v.optional(v.string()),
+        category: v.string(),
+        content: v.string(), // HTML content with placeholders
+        fields: v.any(), // JSON array of TemplateField
+        isPublic: v.boolean(), // For sharing within a team later
+        createdAt: v.string(),
+        updatedAt: v.string(),
+    }).index("by_user", ["userId"]),
 });

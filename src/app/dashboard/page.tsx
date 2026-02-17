@@ -137,7 +137,7 @@ export default function DashboardPage() {
 
     const getActionStyle = (action: string) => {
         switch (action) {
-            case 'signed': return { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200' };
+            case 'signed': return { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-200' };
             case 'exported': return { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' };
             case 'created': return { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' };
             case 'shared': return { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200' };
