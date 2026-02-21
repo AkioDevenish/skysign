@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { GoogleDrivePicker, DropboxPicker } from './GoogleDriveIntegration';
 
 const SignatureCapture = dynamic(() => import('./SignatureCapture'), {
     ssr: false,
@@ -22,6 +23,7 @@ interface SignatureCreatorProps {
     strokeColor?: string;
     strokeWidth?: number;
     isOverlayMode?: boolean;
+    onPdfUpload?: (file: File) => void;
 }
 
 const signatureFonts = [
@@ -36,11 +38,16 @@ export default function SignatureCreator({
     onClear,
     strokeColor = '#1c1917',
     strokeWidth = 3,
+    onPdfUpload,
 }: SignatureCreatorProps) {
     const [mode, setMode] = useState<InputMode>('draw');
     const [typedName, setTypedName] = useState('');
     const [selectedFont, setSelectedFont] = useState(signatureFonts[0]);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+    const [showDrive, setShowDrive] = useState(false);
+    const [showDropbox, setShowDropbox] = useState(false);
+    const [downloadingCloudFile, setDownloadingCloudFile] = useState(false);
 
     const drawCanvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -137,12 +144,38 @@ export default function SignatureCreator({
         }
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file && file.type.startsWith('image/')) {
+    const handleFile = (file: File) => {
+        if (file.type === 'application/pdf') {
+            if (onPdfUpload) {
+                onPdfUpload(file);
+            } else {
+                alert('PDF upload not handled here.');
+            }
+        } else if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = (ev) => setUploadedImage(ev.target?.result as string);
             reader.readAsDataURL(file);
+        } else {
+            alert('Please upload an image or PDF file.');
+        }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) handleFile(file);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files?.[0];
+        if (file) handleFile(file);
+    };
+
+    const handleCloudAction = (provider: string) => {
+        if (provider === 'drive') setShowDrive(true);
+        else if (provider === 'dropbox') setShowDropbox(true);
+        else {
+            if (fileInputRef.current) fileInputRef.current.click();
         }
     };
 
@@ -359,7 +392,7 @@ export default function SignatureCreator({
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     onChange={handleFileUpload}
                     className="hidden"
                 />
@@ -388,6 +421,8 @@ export default function SignatureCreator({
                             <div 
                                 className="bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200 hover:border-blue-400 transition-colors flex flex-col items-center justify-center p-6 cursor-pointer group min-h-[160px]"
                                 onClick={() => fileInputRef.current?.click()}
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={handleDrop}
                             >
                                 <p className="font-medium text-stone-700 mb-3 group-hover:text-blue-600">Drop files here</p>
                                 <p className="text-stone-400 text-sm mb-4">Or</p>
@@ -404,25 +439,25 @@ export default function SignatureCreator({
                             <h3 className="font-semibold text-stone-700 mb-3 text-sm">Import files from:</h3>
                             <div className="grid grid-cols-2 gap-3 flex-1">
                                 {/* Google Drive */}
-                                <button className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
+                                <button onClick={() => handleCloudAction('drive')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
                                     <img src="https://www.vectorlogo.zone/logos/google_drive/google_drive-icon.svg" alt="Google Drive" className="w-6 h-6 object-contain" />
                                     <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Google Drive</span>
                                 </button>
                                 
                                 {/* OneDrive */}
-                                <button className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
+                                <button onClick={() => handleCloudAction('onedrive')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
                                     <img src="https://www.vectorlogo.zone/logos/microsoft_onedrive/microsoft_onedrive-icon.svg" alt="OneDrive" className="w-6 h-6 object-contain" />
                                     <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">One Drive</span>
                                 </button>
 
                                 {/* Dropbox */}
-                                <button className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
+                                <button onClick={() => handleCloudAction('dropbox')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
                                     <img src="https://www.vectorlogo.zone/logos/dropbox/dropbox-tile.svg" alt="Dropbox" className="w-6 h-6 object-contain" />
                                     <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Dropbox</span>
                                 </button>
 
                                 {/* Box */}
-                                <button className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
+                                <button onClick={() => handleCloudAction('box')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
                                     <img src="https://www.vectorlogo.zone/logos/box/box-icon.svg" alt="Box" className="w-6 h-6 object-contain" />
                                     <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Box</span>
                                 </button>
@@ -437,6 +472,37 @@ export default function SignatureCreator({
                 href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Caveat:wght@600&family=Allura&display=swap"
                 rel="stylesheet"
             />
+
+            {showDrive && (
+                <GoogleDrivePicker
+                    onClose={() => setShowDrive(false)}
+                    onFileSelect={async (f) => {
+                        setShowDrive(false);
+                        try {
+                            const res = await fetch(`/api/google/drive/download/${f.id}`);
+                            if (!res.ok) throw new Error('Download failed');
+                            const blob = await res.blob();
+                            const file = new File([blob], f.name, { type: 'application/pdf' });
+                            handleFile(file);
+                        } catch (err) {
+                            alert('Failed to load file from Google Drive.');
+                        }
+                    }}
+                />
+            )}
+
+            {showDropbox && (
+                <DropboxPicker
+                    onClose={() => setShowDropbox(false)}
+                    onFileSelect={async (f) => {
+                        setShowDropbox(false);
+                        // Mock downloading a file for Dropbox
+                        const blob = new Blob(['Mock PDF content for DropBox'], { type: 'application/pdf' });
+                        const file = new File([blob], f.name, { type: 'application/pdf' });
+                        handleFile(file);
+                    }}
+                />
+            )}
         </div>
     );
 }

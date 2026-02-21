@@ -9,12 +9,18 @@ import { api } from "../../convex/_generated/api";
 import { exportSignature, SavedSignature } from '@/lib/signatureStorage';
 import { Id } from "../../convex/_generated/dataModel";
 
+import { useUser } from '@clerk/nextjs';
+import { useToast } from '@/components/ToastProvider';
+
 interface SignatureGalleryProps {
     onSelect?: (signature: SavedSignature) => void;
     onRefresh?: () => void;
 }
 
 export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
+    const { user } = useUser();
+    const { toast } = useToast();
+    
     // Convex hooks
     const { results: signatures, status, loadMore } = usePaginatedQuery(api.signatures.get, {}, { initialNumItems: 10 });
     const deleteSig = useMutation(api.signatures.remove);
@@ -22,9 +28,17 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+    const plan = (user?.publicMetadata?.plan as string) || 'free';
+    const isPro = plan === 'pro' || plan === 'proplus';
+
     const handleDelete = async (id: string, convexId: Id<"signatures">) => {
+        if (!isPro) {
+            toast("Deleting signatures is a Pro feature", "info");
+            return;
+        }
+
         if (deleteConfirm === id) {
-            await deleteSig({ id: convexId });
+            await deleteSig({ id: convexId, plan });
             setDeleteConfirm(null);
         } else {
             setDeleteConfirm(id);
@@ -32,8 +46,25 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
         }
     };
 
-    const handleExport = (signature: SavedSignature, format: 'png' | 'svg') => {
-        exportSignature(signature, format);
+    const handleExport = async (signature: SavedSignature, format: 'png' | 'svg') => {
+        // For remote URLs (Convex storage), open in new tab to avoid CORS issues with client-side fetch
+        if (signature.dataUrl.startsWith('http')) {
+            window.open(signature.dataUrl, '_blank');
+            return;
+        }
+
+        // For local data URLs (base64) or if successful fetch (though we skip fetch now)
+        try {
+            const link = document.createElement('a');
+            link.href = signature.dataUrl;
+            link.download = `${signature.name.replace(/\s+/g, '_')}.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Export failed:', error);
+            toast('Failed to download signature', 'error');
+        }
     };
 
     const handleSelect = (signature: SavedSignature) => {
@@ -50,7 +81,7 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
     const mappedSignatures: SavedSignature[] = signatures?.map(sig => ({
         id: sig._id, // Use Convex ID
         name: sig.name,
-        dataUrl: sig.dataUrl,
+        dataUrl: sig.dataUrl || "",
         createdAt: sig.createdAt,
         updatedAt: sig.updatedAt,
         style: sig.style,
@@ -146,6 +177,7 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                             </svg>
                                         </button>
+                                        {isPro && (
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -161,9 +193,11 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
+
 
                             {/* Selected indicator */}
                             {selectedId === sig.id && (

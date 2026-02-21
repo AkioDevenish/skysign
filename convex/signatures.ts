@@ -16,6 +16,7 @@ export const get = query({
         paginationOpts: v.object({
             numItems: v.number(),
             cursor: v.union(v.string(), v.null()),
+            id: v.optional(v.number()),
         }),
     },
     handler: async (ctx, args) => {
@@ -28,18 +29,8 @@ export const get = query({
             .order("desc")
             .paginate(args.paginationOpts);
 
-        // Map over results to add storage URL if needed
-        return {
-            ...signatures,
-            page: await Promise.all(signatures.page.map(async (sig) => {
-                let dataUrl = sig.dataUrl;
-                if (sig.storageId) {
-                    const url = await ctx.storage.getUrl(sig.storageId);
-                    if (url) dataUrl = url;
-                }
-                return { ...sig, dataUrl: dataUrl || "" }; // Fallback to empty string if no URL
-            }))
-        };
+        // Return paginated results directly
+        return signatures;
     },
 });
 
@@ -141,14 +132,21 @@ export const update = mutation({
 });
 
 // Delete a signature
+// Delete a signature
 export const remove = mutation({
     args: { 
         id: v.id("signatures"),
         userAgent: v.optional(v.string()),
+        plan: v.string(), // require plan to check permissions
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Not authenticated");
+
+        // Check if user is on Free plan
+        if (args.plan === PLANS.FREE) {
+            throw new Error("Deleting signatures is a Pro feature.");
+        }
 
         const existing = await ctx.db.get(args.id);
         if (!existing || existing.userId !== identity.subject) {

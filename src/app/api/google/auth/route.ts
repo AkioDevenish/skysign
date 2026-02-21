@@ -2,14 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 import { auth } from '@clerk/nextjs/server';
 
-// Google OAuth2 configuration
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.NEXT_PUBLIC_APP_URL 
-        ? `${process.env.NEXT_PUBLIC_APP_URL}/api/google/callback`
-        : 'https://skysign.io/api/google/callback'
-);
+// Google OAuth2 configuration will be instantiated in the route handler
+// Scopes required for Google Drive access
 
 // Scopes required for Google Drive access
 const SCOPES = [
@@ -36,6 +30,13 @@ export async function GET(request: NextRequest) {
     // Generate auth URL with state for security
     const state = Buffer.from(JSON.stringify({ userId })).toString('base64');
     
+    // Create the OAuth client dynamically based on the current request domain
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        `${request.nextUrl.origin}/api/google/callback`
+    );
+
     const authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES,

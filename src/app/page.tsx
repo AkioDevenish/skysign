@@ -133,7 +133,7 @@ export default function Home() {
         "5 signatures per month",
         "Air Draw & Draw modes",
         "Standard PNG export",
-        "AES-256 Encryption",
+        "Secure Cloud Storage",
         "Audit Trail (Basic)",
       ],
       cta: "Get Started",
@@ -355,7 +355,7 @@ export default function Home() {
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                           </svg>
-                          256-bit encrypted
+                          Securely Stored
                         </span>
                       </div>
                     </div>
@@ -469,8 +469,8 @@ export default function Home() {
                   {/* Icon */}
                   <div className="mb-6 h-12 flex items-center text-stone-900">
                     {plan.name === 'Free' && (
-                       <div className="relative flex items-center justify-center w-12 h-12">
-                          <PenTool className="w-8 h-8" strokeWidth={1.5} />
+                       <div className="relative w-12 h-12">
+                          <PenTool className="w-6 h-6 absolute top-0 left-1 text-stone-900" strokeWidth={1.5} />
                        </div>
                     )}
                     {plan.name === 'Pro' && (
@@ -502,7 +502,7 @@ export default function Home() {
                     <h3 className="text-3xl font-serif font-medium text-stone-900 mb-2">
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-stone-500">
+                    <p className="text-sm text-stone-500 min-h-[42px]">
                       {plan.description}
                     </p>
                   </div>

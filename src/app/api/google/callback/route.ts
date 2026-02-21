@@ -7,13 +7,7 @@ import { api } from '@/../convex/_generated/api';
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Google OAuth2 configuration
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.NEXT_PUBLIC_APP_URL 
-        ? `${process.env.NEXT_PUBLIC_APP_URL}/api/google/callback`
-        : 'https://skysign.io/api/google/callback'
-);
+// Google OAuth2 configuration will be dynamically instantiated on each request
 
 // GET /api/google/callback - Handle OAuth callback
 export async function GET(request: NextRequest) {
@@ -51,6 +45,12 @@ export async function GET(request: NextRequest) {
         }
 
         // Exchange code for tokens
+        const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            `${request.nextUrl.origin}/api/google/callback`
+        );
+
         const { tokens } = await oauth2Client.getToken(code);
         
         if (!tokens.access_token) {

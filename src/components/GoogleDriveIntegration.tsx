@@ -199,7 +199,6 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
 export function GoogleDriveButton({ onFileSelect }: { onFileSelect?: (file: DriveFile) => void }) {
     const googleStatus = useQuery(api.settings.getGoogleStatus);
     const [showPicker, setShowPicker] = useState(false);
-    const disconnectGoogle = useMutation(api.settings.disconnectGoogle);
 
     const handleClick = () => {
         if (googleStatus?.connected) {
@@ -292,6 +291,131 @@ export function GoogleDriveSettings() {
                             Connect Google Drive
                         </button>
                     )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Dropbox Components
+
+interface DropboxFile {
+    id: string;
+    name: string;
+    path: string;
+    clientModified: string;
+    thumbnailLink?: string;
+}
+
+interface DropboxPickerProps {
+    onFileSelect: (file: DropboxFile) => void;
+    onClose: () => void;
+}
+
+export function DropboxPicker({ onFileSelect, onClose }: DropboxPickerProps) {
+    const [files, setFiles] = useState<DropboxFile[]>([]); 
+    const [loading, setLoading] = useState(false);
+
+    const loadFiles = async () => {
+        setLoading(true);
+        // Mock fetch for now as backend route doesn't exist
+        setTimeout(() => {
+            setFiles([
+                { id: '1', name: 'Contract.pdf', path: '/Contract.pdf', clientModified: new Date().toISOString() },
+                { id: '2', name: 'Agreement.pdf', path: '/Agreement.pdf', clientModified: new Date().toISOString() }
+            ]);
+            setLoading(false);
+        }, 1000);
+    };
+
+    if (files.length === 0 && !loading) loadFiles();
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={onClose}
+        >
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex items-center justify-between p-5 border-b border-stone-200">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 7.5L8.25 11L13.5 7.5L8.25 4L3 7.5ZM3 16.5L8.25 20L13.5 16.5L8.25 13L3 16.5ZM15.75 7.5L21 4L15.75 0.5L10.5 4L15.75 7.5ZM10.5 13L15.75 16.5L21 20L15.75 16.5L10.5 13Z"/>
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-bold text-stone-900">Dropbox</h3>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-lg">
+                        <svg className="w-5 h-5 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div className="p-5">
+                     <div className="text-center py-8 text-stone-500">
+                        Dropbox integration coming soon.
+                    </div>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
+export function DropboxButton({ onFileSelect }: { onFileSelect?: (file: DropboxFile) => void }) {
+    const [showPicker, setShowPicker] = useState(false);
+
+    return (
+        <>
+            <button
+                onClick={() => setShowPicker(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 hover:border-stone-300 rounded-xl text-sm font-medium text-stone-700 hover:text-stone-900 transition-colors"
+            >
+                <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                     <path d="M3 7.5L8.25 11L13.5 7.5L8.25 4L3 7.5ZM3 16.5L8.25 20L13.5 16.5L8.25 13L3 16.5ZM15.75 7.5L21 4L15.75 0.5L10.5 4L15.75 7.5ZM10.5 13L15.75 16.5L21 20L15.75 16.5L10.5 13Z"/>
+                </svg>
+                Connect Dropbox
+            </button>
+            {showPicker && <DropboxPicker onFileSelect={(f) => { onFileSelect?.(f); setShowPicker(false); }} onClose={() => setShowPicker(false)} />}
+        </>
+    );
+}
+
+export function DropboxSettings() {
+    const [connected, setConnected] = useState(false);
+
+    return (
+        <div className="p-6 bg-white border border-stone-200 rounded-2xl">
+            <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                         <path d="M3 7.5L8.25 11L13.5 7.5L8.25 4L3 7.5ZM3 16.5L8.25 20L13.5 16.5L8.25 13L3 16.5ZM15.75 7.5L21 4L15.75 0.5L10.5 4L15.75 7.5ZM10.5 13L15.75 16.5L21 20L15.75 16.5L10.5 13Z"/>
+                    </svg>
+                </div>
+                <div className="flex-1">
+                    <h3 className="text-lg font-bold text-stone-900">Dropbox</h3>
+                    <p className="text-sm text-stone-500 mt-1">
+                        Import documents from Dropbox and save signed files back automatically.
+                    </p>
+                    
+                     <button
+                        onClick={() => setConnected(!connected)}
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-sm font-medium transition-colors"
+                    >
+                        <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 7.5L8.25 11L13.5 7.5L8.25 4L3 7.5ZM3 16.5L8.25 20L13.5 16.5L8.25 13L3 16.5ZM15.75 7.5L21 4L15.75 0.5L10.5 4L15.75 7.5ZM10.5 13L15.75 16.5L21 20L15.75 16.5L10.5 13Z"/>
+                        </svg>
+                        {connected ? 'Disconnect Dropbox' : 'Connect Dropbox'}
+                    </button>
+                    {connected && <p className="text-xs text-stone-500 mt-2">Mock connection active</p>}
+                
                 </div>
             </div>
         </div>
