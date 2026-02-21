@@ -4,7 +4,6 @@ import { auth } from '@clerk/nextjs/server';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/../convex/_generated/api';
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // GET /api/google/drive/download/[fileId] - Download file from Drive
 export async function GET(
@@ -24,6 +23,7 @@ export async function GET(
     }
 
     try {
+        const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
         const { getToken } = await auth();
         const token = await getToken({ template: 'convex' });
         if (token) {

@@ -4,7 +4,6 @@ import { auth } from '@clerk/nextjs/server';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/../convex/_generated/api';
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Google OAuth2 configuration
 // Google OAuth2 configuration will be dynamically instantiated on each request
@@ -65,6 +64,7 @@ export async function GET(request: NextRequest) {
         // Store tokens in Convex (encrypted in production)
         // For simplicity, we'll use the settings mutation
         // In production, you'd want to encrypt these tokens
+        const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
         const token = await getToken({ template: 'convex' });
         if (token) {
             convex.setAuth(token);

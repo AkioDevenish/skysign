@@ -4,10 +4,10 @@ import { auth } from '@clerk/nextjs/server';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/../convex/_generated/api';
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Helper to create authenticated Drive client
 async function getDriveClient(userId: string) {
+    const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
     const { getToken } = await auth();
     const token = await getToken({ template: 'convex' });
     if (token) {
