@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         );
 
         // Verify current user matches state
-        const { userId } = await auth();
+        const { userId, getToken } = await auth();
         if (!userId || userId !== stateUserId) {
             return NextResponse.redirect(
                 new URL('/dashboard?google=error&message=auth_mismatch', request.url)
@@ -65,6 +65,10 @@ export async function GET(request: NextRequest) {
         // Store tokens in Convex (encrypted in production)
         // For simplicity, we'll use the settings mutation
         // In production, you'd want to encrypt these tokens
+        const token = await getToken({ template: 'convex' });
+        if (token) {
+            convex.setAuth(token);
+        }
         await convex.mutation(api.settings.saveGoogleTokens, {
             accessToken: tokens.access_token,
             refreshToken: tokens.refresh_token || undefined,
@@ -75,7 +79,7 @@ export async function GET(request: NextRequest) {
 
         // Redirect back to dashboard with success
         return NextResponse.redirect(
-            new URL('/dashboard?google=connected', request.url)
+            new URL('/create?google=connected', request.url)
         );
     } catch (err) {
         console.error('[Google OAuth] Callback error:', err);

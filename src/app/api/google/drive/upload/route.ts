@@ -8,6 +8,12 @@ const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 // Helper to create authenticated Drive client
 async function getDriveClient(userId: string) {
+    const { getToken } = await auth();
+    const token = await getToken({ template: 'convex' });
+    if (token) {
+        convex.setAuth(token);
+    }
+
     // Get stored tokens from Convex
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const settings = await convex.query(api.settings.get) as any;

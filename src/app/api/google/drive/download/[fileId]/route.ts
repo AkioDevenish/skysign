@@ -24,6 +24,12 @@ export async function GET(
     }
 
     try {
+        const { getToken } = await auth();
+        const token = await getToken({ template: 'convex' });
+        if (token) {
+            convex.setAuth(token);
+        }
+
         // Get stored tokens
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const settings = await convex.query(api.settings.get) as any;

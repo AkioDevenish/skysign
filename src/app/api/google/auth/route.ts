@@ -8,6 +8,7 @@ import { auth } from '@clerk/nextjs/server';
 // Scopes required for Google Drive access
 const SCOPES = [
     'https://www.googleapis.com/auth/drive.file',  // Access to files created by app
+    'https://www.googleapis.com/auth/drive.readonly', // Allow selecting existing PDFs
     'https://www.googleapis.com/auth/userinfo.email',
 ];
 
