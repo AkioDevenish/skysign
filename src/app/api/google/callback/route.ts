@@ -81,10 +81,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(
             new URL('/create?google=connected', request.url)
         );
-    } catch (err) {
+    } catch (err: any) {
         console.error('[Google OAuth] Callback error:', err);
         return NextResponse.redirect(
-            new URL('/dashboard?google=error&message=token_exchange_failed', request.url)
+            new URL('/dashboard?google=error&message=' + encodeURIComponent(err.message || 'unknown_error'), request.url)
         );
     }
 }
