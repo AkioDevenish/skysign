@@ -1,7 +1,6 @@
 'use client';
 
-import { useQuery, useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -20,7 +19,9 @@ interface GoogleDrivePickerProps {
 }
 
 export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerProps) {
-    const googleStatus = useQuery(api.settings.getGoogleStatus);
+    const { user } = useUser();
+    const isGoogleConnected = user?.externalAccounts?.some((acc) => acc.provider === 'google');
+    const googleEmail = user?.externalAccounts?.find((acc) => acc.provider === 'google')?.emailAddress;
     const [files, setFiles] = useState<DriveFile[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -45,12 +46,19 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
         }
     };
 
-    const handleConnect = () => {
-        window.location.href = '/api/google/auth';
+    const handleConnect = async () => {
+        try {
+            await user?.createExternalAccount({
+                strategy: 'oauth_google',
+                redirectUrl: window.location.href,
+            });
+        } catch (err) {
+            console.error('Failed to connect Google:', err);
+        }
     };
 
     // Load files when connected
-    if (googleStatus?.connected && files.length === 0 && !loading && !error) {
+    if (isGoogleConnected && files.length === 0 && !loading && !error) {
         loadFiles();
     }
 
@@ -79,8 +87,8 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-stone-900">Google Drive</h3>
-                            {googleStatus?.connected && (
-                                <p className="text-xs text-stone-500">{googleStatus.email}</p>
+                            {isGoogleConnected && (
+                                <p className="text-xs text-stone-500">{googleEmail}</p>
                             )}
                         </div>
                     </div>
@@ -96,7 +104,7 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
 
                 {/* Content */}
                 <div className="p-5">
-                    {!googleStatus?.connected ? (
+                    {!isGoogleConnected ? (
                         /* Not connected state */
                         <div className="text-center py-12">
                             <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -197,14 +205,22 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
 
 // Small button component for triggering Drive connection/picker
 export function GoogleDriveButton({ onFileSelect }: { onFileSelect?: (file: DriveFile) => void }) {
-    const googleStatus = useQuery(api.settings.getGoogleStatus);
+    const { user } = useUser();
+    const isGoogleConnected = user?.externalAccounts?.some((acc) => acc.provider === 'google');
     const [showPicker, setShowPicker] = useState(false);
 
-    const handleClick = () => {
-        if (googleStatus?.connected) {
+    const handleClick = async () => {
+        if (isGoogleConnected) {
             setShowPicker(true);
         } else {
-            window.location.href = '/api/google/auth';
+            try {
+                await user?.createExternalAccount({
+                    strategy: 'oauth_google',
+                    redirectUrl: window.location.href,
+                });
+            } catch (err) {
+                console.error('Failed to connect Google:', err);
+            }
         }
     };
 
@@ -218,7 +234,7 @@ export function GoogleDriveButton({ onFileSelect }: { onFileSelect?: (file: Driv
                     <path d="M7.71 3.5L1.15 15l3.43 5.5h6.54l-3.41-5.5L14.14 3.5H7.71z" fill="#4285f4"/>
                     <path d="M14.43 3.5l-6.48 11 3.43 5.5h7.14l3.43-5.5-7.52-11z" fill="#34a853"/>
                 </svg>
-                {googleStatus?.connected ? 'Import from Drive' : 'Connect Drive'}
+                {isGoogleConnected ? 'Import from Drive' : 'Connect Drive'}
             </button>
 
             {showPicker && onFileSelect && (
@@ -236,14 +252,18 @@ export function GoogleDriveButton({ onFileSelect }: { onFileSelect?: (file: Driv
 
 // Settings section for Google Drive connection
 export function GoogleDriveSettings() {
-    const googleStatus = useQuery(api.settings.getGoogleStatus);
-    const disconnectGoogle = useMutation(api.settings.disconnectGoogle);
+    const { user } = useUser();
+    const googleAccount = user?.externalAccounts?.find((acc) => acc.provider === 'google');
+    const isGoogleConnected = !!googleAccount;
     const [disconnecting, setDisconnecting] = useState(false);
 
     const handleDisconnect = async () => {
+        if (!googleAccount) return;
         setDisconnecting(true);
         try {
-            await disconnectGoogle();
+            await googleAccount.destroy();
+        } catch (err) {
+            console.error('Failed to disconnect Google Drive:', err);
         } finally {
             setDisconnecting(false);
         }
@@ -264,13 +284,13 @@ export function GoogleDriveSettings() {
                         Import documents from Drive and save signed files back automatically.
                     </p>
 
-                    {googleStatus?.connected ? (
+                    {isGoogleConnected ? (
                         <div className="mt-4">
                             <div className="flex items-center gap-2 text-sm text-emerald-600 mb-3">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
-                                Connected as {googleStatus.email}
+                                Connected as {googleAccount.emailAddress}
                             </div>
                             <button
                                 onClick={handleDisconnect}
@@ -282,7 +302,16 @@ export function GoogleDriveSettings() {
                         </div>
                     ) : (
                         <button
-                            onClick={() => window.location.href = '/api/google/auth'}
+                            onClick={async () => {
+                                try {
+                                    await user?.createExternalAccount({
+                                        strategy: 'oauth_google',
+                                        redirectUrl: window.location.href,
+                                    });
+                                } catch (err) {
+                                    console.error('Failed to connect Google:', err);
+                                }
+                            }}
                             className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-sm font-medium transition-colors"
                         >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">

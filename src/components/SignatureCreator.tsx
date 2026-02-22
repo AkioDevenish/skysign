@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { GoogleDrivePicker, DropboxPicker } from './GoogleDriveIntegration';
+import { GoogleDrivePicker } from './GoogleDriveIntegration';
 
 const SignatureCapture = dynamic(() => import('./SignatureCapture'), {
     ssr: false,
@@ -445,21 +445,21 @@ export default function SignatureCreator({
                                 </button>
                                 
                                 {/* OneDrive */}
-                                <button onClick={() => handleCloudAction('onedrive')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/microsoft_onedrive/microsoft_onedrive-icon.svg" alt="OneDrive" className="w-6 h-6 object-contain" />
-                                    <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">One Drive</span>
+                                <button disabled onClick={() => handleCloudAction('onedrive')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
+                                    <img src="https://www.vectorlogo.zone/logos/microsoft_onedrive/microsoft_onedrive-icon.svg" alt="OneDrive" className="w-6 h-6 object-contain grayscale" />
+                                    <span className="text-xs font-medium text-stone-500">One Drive</span>
                                 </button>
 
                                 {/* Dropbox */}
-                                <button onClick={() => handleCloudAction('dropbox')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/dropbox/dropbox-tile.svg" alt="Dropbox" className="w-6 h-6 object-contain" />
-                                    <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Dropbox</span>
+                                <button disabled onClick={() => handleCloudAction('dropbox')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
+                                    <img src="https://www.vectorlogo.zone/logos/dropbox/dropbox-tile.svg" alt="Dropbox" className="w-6 h-6 object-contain grayscale" />
+                                    <span className="text-xs font-medium text-stone-500">Dropbox</span>
                                 </button>
 
                                 {/* Box */}
-                                <button onClick={() => handleCloudAction('box')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/box/box-icon.svg" alt="Box" className="w-6 h-6 object-contain" />
-                                    <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Box</span>
+                                <button disabled onClick={() => handleCloudAction('box')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
+                                    <img src="https://www.vectorlogo.zone/logos/box/box-icon.svg" alt="Box" className="w-6 h-6 object-contain grayscale" />
+                                    <span className="text-xs font-medium text-stone-500">Box</span>
                                 </button>
                             </div>
                         </div>
@@ -491,18 +491,6 @@ export default function SignatureCreator({
                 />
             )}
 
-            {showDropbox && (
-                <DropboxPicker
-                    onClose={() => setShowDropbox(false)}
-                    onFileSelect={async (f) => {
-                        setShowDropbox(false);
-                        // Mock downloading a file for Dropbox
-                        const blob = new Blob(['Mock PDF content for DropBox'], { type: 'application/pdf' });
-                        const file = new File([blob], f.name, { type: 'application/pdf' });
-                        handleFile(file);
-                    }}
-                />
-            )}
         </div>
     );
 }

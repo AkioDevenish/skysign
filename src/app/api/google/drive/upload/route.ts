@@ -1,51 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { auth } from '@clerk/nextjs/server';
-import { ConvexHttpClient } from 'convex/browser';
-import { api } from '@/../convex/_generated/api';
-
+import { auth, clerkClient } from '@clerk/nextjs/server';
+import { Readable } from 'stream';
 
 // Helper to create authenticated Drive client
 async function getDriveClient(userId: string) {
-    const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-    const { getToken } = await auth();
-    const token = await getToken({ template: 'convex' });
-    if (token) {
-        convex.setAuth(token);
-    }
-
-    // Get stored tokens from Convex
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const settings = await convex.query(api.settings.get) as any;
+    const client = await clerkClient();
     
-    if (!settings?.googleAccessToken) {
+    try {
+        // Fetch the Google OAuth token stored by Clerk
+        const tokenResponse = await client.users.getUserOauthAccessToken(
+            userId, 
+            'oauth_google'
+        );
+        
+        // Ensure tokens exist 
+        if (!tokenResponse || !tokenResponse.data || tokenResponse.data.length === 0) {
+            return null;
+        }
+
+        const googleToken = tokenResponse.data[0].token;
+        
+        const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET
+        );
+
+        oauth2Client.setCredentials({
+            access_token: googleToken,
+        });
+
+        return google.drive({ version: 'v3', auth: oauth2Client });
+    } catch (err) {
+        console.error("Error fetching Google token from Clerk:", err);
         return null;
     }
-
-    const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET
-    );
-
-    oauth2Client.setCredentials({
-        access_token: settings.googleAccessToken,
-        refresh_token: settings.googleRefreshToken,
-    });
-
-    // Handle token refresh if needed
-    oauth2Client.on('tokens', async (tokens) => {
-        if (tokens.access_token) {
-            // Update stored tokens
-            await convex.mutation(api.settings.saveGoogleTokens, {
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token || settings.googleRefreshToken,
-                expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : undefined,
-                email: settings.googleEmail,
-            });
-        }
-    });
-
-    return google.drive({ version: 'v3', auth: oauth2Client });
 }
 
 // POST /api/google/drive/upload - Upload file to Drive
@@ -59,11 +48,9 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;
-        const fileName = formData.get('fileName') as string;
-        const folderId = formData.get('folderId') as string | null;
-
-        if (!file || !fileName) {
-            return NextResponse.json({ error: 'Missing file or fileName' }, { status: 400 });
+        
+        if (!file) {
+            return NextResponse.json({ error: 'No file provided' }, { status: 400 });
         }
 
         const drive = await getDriveClient(userId);
@@ -74,31 +61,22 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Convert file to buffer
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const { Readable } = await import('stream');
-        const stream = Readable.from(buffer);
-
-        // Create file metadata
-        const fileMetadata: { name: string; parents?: string[] } = {
-            name: fileName,
-        };
-
-        // If folderId provided, put in that folder
-        if (folderId) {
-            fileMetadata.parents = [folderId];
-        }
+        // Convert File to Buffer
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
         // Upload to Drive
         const response = await drive.files.create({
-            requestBody: fileMetadata,
+            requestBody: {
+                name: file.name,
+                mimeType: file.type || 'application/pdf',
+            },
             media: {
                 mimeType: file.type || 'application/pdf',
-                body: stream,
+                body: Readable.from(buffer),
             },
             fields: 'id, name, webViewLink, webContentLink',
         });
-
 
         return NextResponse.json({
             success: true,

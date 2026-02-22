@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserButton, useUser, UserProfile } from '@clerk/nextjs';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ import Modal from '@/components/Modal';
 import TeamSection from '@/components/dashboard/TeamSection';
 import ApiKeysSection from '@/components/dashboard/ApiKeysSection';
 import SubscriptionSection from '@/components/dashboard/SubscriptionSection';
+import { GoogleDriveSettings } from '@/components/GoogleDriveIntegration';
 import { useToast } from '@/components/ToastProvider';
 
 type TabId = 'overview' | 'profile' | 'preferences' | 'subscription' | 'api';
@@ -82,6 +84,30 @@ export default function DashboardPage() {
     const isPro = plan === 'pro' || plan === 'proplus';
     const isProPlus = plan === 'proplus';
     const { toast, confirm: confirmDialog } = useToast();
+    const searchParams = useSearchParams();
+
+    // Handle Google OAuth error/success query params
+    useEffect(() => {
+        const googleStatus = searchParams.get('google');
+        const message = searchParams.get('message');
+        
+        if (googleStatus === 'error' && message) {
+            const errorMessages: Record<string, string> = {
+                token_exchange_failed: 'Google Drive connection failed. The authorization code could not be exchanged for an access token. Please try again.',
+                auth_mismatch: 'Google Drive connection failed. There was an authentication mismatch. Please sign in and try again.',
+                missing_params: 'Google Drive connection failed. Missing required parameters from Google.',
+                access_denied: 'Google Drive access was denied. Please grant the required permissions.',
+            };
+            const displayMessage = errorMessages[message] || `Google Drive connection failed: ${message}`;
+            toast(displayMessage, 'error');
+            
+            // Clean up the URL
+            const url = new URL(window.location.href);
+            url.searchParams.delete('google');
+            url.searchParams.delete('message');
+            window.history.replaceState({}, '', url.pathname);
+        }
+    }, [searchParams, toast]);
 
     // Team Handlers
     const handleAddMember = async (e: React.FormEvent) => {
@@ -396,6 +422,12 @@ export default function DashboardPage() {
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        {/* Integrations */}
+                                        <div className="mt-8 pt-6 border-t border-stone-100">
+                                            <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-4">Integrations</h3>
+                                            <GoogleDriveSettings />
                                         </div>
                                     </div>
                                 )}

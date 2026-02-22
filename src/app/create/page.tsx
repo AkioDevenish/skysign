@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ import SignerManager, { Signer } from '@/components/SignerManager';
 import SharingDialog from '@/components/SharingDialog';
 import LimitModal from '@/components/LimitModal';
 import { useToast } from '@/components/ToastProvider';
+import { GoogleDrivePicker } from '@/components/GoogleDriveIntegration';
 
 import SendForSignatureModal from '@/components/SendForSignatureModal';
 import SignatureRequestsDashboard from '@/components/SignatureRequestsDashboard';
@@ -150,7 +152,10 @@ export default function CreatePage() {
     const [isMobile, setIsMobile] = useState(false);
     const [showSendModal, setShowSendModal] = useState(false);
     const [currentStorageId, setCurrentStorageId] = useState<string | null>(null);
+    const [showDrivePicker, setShowDrivePicker] = useState(false);
+    const [exportFormat, setExportFormat] = useState<string | null>(null);
     const { toast } = useToast();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -158,6 +163,18 @@ export default function CreatePage() {
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
+
+    // Handle ?google=connected after OAuth callback
+    useEffect(() => {
+        const googleStatus = searchParams.get('google');
+        if (googleStatus === 'connected') {
+            toast('Google Drive connected successfully!', 'success');
+            // Clean up the URL
+            const url = new URL(window.location.href);
+            url.searchParams.delete('google');
+            window.history.replaceState({}, '', url.pathname);
+        }
+    }, [searchParams, toast]);
 
     // Convex Mutations
     const createSig = useMutation(api.signatures.create);
@@ -351,6 +368,43 @@ export default function CreatePage() {
     const handleRetry = () => {
         setShowPreview(false);
         setSavedSignature(null);
+    };
+
+    const handleExportDownload = () => {
+        if (!exportFormat) return;
+        
+        // Use the savedSignature if it exists, otherwise tell the user to create one
+        if (!savedSignature && !documentFile) {
+            toast('Please create a signature or import a document first.', 'error');
+            return;
+        }
+
+        try {
+            if (exportFormat === 'PNG' && savedSignature) {
+                const a = document.createElement('a');
+                a.href = savedSignature;
+                a.download = `skysign_signature_${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                toast('Signature downloaded successfully.', 'success');
+            } else if (exportFormat === 'PDF' && signedBlob) {
+                const url = URL.createObjectURL(signedBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `skysign_document_${Date.now()}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                toast('Document downloaded successfully.', 'success');
+            } else {
+                toast(`Exporting as ${exportFormat} is coming soon!`, 'info');
+            }
+        } catch (e) {
+            console.error('Export failed:', e);
+            toast('Failed to export. Please try again.', 'error');
+        }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -585,17 +639,29 @@ export default function CreatePage() {
                                 </p>
                             </div>
                             <div className="flex items-center gap-3">
-                                 {/* Import Button moved here for desktop */}
+                                 {/* Import Buttons */}
                                  {activeSection === 'create' && !documentFile && (
-                                     <button
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="px-5 py-2.5 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                        Import PDF
-                                    </button>
+                                     <>
+                                         <button
+                                            onClick={() => setShowDrivePicker(true)}
+                                            className="px-4 py-2.5 bg-white border border-stone-200 hover:border-stone-300 text-stone-700 rounded-full text-sm font-medium hover:text-stone-900 transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7.71 3.5L1.15 15l3.43 5.5h6.54l-3.41-5.5L14.14 3.5H7.71z" fill="#4285f4"/>
+                                                <path d="M14.43 3.5l-6.48 11 3.43 5.5h7.14l3.43-5.5-7.52-11z" fill="#34a853"/>
+                                            </svg>
+                                            Import from Drive
+                                        </button>
+                                         <button
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="px-5 py-2.5 bg-stone-900 text-white rounded-full text-sm font-medium hover:bg-stone-800 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                            Import PDF
+                                        </button>
+                                     </>
                                  )}
 
                                 {/* Primary Action Button (Finalize) */}
@@ -679,19 +745,22 @@ export default function CreatePage() {
                                                 {['PNG', 'SVG', 'PDF', 'JSON'].map((fmt) => (
                                                     <button
                                                         key={fmt}
+                                                        onClick={() => setExportFormat(fmt)}
                                                         disabled={!isPro && fmt !== 'PNG'}
                                                         className={`p-4 rounded-xl text-left transition-all border ${!isPro && fmt !== 'PNG'
                                                             ? 'bg-stone-50 border-stone-100 opacity-60 cursor-not-allowed'
-                                                            : 'bg-white border-stone-200 hover:border-blue-500 hover:ring-1 hover:ring-blue-500 hover:shadow-md cursor-pointer group'
+                                                            : exportFormat === fmt
+                                                                ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500 shadow-md'
+                                                                : 'bg-white border-stone-200 hover:border-blue-500 hover:ring-1 hover:ring-blue-500 hover:shadow-md cursor-pointer group'
                                                             }`}
                                                     >
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <span className="font-bold text-stone-900 group-hover:text-blue-600 transition-colors">{fmt}</span>
+                                                            <span className={`font-bold transition-colors ${exportFormat === fmt ? 'text-blue-700' : 'text-stone-900 group-hover:text-blue-600'}`}>{fmt}</span>
                                                             {!isPro && fmt !== 'PNG' && (
                                                                 <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wide">PRO</span>
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-stone-500">
+                                                        <p className={`text-xs ${exportFormat === fmt ? 'text-blue-600/80' : 'text-stone-500'}`}>
                                                             {fmt === 'PNG' && 'Standard image format (Transparent)'}
                                                             {fmt === 'SVG' && 'Vector format (Infinite scaling)'}
                                                             {fmt === 'PDF' && 'Document format (Print ready)'}
@@ -706,16 +775,20 @@ export default function CreatePage() {
                                         <div className="space-y-4">
                                             <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-2">Actions</h3>
                                             <div className="h-full p-6 bg-stone-50 rounded-2xl border border-stone-200 text-center flex flex-col items-center justify-center">
-                                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-stone-100">
-                                                    <svg className="w-6 h-6 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border ${exportFormat ? 'bg-blue-100 border-blue-200 text-blue-600' : 'bg-white border-stone-100 text-stone-400'}`}>
+                                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                     </svg>
                                                 </div>
                                                 <p className="text-sm text-stone-600 mb-6">
-                                                    Select a format on the left to export current signature.
+                                                    {exportFormat ? `Ready to export as ${exportFormat}` : 'Select a format on the left to export.'}
                                                 </p>
-                                                <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium rounded-xl hover:from-blue-700 hover:to-blue-600 transition-colors shadow-lg shadow-blue-500/20 cursor-pointer w-full max-w-xs">
-                                                    Download File
+                                                <button 
+                                                    onClick={handleExportDownload}
+                                                    disabled={!exportFormat}
+                                                    className={`px-8 py-3 font-medium rounded-xl transition-all shadow-lg w-full max-w-xs ${exportFormat ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 shadow-blue-500/20 cursor-pointer' : 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none'}`}
+                                                >
+                                                    Download {exportFormat || 'File'}
                                                 </button>
                                             </div>
                                         </div>
@@ -902,6 +975,23 @@ export default function CreatePage() {
                         onClose={() => setShowSendModal(false)}
                         documentStorageId={currentStorageId as Parameters<typeof SendForSignatureModal>[0]['documentStorageId']}
                         documentName={`Signature ${new Date().toLocaleString()}`}
+                    />
+                )}
+                {showDrivePicker && (
+                    <GoogleDrivePicker
+                        onClose={() => setShowDrivePicker(false)}
+                        onFileSelect={async (file) => {
+                            setShowDrivePicker(false);
+                            try {
+                                const res = await fetch(`/api/google/drive/download/${file.id}`);
+                                if (!res.ok) throw new Error('Download failed');
+                                const blob = await res.blob();
+                                const pdfFile = new File([blob], file.name, { type: 'application/pdf' });
+                                setDocumentFile(pdfFile);
+                            } catch {
+                                toast('Failed to load file from Google Drive.', 'error');
+                            }
+                        }}
                     />
                 )}
             </AnimatePresence>

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { auth } from '@clerk/nextjs/server';
-import { ConvexHttpClient } from 'convex/browser';
-import { api } from '@/../convex/_generated/api';
-
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 // GET /api/google/drive/download/[fileId] - Download file from Drive
 export async function GET(
@@ -23,23 +20,22 @@ export async function GET(
     }
 
     try {
-        const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-        const { getToken } = await auth();
-        const token = await getToken({ template: 'convex' });
-        if (token) {
-            convex.setAuth(token);
-        }
-
-        // Get stored tokens
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const settings = await convex.query(api.settings.get) as any;
+        const client = await clerkClient();
         
-        if (!settings?.googleAccessToken) {
+        // Fetch the Google OAuth token stored by Clerk
+        const tokenResponse = await client.users.getUserOauthAccessToken(
+            userId, 
+            'oauth_google'
+        );
+        
+        if (!tokenResponse || !tokenResponse.data || tokenResponse.data.length === 0) {
             return NextResponse.json(
                 { error: 'Google Drive not connected' }, 
                 { status: 400 }
             );
         }
+
+        const googleToken = tokenResponse.data[0].token;
 
         const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
@@ -47,8 +43,7 @@ export async function GET(
         );
 
         oauth2Client.setCredentials({
-            access_token: settings.googleAccessToken,
-            refresh_token: settings.googleRefreshToken,
+            access_token: googleToken,
         });
 
         const drive = google.drive({ version: 'v3', auth: oauth2Client });
