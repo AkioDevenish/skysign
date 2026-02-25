@@ -12,7 +12,7 @@ import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import FadeContent from "@/components/reactbits/FadeContent";
 import FAQ from "@/components/FAQ";
 import Newsletter from "@/components/Newsletter";
-import TrustSection from "@/components/TrustSection";
+import FeaturesSection from "@/components/FeaturesSection";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/components/ToastProvider";
@@ -406,9 +406,8 @@ export default function Home() {
 
 
 
-      {/* Trust Section */}
-      <TrustSection />
-
+      {/* Features Section */}
+      <FeaturesSection />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-32 px-8 lg:px-12 relative z-10 overflow-hidden">
