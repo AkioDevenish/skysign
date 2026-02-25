@@ -31,7 +31,7 @@ export const sendTeamInvite = internalAction({
                             <strong>${args.inviterName}</strong> has invited you to join their team <strong>"${args.teamName}"</strong> on Sky Sign.
                         </p>
                         <div style="margin-top: 32px;">
-                            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}" style="background-color: #1c1917; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app'}" style="background-color: #1c1917; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
                                 Accept Invitation
                             </a>
                         </div>

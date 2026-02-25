@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
     "/sign-in(.*)",
     "/sign-up(.*)",
     "/sign/(.*)",  // Public signing pages
+    "/how-it-works(.*)",
     "/terms(.*)",
     "/privacy(.*)",
     "/refund(.*)",

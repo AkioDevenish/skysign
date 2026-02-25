@@ -5,7 +5,6 @@ import Script from "next/script";
 import PaddleProvider from "@/components/PaddleProvider";
 import ConvexClientProvider from "./ConvexClientProvider";
 import "./globals.css";
-import { PostHogProvider } from "@/components/PostHogProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 
 const inter = Inter({
@@ -16,17 +15,19 @@ const inter = Inter({
 // Only load Google Analytics when a real measurement ID is configured
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID;
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app';
+
 export const metadata: Metadata = {
   title: "SkySign | Air Signature Capture",
   description: "Draw your signature in the air and capture it with your camera. The future of digital signatures.",
   keywords: ["signature", "e-signature", "digital signature", "air signature", "hand tracking", "document signing", "electronic signature"],
   authors: [{ name: "SkySign Team" }],
-  metadataBase: new URL("https://skysign.app"),
+  metadataBase: new URL(APP_URL),
   openGraph: {
     title: "SkySign | Sign Documents in the Air",
     description: "The revolutionary e-signature platform that uses AI hand-tracking to capture your signature in mid-air. Secure, fast, and touchless.",
     type: "website",
-    url: "https://skysign.app",
+    url: APP_URL,
     siteName: "SkySign",
     images: [
       {
@@ -91,13 +92,11 @@ export default function RootLayout({
 
 
         <body className={`${inter.variable} antialiased`} suppressHydrationWarning>
-          <PostHogProvider>
             <ConvexClientProvider>
               <PaddleProvider>
                 <ToastProvider>{children}</ToastProvider>
               </PaddleProvider>
             </ConvexClientProvider>
-          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>

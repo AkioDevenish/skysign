@@ -141,12 +141,12 @@ export default function DocumentLayer({
 
                     <div className="flex items-center gap-1.5 px-2">
                         <input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={currentPage}
                             onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
-                            min={1}
-                            max={numPages}
-                            className="w-10 text-center text-sm font-medium text-stone-900 border border-stone-200 rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-12 px-0 text-center text-sm font-medium text-stone-900 border border-stone-200 rounded-lg py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <span className="text-stone-400 text-sm">/</span>
                         <span className="text-sm font-medium text-stone-600">{numPages}</span>

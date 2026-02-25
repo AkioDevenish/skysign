@@ -54,15 +54,29 @@ export async function GET(
             fields: 'name, mimeType',
         });
 
-        // Download file content
+        // Download file content via stream
         const response = await drive.files.get(
             { fileId, alt: 'media' },
-            { responseType: 'arraybuffer' }
+            { responseType: 'stream' }
         );
 
-        const buffer = Buffer.from(response.data as ArrayBuffer);
+        // Convert the Node.js Readable stream to a Web ReadableStream
+        const stream = new ReadableStream({
+            start(controller) {
+                const nodeStream = response.data as any; // Cast to access stream events
+                nodeStream.on('data', (chunk: Buffer) => {
+                    controller.enqueue(new Uint8Array(chunk));
+                });
+                nodeStream.on('end', () => {
+                    controller.close();
+                });
+                nodeStream.on('error', (err: any) => {
+                    controller.error(err);
+                });
+            }
+        });
 
-        return new NextResponse(buffer, {
+        return new NextResponse(stream, {
             headers: {
                 'Content-Type': fileMeta.data.mimeType || 'application/pdf',
                 'Content-Disposition': `attachment; filename="${fileMeta.data.name}"`,

@@ -71,7 +71,7 @@ export default function ApiDocsPage() {
                                     </div>
                                 </div>
                                 <code className="text-sm font-mono text-emerald-400">
-                                    <span className="text-purple-400">curl</span> https://api.skysign.dev/v1/signatures \<br />
+                                    <span className="text-purple-400">curl</span> https://skysign-app.vercel.app/api/v1/signatures \<br />
                                     &nbsp;&nbsp;<span className="text-stone-400">-H</span> <span className="text-yellow-300">&quot;Authorization: Bearer sk_live_...&quot;</span>
                                 </code>
                             </div>
@@ -106,7 +106,7 @@ export default function ApiDocsPage() {
       "object": "signature",
       "name": "Contract Signature",
       "created": 1678901234,
-      "image_url": "https://skysign.dev/s/sig_123.png"
+      "image_url": "https://skysign-app.vercel.app/api/v1/signatures/sig_123.png"
     },
     ...
   ],
@@ -153,7 +153,7 @@ export default function ApiDocsPage() {
 
                             <div className="bg-stone-900 rounded-2xl p-6 shadow-xl">
                                 <code className="text-sm font-mono text-emerald-400">
-                                    <span className="text-purple-400">curl</span> -X POST https://api.skysign.dev/v1/signatures \<br />
+                                    <span className="text-purple-400">curl</span> -X POST https://skysign-app.vercel.app/api/v1/signatures \<br />
                                     &nbsp;&nbsp;<span className="text-stone-400">-H</span> <span className="text-yellow-300">&quot;Authorization: Bearer sk_live_...&quot;</span> \<br />
                                     &nbsp;&nbsp;<span className="text-stone-400">-d</span> name=&quot;My New Signature&quot; \<br />
                                     &nbsp;&nbsp;<span className="text-stone-400">-d</span> image_data=&quot;iVBORw0KGgoAAAANSUhEUgAA...&quot;

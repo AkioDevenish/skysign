@@ -105,7 +105,7 @@ export const create = mutation({
             senderName: identity.name || identity.email || 'Someone',
             documentName: args.documentName,
             message: args.message,
-            signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/sign/${firstSigner.token}`,
+            signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app'}/sign/${firstSigner.token}`,
         });
 
         return { requestId, accessToken: firstSigner.token };
@@ -421,7 +421,7 @@ export const finalizeSignature = internalMutation({
                     senderName: 'Signer (via SkySign)',
                     documentName: request.documentName,
                     message: request.message,
-                    signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/sign/${nextSigner.accessToken}`,
+                    signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app'}/sign/${nextSigner.accessToken}`,
                 });
             }
         }

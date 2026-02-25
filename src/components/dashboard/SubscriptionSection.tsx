@@ -140,7 +140,7 @@ export default function SubscriptionSection({ plan, sigCount, isPro, isProPlus }
                                 </span>
                             </div>
                             <a 
-                                href="mailto:support@skysign.app?subject=Manage Subscription&body=I would like to cancel or update my subscription."
+                                href="mailto:hello@skysign.io?subject=Manage Subscription&body=I would like to cancel or update my subscription."
                                 className="block w-full py-3 bg-white border border-stone-200 text-stone-600 text-center rounded-xl font-semibold hover:bg-stone-50 hover:text-stone-900 transition-colors text-sm"
                             >
                                 Manage Subscription

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { GoogleDrivePicker } from './GoogleDriveIntegration';
+import { useToast } from '@/components/ToastProvider';
 
 const SignatureCapture = dynamic(() => import('./SignatureCapture'), {
     ssr: false,
@@ -44,9 +45,9 @@ export default function SignatureCreator({
     const [typedName, setTypedName] = useState('');
     const [selectedFont, setSelectedFont] = useState(signatureFonts[0]);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const { toast } = useToast();
 
     const [showDrive, setShowDrive] = useState(false);
-    const [showDropbox, setShowDropbox] = useState(false);
     const [downloadingCloudFile, setDownloadingCloudFile] = useState(false);
 
     const drawCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -145,18 +146,24 @@ export default function SignatureCreator({
     };
 
     const handleFile = (file: File) => {
+        const MAX_SIZE_MB = 5;
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+            toast(`File is too large. Please select a file smaller than ${MAX_SIZE_MB}MB.`, 'error');
+            return;
+        }
+
         if (file.type === 'application/pdf') {
             if (onPdfUpload) {
                 onPdfUpload(file);
             } else {
-                alert('PDF upload not handled here.');
+                toast('PDF upload is not supported here. Please use the main upload area.', 'info');
             }
         } else if (file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onload = (ev) => setUploadedImage(ev.target?.result as string);
             reader.readAsDataURL(file);
         } else {
-            alert('Please upload an image or PDF file.');
+            toast('Please upload an image or PDF file.', 'error');
         }
     };
 
@@ -173,7 +180,6 @@ export default function SignatureCreator({
 
     const handleCloudAction = (provider: string) => {
         if (provider === 'drive') setShowDrive(true);
-        else if (provider === 'dropbox') setShowDropbox(true);
         else {
             if (fileInputRef.current) fileInputRef.current.click();
         }
@@ -437,29 +443,11 @@ export default function SignatureCreator({
                         {/* Right: Cloud Import */}
                         <div className="flex-1 flex flex-col">
                             <h3 className="font-semibold text-stone-700 mb-3 text-sm">Import files from:</h3>
-                            <div className="grid grid-cols-2 gap-3 flex-1">
+                            <div className="grid grid-cols-1 gap-3 flex-1">
                                 {/* Google Drive */}
-                                <button onClick={() => handleCloudAction('drive')} className="flex flex-col items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-2 group cursor-pointer h-full max-h-[75px]" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/google_drive/google_drive-icon.svg" alt="Google Drive" className="w-6 h-6 object-contain" />
-                                    <span className="text-xs font-medium text-stone-600 group-hover:text-stone-800">Google Drive</span>
-                                </button>
-                                
-                                {/* OneDrive */}
-                                <button disabled onClick={() => handleCloudAction('onedrive')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/microsoft_onedrive/microsoft_onedrive-icon.svg" alt="OneDrive" className="w-6 h-6 object-contain grayscale" />
-                                    <span className="text-xs font-medium text-stone-500">One Drive</span>
-                                </button>
-
-                                {/* Dropbox */}
-                                <button disabled onClick={() => handleCloudAction('dropbox')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/dropbox/dropbox-tile.svg" alt="Dropbox" className="w-6 h-6 object-contain grayscale" />
-                                    <span className="text-xs font-medium text-stone-500">Dropbox</span>
-                                </button>
-
-                                {/* Box */}
-                                <button disabled onClick={() => handleCloudAction('box')} className="flex flex-col items-center justify-center p-3 bg-stone-50 border border-stone-200 rounded-xl opacity-60 cursor-not-allowed gap-2 h-full max-h-[75px] relative group" type="button">
-                                    <img src="https://www.vectorlogo.zone/logos/box/box-icon.svg" alt="Box" className="w-6 h-6 object-contain grayscale" />
-                                    <span className="text-xs font-medium text-stone-500">Box</span>
+                                <button onClick={() => handleCloudAction('drive')} className="flex items-center justify-center p-3 bg-white border border-stone-200 rounded-xl hover:shadow-md hover:border-blue-200 transition-all gap-4 group cursor-pointer h-full" type="button">
+                                    <img src="https://www.vectorlogo.zone/logos/google_drive/google_drive-icon.svg" alt="Google Drive" className="w-8 h-8 object-contain" />
+                                    <span className="text-sm font-medium text-stone-600 group-hover:text-stone-800">Google Drive</span>
                                 </button>
                             </div>
                         </div>
@@ -477,7 +465,6 @@ export default function SignatureCreator({
                 <GoogleDrivePicker
                     onClose={() => setShowDrive(false)}
                     onFileSelect={async (f) => {
-                        setShowDrive(false);
                         try {
                             const res = await fetch(`/api/google/drive/download/${f.id}`);
                             if (!res.ok) throw new Error('Download failed');
@@ -485,7 +472,9 @@ export default function SignatureCreator({
                             const file = new File([blob], f.name, { type: 'application/pdf' });
                             handleFile(file);
                         } catch (err) {
-                            alert('Failed to load file from Google Drive.');
+                            toast('Failed to load file from Google Drive. Please try again.', 'error');
+                        } finally {
+                            setShowDrive(false);
                         }
                     }}
                 />

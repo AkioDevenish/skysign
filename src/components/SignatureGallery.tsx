@@ -229,7 +229,7 @@ export default function SignatureGallery({ onSelect }: SignatureGalleryProps) {
                 <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
                     <p className="text-xs text-amber-700">
                         <strong>{remainingSlots}</strong> free {remainingSlots === 1 ? 'slot' : 'slots'} remaining.{' '}
-                        <span className="font-semibold">Unlimited signatures coming soon with Pro!</span>
+                        <span className="font-semibold">Upgrade to Pro for more signatures!</span>
                     </p>
                 </div>
             )}

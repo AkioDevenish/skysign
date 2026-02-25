@@ -398,8 +398,6 @@ export default function CreatePage() {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 toast('Document downloaded successfully.', 'success');
-            } else {
-                toast(`Exporting as ${exportFormat} is coming soon!`, 'info');
             }
         } catch (e) {
             console.error('Export failed:', e);
@@ -409,7 +407,15 @@ export default function CreatePage() {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setDocumentFile(e.target.files[0]);
+            const file = e.target.files[0];
+            const MAX_SIZE_MB = 5;
+            if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+                toast(`File is too large. Please select a file smaller than ${MAX_SIZE_MB}MB.`, 'error');
+                // clear the input
+                if (e.target) e.target.value = '';
+                return;
+            }
+            setDocumentFile(file);
         }
     };
 
@@ -742,7 +748,7 @@ export default function CreatePage() {
                                         <div className="space-y-4">
                                             <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wider mb-2">File Format</h3>
                                             <div className="grid grid-cols-2 gap-3">
-                                                {['PNG', 'SVG', 'PDF', 'JSON'].map((fmt) => (
+                                                {['PNG', 'PDF'].map((fmt) => (
                                                     <button
                                                         key={fmt}
                                                         onClick={() => setExportFormat(fmt)}
@@ -762,9 +768,7 @@ export default function CreatePage() {
                                                         </div>
                                                         <p className={`text-xs ${exportFormat === fmt ? 'text-blue-600/80' : 'text-stone-500'}`}>
                                                             {fmt === 'PNG' && 'Standard image format (Transparent)'}
-                                                            {fmt === 'SVG' && 'Vector format (Infinite scaling)'}
                                                             {fmt === 'PDF' && 'Document format (Print ready)'}
-                                                            {fmt === 'JSON' && 'Full data backup (Import/Export)'}
                                                         </p>
                                                     </button>
                                                 ))}
@@ -981,15 +985,21 @@ export default function CreatePage() {
                     <GoogleDrivePicker
                         onClose={() => setShowDrivePicker(false)}
                         onFileSelect={async (file) => {
-                            setShowDrivePicker(false);
                             try {
+                                const MAX_SIZE_MB = 5;
                                 const res = await fetch(`/api/google/drive/download/${file.id}`);
                                 if (!res.ok) throw new Error('Download failed');
                                 const blob = await res.blob();
+                                if (blob.size > MAX_SIZE_MB * 1024 * 1024) {
+                                    toast(`File is too large. Please select a file smaller than ${MAX_SIZE_MB}MB.`, 'error');
+                                    return;
+                                }
                                 const pdfFile = new File([blob], file.name, { type: 'application/pdf' });
                                 setDocumentFile(pdfFile);
                             } catch {
                                 toast('Failed to load file from Google Drive.', 'error');
+                            } finally {
+                                setShowDrivePicker(false);
                             }
                         }}
                     />

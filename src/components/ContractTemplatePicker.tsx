@@ -13,6 +13,7 @@ import {
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { useToast } from '@/components/ToastProvider';
 
 import React from 'react';
 
@@ -51,6 +52,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
     const [fieldValues, setFieldValues] = useState<FieldValues>({});
     const [step, setStep] = useState<'categories' | 'templates' | 'view-template' | 'edit-template' | 'fields' | 'preview'>(initialCategory ? 'templates' : 'categories');
     const [searchQuery, setSearchQuery] = useState('');
+    const { toast } = useToast();
     
     // Convex integrations
     const customTemplatesRaw = useQuery(api.templates.list);
@@ -189,7 +191,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
             setAiPrompt('');
         } catch (error: any) {
             console.error("AI Generation failed:", error);
-            alert("Failed to generate contract: " + error.message);
+            toast('Failed to generate contract: ' + (error.message || 'Unknown error'), 'error');
         } finally {
             setIsGenerating(false);
         }

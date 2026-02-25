@@ -38,7 +38,7 @@ export const checkAndSendReminders = internalAction({
                         recipientName: request.recipientName,
                         senderName: 'A SkySign User',
                         documentName: request.documentName,
-                        signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/sign/${request.accessToken}`,
+                        signingUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app'}/sign/${request.accessToken}`,
                         daysRemaining,
                     });
 

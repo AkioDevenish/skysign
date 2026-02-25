@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         <li>Exclusive early access to new plans</li>
       </ul>
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign.io'}/create" style="display: inline-block; background: linear-gradient(135deg, #1c1917 0%, #44403c 100%); color: white; padding: 14px 32px; border-radius: 99px; text-decoration: none; font-weight: 600; font-size: 15px;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://skysign-app.vercel.app'}/create" style="display: inline-block; background: linear-gradient(135deg, #1c1917 0%, #44403c 100%); color: white; padding: 14px 32px; border-radius: 99px; text-decoration: none; font-weight: 600; font-size: 15px;">
           Start Signing Free →
         </a>
       </div>
