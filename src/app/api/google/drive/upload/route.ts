@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
         const drive = await getDriveClient(userId);
         if (!drive) {
             return NextResponse.json(
-                { error: 'Google Drive not connected' }, 
-                { status: 400 }
+                { error: 'Google OAuth token not found in Clerk' },
+                { status: 401 }
             );
         }
 
@@ -106,8 +106,8 @@ export async function GET(request: NextRequest) {
         const drive = await getDriveClient(userId);
         if (!drive) {
             return NextResponse.json(
-                { error: 'Google Drive not connected' }, 
-                { status: 400 }
+                { error: 'Google OAuth token not found in Clerk' },
+                { status: 401 }
             );
         }
 

@@ -11,7 +11,7 @@ import SignaturePreview from '@/components/SignaturePreview';
 import SignatureGallery from '@/components/SignatureGallery';
 import { ContractTemplatePicker } from '@/components/ContractTemplatePicker';
 import { signPdf } from '@/utils/pdfUtils';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { ContractTemplate } from '@/lib/contractTemplates';
 // import { saveSignature, canSaveMore } from '@/lib/signatureStorage'; // Deprecated
 // import { logAuditEntry } from '@/lib/auditTrail'; // Deprecated
@@ -140,16 +140,17 @@ export default function CreatePage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [galleryKey, setGalleryKey] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [_totalPages, setTotalPages] = useState(1);
+    const [, setTotalPages] = useState(1);
     const [signers, setSigners] = useState<Signer[]>([]);
     const [templatesExpanded, setTemplatesExpanded] = useState(false);
-    const [_fields, setFields] = useState<Field[]>([]);
+    const [, setFields] = useState<Field[]>([]);
     const [placementMode, setPlacementMode] = useState(false);
+    const [signaturePlacement, setSignaturePlacement] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const [showSharing, setShowSharing] = useState(false);
     const [signedBlob, setSignedBlob] = useState<Blob | null>(null);
     const [showLimitModal, setShowLimitModal] = useState(false);
     const [currentSignatureId, setCurrentSignatureId] = useState<string | null>(null);
-    const [isMobile, setIsMobile] = useState(false);
+    const [_isMobile, setIsMobile] = useState(false);
     const [showSendModal, setShowSendModal] = useState(false);
     const [currentStorageId, setCurrentStorageId] = useState<string | null>(null);
     const [showDrivePicker, setShowDrivePicker] = useState(false);
@@ -259,6 +260,7 @@ export default function CreatePage() {
 
                 // 1. Convert Data URL to Blob
                 const res = await fetch(dataUrl);
+                if (!res.ok) throw new Error('Failed to process signature image');
                 const blob = await res.blob();
 
                 // 2. Generate Upload URL
@@ -270,6 +272,7 @@ export default function CreatePage() {
                     headers: { "Content-Type": blob.type },
                     body: blob,
                 });
+                if (!result.ok) throw new Error('Failed to upload signature to cloud');
                 const { storageId } = await result.json();
 
                 // 4. Save Signature with Storage ID
@@ -303,7 +306,7 @@ export default function CreatePage() {
 
         try {
             setIsSaving(true);
-            const { clientWidth, clientHeight, scrollTop } = containerRef.current;
+            const { clientWidth, clientHeight } = containerRef.current;
 
             // Generate Audit Trail (Server-Side)
             // We use the signature ID created during the 'Save' step
@@ -331,7 +334,7 @@ export default function CreatePage() {
                 savedSignature,
                 { width: clientWidth, height: clientHeight },
                 currentPage,
-                -scrollTop,
+                signaturePlacement || undefined,
                 user?.fullName || 'Anonymous Signer',
                 auditId
             );
@@ -861,6 +864,7 @@ export default function CreatePage() {
                                                         signatureDataUrl={savedSignature}
                                                         containerWidth={docDims.width}
                                                         containerHeight={docDims.height}
+                                                        onPositionChange={setSignaturePlacement}
                                                     />
                                                 </div>
                                             )}

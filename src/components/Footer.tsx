@@ -34,8 +34,8 @@ export default function Footer() {
                         <h4 className="font-semibold text-stone-900 mb-6">Product</h4>
                         <ul className="space-y-4 text-sm text-stone-500">
                             <li><Link href="/how-it-works" className="hover:text-stone-900 transition-colors">How it Works</Link></li>
-                            <li><a href="/#pricing" className="hover:text-stone-900 transition-colors">Pricing & Plans</a></li>
-                            <li><a href="/#faq" className="hover:text-stone-900 transition-colors">FAQ</a></li>
+                            <li><Link href="/#pricing" className="hover:text-stone-900 transition-colors">Pricing & Plans</Link></li>
+                            <li><Link href="/#faq" className="hover:text-stone-900 transition-colors">FAQ</Link></li>
                             <li><Link href="/create" className="hover:text-stone-900 transition-colors">Create Signature</Link></li>
                         </ul>
                     </div>

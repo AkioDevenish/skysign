@@ -3,7 +3,6 @@ import { Resend } from 'resend';
 import { isValidEmail, createRateLimiter } from '@/lib/apiUtils';
 
 // Newsletter subscription endpoint using Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SkySign <onboarding@resend.dev>';
 
 // Rate limit: 3 newsletter subscriptions per IP per hour
@@ -37,6 +36,8 @@ export async function POST(request: Request) {
                 { status: 503 }
             );
         }
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         // Send welcome email to the subscriber
         const { error } = await resend.emails.send({

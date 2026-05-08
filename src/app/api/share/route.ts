@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { escapeHtml, isValidEmail, createRateLimiter } from '@/lib/apiUtils';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SkySign <onboarding@resend.dev>';
 
 // Rate limit: 10 shares per IP per 15 minutes
@@ -30,6 +29,8 @@ export async function POST(request: Request) {
                 { status: 503 }
             );
         }
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         if (type === 'email') {
             if (!email || !isValidEmail(email)) {

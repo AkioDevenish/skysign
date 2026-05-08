@@ -50,12 +50,6 @@ export default defineSchema({
         autoSave: v.boolean(),
         defaultFormat: v.string(), // 'png', 'svg', 'pdf'
         darkMode: v.optional(v.boolean()),
-        // Google Drive integration
-        googleAccessToken: v.optional(v.string()),
-        googleRefreshToken: v.optional(v.string()),
-        googleTokenExpiry: v.optional(v.string()),
-        googleEmail: v.optional(v.string()),
-        googleConnectedAt: v.optional(v.string()),
     }).index("by_user", ["userId"]),
 
     newsletter: defineTable({

@@ -129,12 +129,16 @@ export default function SignerPage() {
 
             // Upload signature image
             const uploadUrl = await generateUploadUrl();
-            const blob = await (await fetch(finalSignatureDataUrl)).blob();
+            const res = await fetch(finalSignatureDataUrl);
+            if (!res.ok) throw new Error('Failed to process signature image');
+            const blob = await res.blob();
+
             const uploadResponse = await fetch(uploadUrl, {
                 method: 'POST',
                 body: blob,
                 headers: { 'Content-Type': 'image/png' }
             });
+            if (!uploadResponse.ok) throw new Error('Failed to upload signature to cloud');
             const { storageId: signatureStorageId } = await uploadResponse.json();
 
             // For now, we'll use the signature storage ID as the signed document
@@ -203,6 +207,23 @@ export default function SignerPage() {
                     </div>
                     <h1 className="text-2xl font-semibold text-stone-900 mb-2">Request Expired</h1>
                     <p className="text-stone-600">This signature request has expired. Please contact the sender for a new link.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Wait your turn (Multi-party)
+    if ((request as Record<string, unknown>).signerStatus === 'pending') {
+        return (
+            <div className="min-h-screen bg-stone-50 flex items-center justify-center p-6">
+                <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-stone-900 mb-2">Wait Your Turn</h1>
+                    <p className="text-stone-600">The document is still being signed by other parties. You will receive an email when it is your turn to sign.</p>
                 </div>
             </div>
         );

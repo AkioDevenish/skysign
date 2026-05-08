@@ -235,6 +235,20 @@ export const getByToken = query({
 export const markViewed = mutation({
     args: { accessToken: v.string() },
     handler: async (ctx, args) => {
+        // 1. Try requestSigners
+        const signer = await ctx.db
+            .query("requestSigners")
+            .withIndex("by_token", (q) => q.eq("accessToken", args.accessToken))
+            .first();
+
+        if (signer) {
+            if (signer.status === 'sent') {
+                await ctx.db.patch(signer._id, { status: 'viewed' });
+            }
+            return;
+        }
+
+        // 2. Fallback to main request
         const request = await ctx.db
             .query("signatureRequests")
             .withIndex("by_token", (q) => q.eq("accessToken", args.accessToken))
@@ -271,6 +285,7 @@ export const submitSignature = mutation({
             request = await ctx.db.get(signer.requestId);
             if (!request) throw new Error("Request not found");
             if (signer.status === 'signed') throw new Error("Already signed");
+            if (signer.status === 'pending') throw new Error("It's not your turn to sign yet.");
         } else {
             // Legacy / Single Signer fallback
             request = await ctx.db
