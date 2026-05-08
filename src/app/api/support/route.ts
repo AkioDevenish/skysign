@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { escapeHtml, isValidEmail, createRateLimiter } from '@/lib/apiUtils';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'SkySign <onboarding@resend.dev>';
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'hello@skysign.io';
 
@@ -45,6 +44,8 @@ export async function POST(request: Request) {
                 { status: 503 }
             );
         }
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         // Sanitize user inputs for HTML embedding
         const safeName = escapeHtml(name);

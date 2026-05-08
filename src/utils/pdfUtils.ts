@@ -8,7 +8,7 @@ export async function signPdf(
     signatureDataUrl: string,
     containerDims: { width: number; height: number },
     pageNumber: number = 1,
-    yOffset: number = 0,
+    placement?: { x: number; y: number; width: number; height: number },
     signerName?: string,
     auditId?: string
 ): Promise<Uint8Array> {
@@ -17,19 +17,26 @@ export async function signPdf(
     const signatureImage = await pdfDoc.embedPng(signatureDataUrl);
 
     const page = pdfDoc.getPages()[pageNumber - 1];
-    const { width: pdfWidth } = page.getSize();
+    const { width: pdfWidth, height: pdfHeight } = page.getSize();
     const scaleFactor = pdfWidth / containerDims.width;
 
-    const renderedHeightInPdfUnits = containerDims.height * scaleFactor;
-    const scrollOffsetInPdfUnits = -yOffset * scaleFactor;
-    const drawY = page.getHeight() - renderedHeightInPdfUnits - scrollOffsetInPdfUnits;
-
-    page.drawImage(signatureImage, {
-        x: 0,
-        y: drawY,
-        width: pdfWidth,
-        height: renderedHeightInPdfUnits,
-    });
+    if (placement) {
+        // Use exact placement from SignaturePlacer
+        page.drawImage(signatureImage, {
+            x: placement.x * scaleFactor,
+            y: pdfHeight - (placement.y * scaleFactor) - (placement.height * scaleFactor),
+            width: placement.width * scaleFactor,
+            height: placement.height * scaleFactor,
+        });
+    } else {
+        // Fallback to legacy full-page "signature" if no placement provided (should not happen with new UI)
+        page.drawImage(signatureImage, {
+            x: 0,
+            y: 0,
+            width: pdfWidth,
+            height: pdfHeight,
+        });
+    }
 
     // --- Digital Certificate Embedding ---
     if (signerName && auditId) {

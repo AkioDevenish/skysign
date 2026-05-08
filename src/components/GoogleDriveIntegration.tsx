@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaGoogleDrive } from 'react-icons/fa';
 import { useToast } from '@/components/ToastProvider';
 
@@ -32,10 +32,10 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
     const [isConnecting, setIsConnecting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const [lastQuery, setLastQuery] = useState('');
+    const [_lastQuery, setLastQuery] = useState('');
     const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-    const loadFiles = async (query: string = '', isInitial: boolean = false) => {
+    const loadFiles = useCallback(async (query: string = '', isInitial: boolean = false) => {
         if (loading) return;
         setLoading(true);
         setError(null);
@@ -55,7 +55,7 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading]);
 
     const handleConnect = async () => {
         if (isConnecting) return;
@@ -86,11 +86,12 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
                 clearTimeout(timeout);
                 setIsConnecting(false);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             clearTimeout(timeout);
             console.error('Failed to connect Google:', err);
-            setError(err?.message || 'Failed to connect to Google Drive');
-            toast(err?.message || 'Failed to connect Google Drive. Please check your Google Account settings.', 'error');
+            const errorMessage = err instanceof Error ? err.message : 'Failed to connect to Google Drive';
+            setError(errorMessage);
+            toast(errorMessage || 'Failed to connect Google Drive. Please check your Google Account settings.', 'error');
         } finally {
             clearTimeout(timeout);
             setIsConnecting(false);
@@ -102,7 +103,7 @@ export function GoogleDrivePicker({ onFileSelect, onClose }: GoogleDrivePickerPr
         if (isGoogleConnected && !hasLoaded && !loading && !error) {
             loadFiles('', true);
         }
-    }, [isGoogleConnected, hasLoaded, loading, error]);
+    }, [isGoogleConnected, hasLoaded, loading, error, loadFiles]);
 
     return (
         <motion.div
@@ -289,11 +290,11 @@ export function GoogleDriveButton({ onFileSelect }: { onFileSelect?: (file: Driv
                     clearTimeout(timeout);
                     setIsConnecting(false);
                 }
-            } catch (err: any) {
+        } catch (err: unknown) {
                 clearTimeout(timeout);
                 console.error('Failed to connect Google:', err);
                 setIsConnecting(false);
-                toast(err?.message || 'Failed to connect Google Drive. Please try again.', 'error');
+            toast(err instanceof Error ? err.message : 'Failed to connect Google Drive. Please try again.', 'error');
             }
         }
     };
@@ -335,12 +336,14 @@ export function GoogleDriveSettings() {
         setDisconnecting(true);
         try {
             await googleAccount.destroy();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to disconnect Google Drive:', err);
-            if (err?.errors?.[0]?.code === 'external_account_not_found' || err?.message?.includes('verification')) {
+            const message = err instanceof Error ? err.message : '';
+            const errors = (err as { errors?: { code: string }[] })?.errors;
+            if (errors?.[0]?.code === 'external_account_not_found' || message.includes('verification')) {
                 toast('This Google account is your primary login method. Visit your Google Account Security settings to remove access.', 'info');
             } else {
-                toast('Failed to disconnect: ' + err.message, 'error');
+                toast('Failed to disconnect: ' + message, 'error');
             }
         } finally {
             setDisconnecting(false);
@@ -402,11 +405,11 @@ export function GoogleDriveSettings() {
                                         clearTimeout(timeout);
                                         setIsConnecting(false);
                                     }
-                                } catch (err: any) {
+                                } catch (err: unknown) {
                                     clearTimeout(timeout);
                                     console.error('Failed to connect Google:', err);
                                     setIsConnecting(false);
-                                    toast('Connection error: ' + err.message, 'error');
+                                    toast('Connection error: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error');
                                 } finally {
                                     clearTimeout(timeout);
                                     // Note: If redirect happens, the component resets anyway.

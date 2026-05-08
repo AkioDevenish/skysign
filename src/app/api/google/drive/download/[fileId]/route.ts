@@ -30,8 +30,8 @@ export async function GET(
         
         if (!tokenResponse || !tokenResponse.data || tokenResponse.data.length === 0) {
             return NextResponse.json(
-                { error: 'Google Drive not connected' }, 
-                { status: 400 }
+                { error: 'Google OAuth token not found in Clerk' },
+                { status: 401 }
             );
         }
 
@@ -63,14 +63,14 @@ export async function GET(
         // Convert the Node.js Readable stream to a Web ReadableStream
         const stream = new ReadableStream({
             start(controller) {
-                const nodeStream = response.data as any; // Cast to access stream events
+                const nodeStream = response.data as import('stream').Readable;
                 nodeStream.on('data', (chunk: Buffer) => {
                     controller.enqueue(new Uint8Array(chunk));
                 });
                 nodeStream.on('end', () => {
                     controller.close();
                 });
-                nodeStream.on('error', (err: any) => {
+                nodeStream.on('error', (err: Error) => {
                     controller.error(err);
                 });
             }
@@ -82,7 +82,7 @@ export async function GET(
                 'Content-Disposition': `attachment; filename="${fileMeta.data.name}"`,
             },
         });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[Drive] Download error:', error);
         return NextResponse.json(
             { error: 'Failed to download from Google Drive' }, 

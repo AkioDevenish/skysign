@@ -82,11 +82,11 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
         const custom: ContractTemplate[] = (customTemplatesRaw || []).map(t => ({
             id: t._id,
             name: t.name,
-            category: t.category as any, // Cast to match union type
+            category: t.category as ContractTemplate['category'],
             description: t.description || '',
             icon: '📝',
             isPro: false,
-            fields: t.fields,
+            fields: t.fields as TemplateField[],
             content: t.content
         }));
         return [...custom, ...contractTemplates];
@@ -157,7 +157,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
         const newTemplate: ContractTemplate = {
             id: `custom-${Date.now()}`,
             name: 'Untitled Contract',
-            category: 'contract' as any, // default
+            category: 'contract' as ContractTemplate['category'], // default
             description: 'Custom contract template',
             icon: '📝',
             isPro: false,
@@ -177,7 +177,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
             const newTemplate: ContractTemplate = {
                 id: `custom-${Date.now()}`,
                 name: 'AI Generated Contract',
-                category: 'contract' as any,
+                category: 'contract' as ContractTemplate['category'],
                 description: `Generated from: "${aiPrompt}"`,
                 icon: '✨',
                 isPro: false,
@@ -189,9 +189,9 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
             setStep('edit-template');
             setShowAiModal(false);
             setAiPrompt('');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("AI Generation failed:", error);
-            toast('Failed to generate contract: ' + (error.message || 'Unknown error'), 'error');
+            toast('Failed to generate contract: ' + (error instanceof Error ? error.message : 'Unknown error'), 'error');
         } finally {
             setIsGenerating(false);
         }
@@ -271,7 +271,7 @@ export function ContractTemplatePicker({ onSelect, onClose, isPro = false, embed
 
             setSelectedTemplate(updatedTemplate);
             setStep('view-template');
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to save template:", error);
             // Optionally show toast
         }
@@ -815,7 +815,7 @@ function RichTextEditor({
     onChange: (html: string) => void; 
 }) {
     const editorRef = React.useRef<HTMLDivElement>(null);
-    const [activeFormats, setActiveFormats] = useState<Record<string, any>>({});
+    const [activeFormats, setActiveFormats] = useState<Record<string, boolean>>({});
 
     const checkFormats = React.useCallback(() => {
         if (typeof document === 'undefined') return;
@@ -829,9 +829,11 @@ function RichTextEditor({
                 justifyRight: document.queryCommandState('justifyRight'),
                 insertUnorderedList: document.queryCommandState('insertUnorderedList'),
                 insertOrderedList: document.queryCommandState('insertOrderedList'),
-                block: document.queryCommandValue('formatBlock').toLowerCase(),
+                h1: document.queryCommandValue('formatBlock').toLowerCase() === 'h1',
+                h2: document.queryCommandValue('formatBlock').toLowerCase() === 'h2',
+                p: ['p', 'div', ''].includes(document.queryCommandValue('formatBlock').toLowerCase()),
             });
-        } catch (e) {
+        } catch (_e) {
             // Ignore errors
         }
     }, []);
@@ -875,9 +877,9 @@ function RichTextEditor({
                 <ToolButton icon="Align C" label="Align Center" command="justifyCenter" onClick={() => execCmd('justifyCenter')} isActive={activeFormats.justifyCenter} />
                 <ToolButton icon="Align R" label="Align Right" command="justifyRight" onClick={() => execCmd('justifyRight')} isActive={activeFormats.justifyRight} />
                 <div className="w-px h-4 bg-stone-300 mx-1" />
-                <ToolButton icon={<span className="font-serif text-base">H1</span>} label="Heading 1" command="formatBlock" onClick={() => execCmd('formatBlock', '<h1>')} isActive={activeFormats.block === 'h1'} />
-                <ToolButton icon={<span className="font-serif text-base">H2</span>} label="Heading 2" command="formatBlock" onClick={() => execCmd('formatBlock', '<h2>')} isActive={activeFormats.block === 'h2'} />
-                <ToolButton icon={<span className="font-serif text-base">P</span>} label="Paragraph" command="formatBlock" onClick={() => execCmd('formatBlock', '<p>')} isActive={activeFormats.block === 'p' || activeFormats.block === 'div' || !activeFormats.block} />
+                <ToolButton icon={<span className="font-serif text-base">H1</span>} label="Heading 1" command="formatBlock" onClick={() => execCmd('formatBlock', '<h1>')} isActive={!!activeFormats.h1} />
+                <ToolButton icon={<span className="font-serif text-base">H2</span>} label="Heading 2" command="formatBlock" onClick={() => execCmd('formatBlock', '<h2>')} isActive={!!activeFormats.h2} />
+                <ToolButton icon={<span className="font-serif text-base">P</span>} label="Paragraph" command="formatBlock" onClick={() => execCmd('formatBlock', '<p>')} isActive={!!activeFormats.p} />
                 <div className="w-px h-4 bg-stone-300 mx-1" />
                 <ToolButton icon="•" label="Bullet List" command="insertUnorderedList" onClick={() => execCmd('insertUnorderedList')} isActive={activeFormats.insertUnorderedList} />
                 <ToolButton icon="1." label="Numbered List" command="insertOrderedList" onClick={() => execCmd('insertOrderedList')} isActive={activeFormats.insertOrderedList} />
@@ -931,8 +933,9 @@ const EditorArea = React.memo(({
         />
     );
 });
+EditorArea.displayName = 'EditorArea';
 
-function ToolButton({ icon, label, onClick, bold, italic, underline, isActive }: any) {
+function ToolButton({ icon, label, onClick, bold, italic, underline, isActive, ..._rest }: { icon: React.ReactNode, label: string, onClick: () => void, bold?: boolean, italic?: boolean, underline?: boolean, isActive?: boolean, [key: string]: unknown }) {
     return (
         <button
             onMouseDown={(e) => {

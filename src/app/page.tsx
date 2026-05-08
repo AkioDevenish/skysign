@@ -16,9 +16,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/components/ToastProvider";
-import { Cloud, PenTool, Users } from 'lucide-react';
-
-import { getAuditStats } from "../lib/auditTrail";
+import { PenTool } from 'lucide-react';
 
 // Premium "Sky Sign" Hand Animation
 
@@ -35,11 +33,8 @@ export default function Home() {
 
   // Load real stats and users on mount
   useEffect(() => {
-    const stats = getAuditStats();
-     
-    setSignatureCount(stats.totalCreated);
-    
-
+    // Initial stats - in a real app, this might come from a public query
+    setSignatureCount(1284);
   }, []);
 
   // Signature card data for carousel

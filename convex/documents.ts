@@ -32,37 +32,35 @@ export const embedSignature = action({
 
     // 4. Embed Signature Image
     const signatureImage = await pdfDoc.embedPng(sigBuffer);
-    const sigDims = signatureImage.scale(0.5); // Check scale
 
-    // 5. Append a Signature Page (Temporary solution until Field Placement is ready)
-    // We add a new page at the end
-    const page = pdfDoc.addPage();
-    const { width, height } = page.getSize();
+    // 5. Place Signature on the last page of the document
+    const pages = pdfDoc.getPages();
+    const page = pages[pages.length - 1]; // Use last page
     
-    // Draw Text
-    page.drawText(`Digitally Signed by ${args.signerName} (${args.signerEmail})`, {
+    // Draw Text at bottom left
+    page.drawText(`Digitally Signed by ${args.signerName}`, {
         x: 50,
-        y: height - 100,
-        size: 18,
+        y: 80,
+        size: 10,
         font: helveticaFont,
         color: rgb(0, 0, 0),
     });
 
     const now = new Date().toISOString();
-    page.drawText(`Date: ${now}`, {
+    page.drawText(`Date: ${now} | ID: ${args.requestId.substring(0, 8)}`, {
         x: 50,
-        y: height - 125,
-        size: 12,
+        y: 65,
+        size: 8,
         font: helveticaFont,
         color: rgb(0.5, 0.5, 0.5),
     });
 
-    // Draw Signature
+    // Draw Signature next to text
     page.drawImage(signatureImage, {
         x: 50,
-        y: height - 250,
-        width: sigDims.width,
-        height: sigDims.height,
+        y: 100,
+        width: 100, // Fixed small size for backend auto-placement
+        height: 40,
     });
 
     // 6. Save and Upload

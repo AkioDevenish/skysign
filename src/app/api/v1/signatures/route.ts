@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createRateLimiter } from '@/lib/apiUtils';
 
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
-
 // Rate limit: 60 API requests per minute per IP
 const rateLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 60 });
 
@@ -23,7 +21,8 @@ async function hashApiKey(key: string): Promise<string> {
  * Returns the userId associated with the key, or null if invalid.
  */
 async function authenticateApiKey(
-    request: Request
+    request: Request,
+    convexUrl: string
 ): Promise<{ userId: string } | null> {
     const authHeader = request.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -40,7 +39,7 @@ async function authenticateApiKey(
     // Query Convex for the matching API key using the by_hashed_key index
     try {
         const response = await fetch(
-            `${CONVEX_URL}/api/query`,
+            `${convexUrl}/api/query`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -77,6 +76,15 @@ async function authenticateApiKey(
  * Response: { signatures: [...], total: number }
  */
 export async function GET(request: Request) {
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+    if (!convexUrl) {
+        return NextResponse.json(
+            { error: 'Service configuration error' },
+            { status: 500 }
+        );
+    }
+
     try {
         // Rate limiting
         const forwarded = request.headers.get('x-forwarded-for');
@@ -88,7 +96,7 @@ export async function GET(request: Request) {
             );
         }
 
-        const auth = await authenticateApiKey(request);
+        const auth = await authenticateApiKey(request, convexUrl);
         if (!auth) {
             return NextResponse.json(
                 {
@@ -107,7 +115,7 @@ export async function GET(request: Request) {
         );
 
         const response = await fetch(
-            `${CONVEX_URL}/api/query`,
+            `${convexUrl}/api/query`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -164,6 +172,15 @@ export async function GET(request: Request) {
  * Response: { id: string, name: string, createdAt: string }
  */
 export async function POST(request: Request) {
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+    if (!convexUrl) {
+        return NextResponse.json(
+            { error: 'Service configuration error' },
+            { status: 500 }
+        );
+    }
+
     try {
         // Rate limiting
         const forwarded = request.headers.get('x-forwarded-for');
@@ -175,7 +192,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const auth = await authenticateApiKey(request);
+        const auth = await authenticateApiKey(request, convexUrl);
         if (!auth) {
             return NextResponse.json(
                 {
@@ -226,7 +243,7 @@ export async function POST(request: Request) {
         const now = new Date().toISOString();
 
         const response = await fetch(
-            `${CONVEX_URL}/api/mutation`,
+            `${convexUrl}/api/mutation`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
